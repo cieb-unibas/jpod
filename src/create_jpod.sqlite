@@ -9,40 +9,40 @@ PRAGMA foreign_keys = ON;
 
 -- create the job_postings table:
 CREATE TABLE job_postings(
-	uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
-	crawl_timestamp VARCHAR(19),
-	url TEXT,
-	post_date TEXT,
-  job_title TEXT,
-  job_description TEXT,
-  html_job_description TEXT,
-  job_board TEXT,
-  text_language TEXT
-	);
+uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
+crawl_timestamp VARCHAR(19),
+url TEXT,
+post_date TEXT,
+job_title TEXT,
+job_description TEXT,
+html_job_description TEXT,
+job_board TEXT,
+text_language TEXT
+);
 
 -- create the position_characteristics table:
 CREATE TABLE position_characteristics(
-	uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
-	company_name VARCHAR,
-  category VARCHAR,
-  inferred_department_name VARCHAR,
-  inferred_department_score INTEGER,
-  city VARCHAR,
-  inferred_city VARCHAR,
-  state VARCHAR,
-  inferred_state VARCHAR,
-  country VARCHAR,
-  inferred_country VARCHAR,
-  job_type VARCHAR,
-  inferred_job_title VARCHAR,
-  remote_position VARCHAR
-	);
+uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
+company_name VARCHAR,
+category VARCHAR,
+inferred_department_name VARCHAR,
+inferred_department_score INTEGER,
+city VARCHAR,
+inferred_city VARCHAR,
+state VARCHAR,
+inferred_state VARCHAR,
+country VARCHAR,
+inferred_country VARCHAR,
+job_type VARCHAR,
+inferred_job_title VARCHAR,
+remote_position VARCHAR
+);
 
 -- create the institutions table:
 CREATE TABLE institutions(
-	company_name VARCHAR NOT NULL PRIMARY KEY,
-	contact_mail VARCHAR,
-	contact_phone INTEGER,
-  inferred_company_type VARCHAR,
-  inferred_company_score INTEGER 
-	);
+company_name VARCHAR NOT NULL PRIMARY KEY,
+contact_email VARCHAR,
+contact_phone_number INTEGER,
+inferred_company_type VARCHAR,
+inferred_company_score INTEGER
+);
