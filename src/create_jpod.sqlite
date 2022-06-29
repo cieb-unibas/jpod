@@ -44,5 +44,5 @@ company_name VARCHAR NOT NULL PRIMARY KEY,
 contact_email VARCHAR,
 contact_phone_number INTEGER,
 inferred_company_type VARCHAR,
-inferred_company_score INTEGER
+inferred_company_type_score INTEGER
 );
