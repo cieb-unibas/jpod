@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## specify the directory
-jpod_src="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/src/"
+jpod_src="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/"
 jpod_data="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 
 ## create sqlite database
@@ -12,4 +12,4 @@ ml purge
 
 ## insert job adds data using python
 ml load Python
-python "${jpod_src}data_insert.py" "${jpod_data}jobspickr_raw/" ".zip" $jpod_data
+python "${jpod_src}data_insert.py" $jpod_data "${jpod_data}jobspickr_raw/" ".zip"
