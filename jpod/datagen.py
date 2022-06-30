@@ -2,9 +2,8 @@ import pandas as pd
 import zipfile as zf
 import os
 import re
-import sqlite3
 
-class jpod_properties():
+class base_properties():
     def __init__(self):
         self.tables = ["job_postings", "position_characteristics", "institutions"]
         self.pkeys = {"job_postings": "uniq_id", "position_characteristics": "uniq_id", "institutions": "company_name"}
@@ -22,17 +21,13 @@ class jpod_properties():
             "job_title", "job_board", "company_name", "category", "inferred_department_name",
             "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
             "job_type", "inferred_job_title", "inferred_company_type"]
-    
-def jpod_connect(db_path):
-        conn = sqlite3.connect(db_path + "jpod.db")
-        return conn
-
-def select_files(dir, file_format):
+   
+def select_raw_files(dir, file_format = ".zip"):
     files = os.listdir(dir)
     files = [file for file in files if file.endswith(file_format)]
     return files
 
-def load_data(file):
+def load_raw_data(file):
     if file.endswith(".zip"):
         file = zf.ZipFile(file)
         file_list = file.infolist()
@@ -43,16 +38,18 @@ def load_data(file):
         df = pd.read_csv(file)
     else:
         raise ValueError("Data must be provided in raw or zipped .csv format.")
+    df = df.rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
     return df
 
-def structure_data(df, table_vars, table_pkey, lower_string_vars = None, distinct_postings = True):
-    all_vars = table_vars + [table_pkey]
-    df = df.loc[:, all_vars]
+def structure_data(df, table_vars, table_pkey, lowercase_vars = None, distinct_postings = True):
+    table_vars = table_vars + [table_pkey]
+    df = df.loc[:, table_vars]
     if distinct_postings:
         df = df.drop_duplicates(subset = [table_pkey]).reset_index().drop("index", axis = 1)
-    if lower_string_vars is not None:
-        for v in lower_string_vars:
-            df[v] = [str(x).strip().lower() for x in df[v]]
+    if lowercase_vars is not None:
+        lowercase_vars = [v for v in lowercase_vars if v in table_vars]
+        for v in lowercase_vars:
+            df[v] = df[v].astype(str).str.strip().str.lower()
     return df
 
 def regex_subset(full_set, search_string, n_letters):
@@ -64,8 +61,7 @@ def unique_data_preparation(df, id, table, conn):
     # get existing records:
     existing_ids = conn.execute("SELECT DISTINCT {} FROM {}".format(id, table)).fetchall()
     existing_ids = [str(id[0]).strip().lower() for id in existing_ids]
-    # for every id check if it already exists and specify otherwise
-    # df[id] = [str(name).strip().lower() for name in df[id]] => not necesseray anymore
+    # for every id check if there is a match with existing ones. keep otherwise
     df = df.set_index(id)
     new_insertations = [name for name in df.index if name not in regex_subset(full_set = existing_ids, search_string = str(name), n_letters = 3)]
     df = df.loc[new_insertations, :].reset_index().drop_duplicates(subset = [id]).dropna(subset=[id])
@@ -73,4 +69,4 @@ def unique_data_preparation(df, id, table, conn):
 
 def test_data_structure(n_insertations, table, conn):
             n_row_table = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
-            assert n_insertations == n_row_table
+            assert n_insertations == n_row_table, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
