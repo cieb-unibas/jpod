@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## directories
+ml purge
 jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 
 ## create sqlite database

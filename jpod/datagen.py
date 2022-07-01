@@ -48,12 +48,10 @@ def unique_data_preparation(df, id, table, conn):
     df = df.loc[new_insertations, :].reset_index().drop_duplicates(subset = [id]).dropna(subset=[id])
     return df
 
-def test_data_structure(n_insertations, table, conn):
-            n_row_table = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
-            assert n_insertations == n_row_table, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
-
 def insert_base_data(table_dat, table, conn):
     projected_insertations = len(table_dat)
+    rows_pre = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
     table_dat.to_sql(name = table, con = conn, index = False, if_exists = "append")
-    test_data_structure(n_insertations = projected_insertations, table = table, conn = conn)
+    rows_post = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
+    assert rows_post - rows_pre == projected_insertations, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
     print("Data successfully inserted into JPOD table '{}'.".format(table))
