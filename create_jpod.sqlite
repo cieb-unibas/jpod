@@ -1,13 +1,9 @@
--- specify the path where the database should be created:
+-- specify the paths and create the database:
 .cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/
-
--- create the database:
 .open jpod.db
-
--- enable foreign_keys functionality
 PRAGMA foreign_keys = ON;
 
--- create the job_postings table:
+-- create table structures:
 CREATE TABLE job_postings(
 uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
 crawl_timestamp VARCHAR(19),
@@ -20,7 +16,6 @@ job_board TEXT,
 text_language TEXT
 );
 
--- create the position_characteristics table:
 CREATE TABLE position_characteristics(
 uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
 company_name VARCHAR,
@@ -38,7 +33,6 @@ inferred_job_title VARCHAR,
 remote_position VARCHAR
 );
 
--- create the institutions table:
 CREATE TABLE institutions(
 company_name VARCHAR NOT NULL PRIMARY KEY,
 contact_email VARCHAR,

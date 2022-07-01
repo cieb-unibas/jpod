@@ -3,25 +3,6 @@ import zipfile as zf
 import os
 import re
 
-class base_properties():
-    def __init__(self):
-        self.tables = ["job_postings", "position_characteristics", "institutions"]
-        self.pkeys = {"job_postings": "uniq_id", "position_characteristics": "uniq_id", "institutions": "company_name"}
-        self.tablevars = {
-            "job_postings": ["crawl_timestamp", "url", "post_date", "job_title", "job_description",
-            "html_job_description", "job_board", "text_language"
-            ],
-            "position_characteristics": ["company_name", "category", "inferred_department_name", 
-            "inferred_department_score", "city", "inferred_city", "state", "inferred_state", 
-            "country", "inferred_country", "job_type", "inferred_job_title", "remote_position"
-            ],
-            "institutions": ["contact_phone_number", "contact_email", "inferred_company_type", "inferred_company_type_score"
-            ]}
-        self.str_matching_vars = [
-            "job_title", "job_board", "company_name", "category", "inferred_department_name",
-            "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
-            "job_type", "inferred_job_title", "inferred_company_type"]
-   
 def select_raw_files(dir, file_format = ".zip"):
     files = os.listdir(dir)
     files = [file for file in files if file.endswith(file_format)]
@@ -42,7 +23,7 @@ def load_raw_data(file):
     return df
 
 def structure_data(df, table_vars, table_pkey, lowercase_vars = None, distinct_postings = True):
-    table_vars = table_vars + [table_pkey]
+    table_vars = list(set(table_vars + [table_pkey]))
     df = df.loc[:, table_vars]
     if distinct_postings:
         df = df.drop_duplicates(subset = [table_pkey]).reset_index().drop("index", axis = 1)
@@ -70,3 +51,9 @@ def unique_data_preparation(df, id, table, conn):
 def test_data_structure(n_insertations, table, conn):
             n_row_table = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
             assert n_insertations == n_row_table, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
+
+def insert_base_data(table_dat, table, conn):
+    projected_insertations = len(table_dat)
+    table_dat.to_sql(name = table, con = conn, index = False, if_exists = "append")
+    test_data_structure(n_insertations = projected_insertations, table = table, conn = conn)
+    print("Data successfully inserted into JPOD table '{}'.".format(table))

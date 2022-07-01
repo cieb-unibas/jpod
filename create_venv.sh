@@ -1,7 +1,8 @@
 #!/bin/bash
 ml load Python
-jpod_data="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-virtualenv --system-site-packages "${jpod_data}/jpod_venv"
-source "${jpod_data}/jpod_venv/bin/activate"
-pip install -r "${jpod_data}/jpod/requirements.txt"
+jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
+virtualenv --system-site-packages "${jpod_path}/jpod_venv"
+source "${jpod_path}/jpod_venv/bin/activate"
+pip install -r "${jpod_path}/jpod/requirements.txt"
 deactivate
+ml purge

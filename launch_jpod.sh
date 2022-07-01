@@ -1,17 +1,16 @@
 #!/bin/bash
 
-## specify the directory ---------
-jpod_src="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/"
-jpod_data="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
+## directories
+jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 
-## create sqlite database ---------
+## create sqlite database
 ml load SQLite/3.35.4-GCCcore-10.3.0
-cd $data_path
-sqlite3 jpod.db ".read ${jpod_src}create_jpod.sqlite"
+cd $jpod_path
+sqlite3 jpod.db ".read ${jpod_path}jpod/create_jpod.sqlite"
 ml purge
 
-## insert base job adds data using python ---------
+## insert base data using python
 ml load Python
-source "${jpod_data}/jpod_venv/bin/activate"
-## arg[1] = path to database, arg[2] = path to raw data, arg[3] = file format of raw data:
-python "${jpod_src}data_insert.py" $jpod_data "${jpod_data}jobspickr_raw/" ".zip" 
+source "${jpod_path}/jpod_venv/bin/activate"
+python "${jpod_path}jpod/jpod/insert_base.py" $jpod_path
+ml purge

@@ -14,3 +14,29 @@ def get_table_vars(conn, table):
     res = [col[1] for col in res.fetchall()]
     return res
 
+class base_properties():
+    def __init__(self):
+        self.tables = ["job_postings", "position_characteristics", "institutions"]
+        self.pkeys = {"job_postings": "uniq_id", "position_characteristics": "uniq_id", "institutions": "company_name"}
+        self.tablevars = {
+            "job_postings": ["crawl_timestamp", "url", "post_date", "job_title", "job_description",
+            "html_job_description", "job_board", "text_language"
+            ],
+            "position_characteristics": ["company_name", "category", "inferred_department_name", 
+            "inferred_department_score", "city", "inferred_city", "state", "inferred_state", 
+            "country", "inferred_country", "job_type", "inferred_job_title", "remote_position"
+            ],
+            "institutions": ["contact_phone_number", "contact_email", "inferred_company_type", "inferred_company_type_score"
+            ]}
+        self.str_matching_vars = [
+            "job_title", "job_board", "company_name", "category", "inferred_department_name",
+            "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
+            "job_type", "inferred_job_title", "inferred_company_type"]
+
+def empty_table(table, conn):
+    n_rows_table = conn.execute("SELECT COUNT(*) FROM {};".format(table)).fetchone()[0]
+    if n_rows_table != 0:
+        conn.execute("DELETE FROM {};".format(table))
+        print("Deleted {} rows from table '{}'".format(n_rows_table, table))
+    else:
+        print("JPOD table '{}' is already empty.".format(table))
