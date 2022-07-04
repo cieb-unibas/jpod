@@ -4,7 +4,7 @@ sys.path.append("../jpod")
 from jpod import navigate as nav
 
 #### connect to the database and get its current structure -----------------------
-DB_DIR = "C:/Users/matth/Desktop/"
+#DB_DIR = "C:/Users/matth/Desktop/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 TABLES_VARS = {}
 for table in nav.get_tables(conn=JPOD_CONN):
@@ -53,6 +53,7 @@ LEFT JOIN position_characteristics pc ON pc.uniq_id = jp.uniq_id;
 print("Employers asking about '{}': ".format(KEYWORD))
 pd.read_sql_query(jpod_query, con=JPOD_CONN)
 
+# EXAMPLE 5: Top 20 companies in terms of the number of postings using the term "machine learning"
 jpod_query = """
 SELECT pc.company_name, COUNT(*) as n_postings
 FROM (

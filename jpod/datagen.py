@@ -4,11 +4,17 @@ import zipfile as zf
 import os
 
 def select_raw_files(dir, file_format = ".zip"):
+    """
+    Returns all files of a given format from a directory.
+    """
     files = os.listdir(dir)
     files = [file for file in files if file.endswith(file_format)]
     return files
 
 def load_raw_data(file):
+    """
+    Reads zipped or raw .csv file.
+    """
     if file.endswith(".zip"):
         file = zf.ZipFile(file)
         file_list = file.infolist()
@@ -19,10 +25,14 @@ def load_raw_data(file):
         df = pd.read_csv(file)
     else:
         raise ValueError("Data must be provided in raw or zipped .csv format.")
+    # need an IF CLAUSE HERE BECAUSE UNCERTAIN IF THESE VARIABLES WILL ALWAYS BE PRESENT!
     df = df.rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
     return df
 
 def structure_data(df, table_vars, table_pkey, lowercase = None, distinct = True):
+    """
+    Subsets a pd.DataFrame to columns that exist in JPOD and lowercases columns that are lowercased in JPOD.
+    """
     table_vars = list(set(table_vars + [table_pkey]))
     df = df.loc[:, table_vars]
     if lowercase is not None:
@@ -61,3 +71,21 @@ def insert_base_data(table_dat, table, conn):
         rows_post = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
         assert rows_post - rows_pre == projected_insertations, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
         print("Data successfully inserted into JPOD table '{}'.".format(table))
+
+
+# tbd for updates: create new uniq_ids
+# def create_id(chars = string.ascii_lowercase + string.digits):
+#     id = ''.join(random.choice(chars) for x in range(32))
+#     return id
+
+# def create_identifiers(n_ids, conn, table, id)
+#     existing_ids = conn.execute("SELECT {} FROM {}".format(id, table)).fetchall()
+#     existing_ids = np.array(existing_ids, dtype=str)
+        
+    
+
+
+
+
+
+
