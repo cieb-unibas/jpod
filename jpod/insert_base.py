@@ -18,7 +18,7 @@ DAT_DIR = DB_DIR + "jobspickr_raw/"
 #DAT_DIR = DB_DIR # desktop
 FILES = dg.select_raw_files(DAT_DIR)
 
-for file in FILES[:10]: # for testing only 10 files
+for file in FILES:
     dat = dg.load_raw_data(DAT_DIR + file)
     print("Data from file '{}' loaded".format(file))
     for table in JPOD_STRUCTURE.tables:

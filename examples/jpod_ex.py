@@ -5,6 +5,7 @@ from jpod import navigate as nav
 
 #### connect to the database and get its current structure -----------------------
 #DB_DIR = "C:/Users/matth/Desktop/"
+DB_DIR = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 TABLES_VARS = {}
 for table in nav.get_tables(conn=JPOD_CONN):
