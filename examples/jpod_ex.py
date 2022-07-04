@@ -1,15 +1,23 @@
-import sys
 import pandas as pd
-sys.path.append("../jpod")
-from jpod import navigate as nav
+import sqlite3
 
-#### connect to the database and get its current structure -----------------------
-#DB_DIR = "C:/Users/matth/Desktop/"
 DB_DIR = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-JPOD_CONN = nav.db_connect(db_path = DB_DIR)
+
+def get_tables(conn):
+    res = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    res = [col[0] for col in res.fetchall()]
+    return res
+    
+def get_table_vars(conn, table):
+    res = conn.execute("PRAGMA table_info({});".format(table))
+    res = [col[1] for col in res.fetchall()]
+    return res
+
+#### connect to the database and get its current structure ---------------------
+JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
 TABLES_VARS = {}
-for table in nav.get_tables(conn=JPOD_CONN):
-    TABLES_VARS[table] = nav.get_table_vars(table = table, conn = JPOD_CONN)
+for table in get_tables(conn=JPOD_CONN):
+    TABLES_VARS[table] = get_table_vars(table = table, conn = JPOD_CONN)
 
 # EXAMPLE 1: number of job adds by job board
 jpod_query = """
@@ -19,7 +27,7 @@ GROUP BY job_board
 ORDER BY n_postings DESC;
 """
 pd.read_sql_query(jpod_query, con=JPOD_CONN) # Opion 1: read via pandas read_sql_query() method
-pd.DataFrame(JPOD_CONN.execute(jpod_query).fetchall(), columns=["plattform", "n_postings"]) # Opion 2: read via sqlite execute() method
+# pd.DataFrame(JPOD_CONN.execute(jpod_query).fetchall(), columns=["plattform", "n_postings"]) # Opion 2: read via sqlite execute() method
 
 # EXAMPLE 2: Biggest 10 cities with their total number of postings
 jpod_query = """
@@ -55,6 +63,7 @@ print("Employers asking about '{}': ".format(KEYWORD))
 pd.read_sql_query(jpod_query, con=JPOD_CONN)
 
 # EXAMPLE 5: Top 20 companies in terms of the number of postings using the term "machine learning"
+KEYWORD = "machine learning"
 jpod_query = """
 SELECT pc.company_name, COUNT(*) as n_postings
 FROM (
