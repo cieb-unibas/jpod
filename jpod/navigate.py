@@ -28,7 +28,7 @@ class base_properties():
             ],
             "institutions": ["contact_phone_number", "contact_email", "inferred_company_type", "inferred_company_type_score"
             ]}
-        self.str_matching_vars = [
+        self.lowercase_vars = [
             "job_title", "job_board", "company_name", "category", "inferred_department_name",
             "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
             "job_type", "inferred_job_title", "inferred_company_type"]
