@@ -20,6 +20,7 @@ FILES = dg.select_raw_files(DAT_DIR)
 
 for file in FILES:
     dat = dg.load_raw_data(DAT_DIR + file)
+    dat = dat.rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
     print("Data from file '{}' loaded".format(file))
     for table in JPOD_STRUCTURE.tables:
         print("Insert data from raw file '{}' into database table '{}'".format(file, table))
@@ -31,7 +32,7 @@ for file in FILES:
             distinct = True
             )
         table_dat = dg.unique_records(df = table_dat, id = JPOD_STRUCTURE.pkeys[table], table = table, conn = JPOD_CONN)
-        dg.insert_base_data(table_dat=table_dat, table = table, conn = JPOD_CONN)
+        dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN)
     print("All data from file '{}' successfully inserted into JPOD.".format(file))
 
 # summarize
