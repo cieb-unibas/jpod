@@ -4,13 +4,42 @@ import zipfile as zf
 import os
 
 def select_raw_files(dir, file_format = ".zip"):
-    """Return files of a given format from a directory."""
+    """Return files of a given format from a directory.
+    
+    Parameters
+    ----------
+    dir : str
+        A string indicating the location of the files to read.
+    file_format: str, optional
+        A string indicating the format of the files to be read (default is '.zip').
+    
+    Returns:
+    --------
+    list:
+        A list of strings indicating files to be read.
+    """
     files = os.listdir(dir)
     files = [file for file in files if file.endswith(file_format)]
     return files
 
 def load_raw_data(file):
-    """Read zipped or raw .csv file to a pandas DataFrame"""
+    """Read zipped or raw .csv file to a pandas DataFrame
+    
+    Parameters
+    ----------
+    file : str
+        A string indicating the location of the file to read.
+    
+    Raises:
+    ------
+    ValueError:
+        If `file` is not a zipped .csv or raw .csv file.
+
+    Returns:
+    --------
+    pd.DataFrame:
+        A pd.DataFrame containing the raw data to be inserted in JPOD.
+    """
     if file.endswith(".zip"):
         file = zf.ZipFile(file)
         file_list = file.infolist()
@@ -25,17 +54,25 @@ def load_raw_data(file):
 
 def structure_data(df, table_vars, table_pkey, lowercase = None, distinct = True):
     """
-    Structures and processes data before inserting it to JPOD.
+    Structures and processes the data before inserting it to JPOD.
 
-    Keyword arguments:
-    df -- A pandas DataFrame
-    table_vars -- A list of strings that represent JPOD-columns the data will be inserted to.
-    table_pkey -- A string representing the primary key in the JPOD-table data will be inserted to.
-    lowercase -- A list of strings representing columns in the JPOD-table that have to be lowercase (default = None).
-    distinct -- Should only observations with a non-duplicated primary key be considered (default = True)?
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas DataFrame containing the data
+    table_vars : list
+        A list of strings that represent JPOD-columns the data will be inserted in.
+    table_pkey : str
+        A string indicating the primary key in the JPOD-table the data will be inserted in.
+    lowercase : list, optional
+        A list of strings indicating columns of the JPOD-table that have to be lowercase (default is 'None').
+    distinct : bool, optional
+        A flag indicating if only observations with a non-duplicated primary key should be considered (default is True).
 
-    Returns:
-    A pandas DataFrame.
+    Returns
+    -------
+    pd.DataFrame :
+        A pandas DataFrame only consisting of columns that are present in the corresponding JPOD table.
     """
     table_vars = list(set(table_vars + [table_pkey]))
     df = df.loc[:, table_vars]
@@ -51,14 +88,21 @@ def unique_records(df, id, table, conn):
     """
     Subset data to observations with identifiers that are not present in JPOD yet.
 
-    Keyword arguments:
-    df -- A pandas DataFrame
-    table -- A string indicating the JPOD-table the data will be inserted to.
-    id -- A string representing the primary key of the JPOD-table
-    conn -- Connection to JPOD (a sqlite3 object)
+    Parameters
+    -----------
+    df : pd.DataFrame
+        A pd.DataFrame containing data to be inserted to JPOD.
+    table : str
+        A string indicating the JPOD-table the data will be inserted in.
+    id : str 
+        A string representing the primary key of the JPOD table.
+    conn : sqlite3.Connection
+        A sqlite Connection to JPOD.
 
-    Returns:
-    A pandas DataFrame.
+    Returns
+    -------
+    pd.DataFrame :
+        A pd.DataFrame that only contains observations with primary keys not present in the JPOD table.
     """
     existing_ids = conn.execute("SELECT {} FROM {}".format(id, table)).fetchall()
     existing_ids = np.array(existing_ids, dtype=str)
@@ -75,10 +119,14 @@ def insert_base_data(df, table, conn):
     """
     Insert data into JPOD.
 
-    Keyword arguments:
-    df -- A pandas DataFrame
-    table -- A string indicating the JPOD-table the data will be inserted to.
-    conn -- Connection to JPOD (a sqlite3 object)
+    Parameters:
+    ----------
+    df : pd.DataFrame
+        A pd.DataFrame containing data to be inserted to JPOD.
+    table : str
+        A string indicating the JPOD-table the data will be inserted in.
+    conn : sqlite3.Connection
+        A sqlite Connection to JPOD.
     """
     if len(df) == 0:
         print("No data to insert into JPOD table '{}'.".format(table))

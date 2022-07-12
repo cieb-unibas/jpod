@@ -5,10 +5,14 @@ def db_connect(db_path):
     Connect to JPOD.
     
     Parameters:
-    db_path (str) -- Directory to JPOD
+    -----------
+    db_path : str
+        A string indicating the location of JPOD.
     
     Returns:
-    A sqlite3 connection to JPOD
+    --------
+    sqlite3.Connection:
+        A sqlite3 connection object to JPOD.
     """
     conn = sqlite3.connect(db_path + "jpod.db")
     return conn
@@ -18,10 +22,14 @@ def get_tables(conn):
     Retrieve all tables from JPOD
 
     Parameters:
-    conn -- Connection to JPOD (a sqlite3 object)
+    -----------
+    conn : sqlite3.Connection
+        A sqlite3 connection object to JPOD.
 
     Returns:
-    A list of strings indicating JPOD tables.
+    --------
+    list :
+        A list of strings indicating JPOD tables.
     """
     res = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
     res = [col[0] for col in res.fetchall()]
@@ -32,11 +40,16 @@ def get_table_vars(conn, table):
     Retriebe all columns from a table in JPOD
 
     Parameters:
-    conn -- Connection to JPOD (a sqlite3 object)
-    table (str) -- A JPOD-table
+    -----------
+    conn : sqlite3.Connection
+        A sqlite3 connection object to JPOD.
+    table :str
+        A string indicating a certain JPOD table.
 
     Returns:
-    A list of strings indicating columns of a JPOD table.
+    --------
+    list:
+        A list of strings indicating columns of a JPOD table.
     """
     res = conn.execute("PRAGMA table_info({});".format(table))
     res = [col[1] for col in res.fetchall()]
@@ -46,14 +59,16 @@ class base_properties():
     """
     Retrieve the base properties of JPOD.
 
-    Parameters:
-    None
-
     Attributes:
-    tables (list) -- A list of the base tables in JPOD.
-    pkeys (dict)-- A dictionary of tables and their respective primary keys in JPOD.
-    tablevars (dict) -- A dictionary of tables and their respective columns in JPOD
-    lowercase_vars (list) -- A list of columns in JPOD that are lowercase.
+    -----------
+    tables : list
+        A list of strings indicating the base tables in JPOD.
+    pkeys : dict
+        A dictionary of tables (str) and their respective primary keys (str) in JPOD.
+    tablevars : dict
+        A dictionary of tables (str) and their respective column names (str) in JPOD
+    lowercase_vars : list
+        A list of column names in JPOD that are lowercase.
     """
     def __init__(self):
         self.tables = ["job_postings", "position_characteristics", "institutions"]
@@ -78,8 +93,11 @@ def empty_table(table, conn):
     Delete all existing observations in a JPOD table.
 
     Parameters:
-    table -- A string representing the JPOD table
-    conn -- Connection to JPOD (a sqlite3 object)
+    ----------
+    table : str
+        A string representing the JPOD table
+    conn : sqlite3.Connection
+        A sqlite3 connection object to JPOD.
     """
     n_rows_table = conn.execute("SELECT COUNT(*) FROM {};".format(table)).fetchone()[0]
     if n_rows_table != 0:

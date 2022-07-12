@@ -18,6 +18,19 @@ DAT_DIR = DB_DIR + "jobspickr_raw/"
 #DAT_DIR = DB_DIR # desktop
 FILES = dg.select_raw_files(DAT_DIR)
 
+
+# get existing pkeys in the tables here.
+# store them in memory as np.array in order to not connect to JPOD in every loop (at the end, there will be around 3.4Mio. elements in this array..)
+# in the loop: 1) check if new records match existing pkeys 2) if not: append the pkey array with the new ones.
+def retrieve_pkeys(table, pkey):
+    sql_statement = """SELECT %s FROM %s;""" % (pkey, table)
+    existing_keys = pd.read_sql_query(sql_statement, con = conn)[pair[1]]
+    existing_keys = np.array(existing_keys)
+    return existing_keys
+
+
+
+
 for file in FILES:
     dat = dg.load_raw_data(DAT_DIR + file)
     dat = dat.rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
