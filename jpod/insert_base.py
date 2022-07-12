@@ -1,11 +1,12 @@
 import sys
-#sys.path.append("./jpod")
+sys.path.append("./jpod")
 import datagen as dg
 import navigate as nav
 
 #### connect to the database and get its base structure -----------------------
 DB_DIR = sys.argv[1]
 #DB_DIR = "C:/Users/matth/Desktop/"
+DB_DIR = "C:/Users/nigmat01/Desktop/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 JPOD_STRUCTURE = nav.base_properties()
 
@@ -15,21 +16,13 @@ for table in JPOD_STRUCTURE.tables:
 
 #### insert data from JobsPickr -----------------------
 DAT_DIR = DB_DIR + "jobspickr_raw/"
-#DAT_DIR = DB_DIR # desktop
+DAT_DIR = DB_DIR # desktop
 FILES = dg.select_raw_files(DAT_DIR)
 
-
-# get existing pkeys in the tables here.
-# store them in memory as np.array in order to not connect to JPOD in every loop (at the end, there will be around 3.4Mio. elements in this array..)
-# in the loop: 1) check if new records match existing pkeys 2) if not: append the pkey array with the new ones.
-def retrieve_pkeys(table, pkey):
-    sql_statement = """SELECT %s FROM %s;""" % (pkey, table)
-    existing_keys = pd.read_sql_query(sql_statement, con = conn)[pair[1]]
-    existing_keys = np.array(existing_keys)
-    return existing_keys
-
-
-
+# get a set of existing pkeys per table.
+pkey_exist = {}
+for table in JPOD_STRUCTURE.tables:
+    pkey_exist[table] = dg.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
 
 for file in FILES:
     dat = dg.load_raw_data(DAT_DIR + file)
@@ -37,20 +30,28 @@ for file in FILES:
     print("Data from file '{}' loaded".format(file))
     for table in JPOD_STRUCTURE.tables:
         print("Insert data from raw file '{}' into database table '{}'".format(file, table))
+        p_key = JPOD_STRUCTURE.pkeys[table]
         table_dat = dg.structure_data(
             df = dat, 
             table_vars = JPOD_STRUCTURE.tablevars[table], 
-            table_pkey = JPOD_STRUCTURE.pkeys[table],
+            table_pkey = p_key,
             lowercase = JPOD_STRUCTURE.lowercase_vars, 
             distinct = True
             )
-        table_dat = dg.unique_records(df = table_dat, id = JPOD_STRUCTURE.pkeys[table], table = table, conn = JPOD_CONN)
-        dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN)
-    print("All data from file '{}' successfully inserted into JPOD.".format(file))
+        if len(pkey_exist[table]) == 0:
+           dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
+        else:
+            table_dat = dg.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
+            dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
+        # update existing p_key_values
+        if len(table_dat[p_key]) > 0:
+            pkey_exist[table] |= set(table_dat[p_key])
+        print("All data from file '{}' successfully inserted into JPOD.".format(file))
 
 # summarize
 for table in JPOD_STRUCTURE.tables:
     N_obs = JPOD_CONN.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
+    assert N_obs == len(pkey_exist[table]), "Stored number of uniqe pkey values does not correspond to number of rows in the JPOD table '%s'" % table
     print("Number of observations in table '{}':".format(table), N_obs)
 
 #### Save and close connection to .db -------------------

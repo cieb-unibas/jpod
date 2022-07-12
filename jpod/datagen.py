@@ -84,38 +84,66 @@ def structure_data(df, table_vars, table_pkey, lowercase = None, distinct = True
         df = df.drop_duplicates(subset = [table_pkey]).reset_index().drop("index", axis = 1)
     return df
 
-def unique_records(df, id, table, conn):
+def retrieve_pkeys(table, p_key, conn):
     """
-    Subset data to observations with identifiers that are not present in JPOD yet.
+    Retrieve all the values of the primary key column in a JPOD table.
+
+    Parameters:
+    -----------
+    table : str
+        A string indicating the JPOD table.
+    conn : sqlite3.Connection
+        A sqlite Connection to JPOD.
+    
+    Raises:
+    -------
+    AssertionError
+        If `table` is not a JPOD table.
+    
+    Returns:
+    --------
+    set :
+        A set of all the primary key values of this table.
+    """
+    sql_statement = """SELECT %s FROM %s;""" % (p_key, table)
+    existing_keys = conn.execute(sql_statement).fetchall()
+    existing_keys = set([x[0] for x in existing_keys])
+    return existing_keys
+
+def unique_records(df, df_identifier, existing_pkeys):
+    """
+    Subset data to observations with identifiers that are not present as primary key values in JPOD.
 
     Parameters
     -----------
     df : pd.DataFrame
         A pd.DataFrame containing data to be inserted to JPOD.
-    table : str
-        A string indicating the JPOD-table the data will be inserted in.
-    id : str 
-        A string representing the primary key of the JPOD table.
-    conn : sqlite3.Connection
-        A sqlite Connection to JPOD.
+    df_identifier : str
+        A string indicating a column of `df` that identifies unique rows.
+    existing_pkeys : set, list
+        A list or set of values that are already in use as primary key values in JPOD.
+
+    Raises:
+    -------
+    AssertionError:
+        If `df_identifier` is not a column of `df`.
 
     Returns
     -------
     pd.DataFrame :
         A pd.DataFrame that only contains observations with primary keys not present in the JPOD table.
     """
-    existing_ids = conn.execute("SELECT {} FROM {}".format(id, table)).fetchall()
-    existing_ids = np.array(existing_ids, dtype=str)
-    n_existing = len(existing_ids)
-    if n_existing > 0:
-        existing_ids = np.char.strip(existing_ids)
-        existing_ids = np.char.lower(existing_ids)
-        new_insertations = np.setdiff1d(list(df[id]), list(existing_ids))
-        df = df.set_index(id)
-        df = df.loc[new_insertations, :].reset_index().drop_duplicates(subset = [id]).dropna(subset=[id])
+    assert df_identifier in df.columns, "Stated identifier could not be found in the DataFrame."
+    new_insertations = np.setdiff1d(list(df[df_identifier]), list(existing_pkeys)) # numpy solution 
+    # new_insertations = list(set(df[df_identifier]).difference(existing_pkeys)) # set() difference solution
+    if len(new_insertations) > 0:
+        df = df.set_index(df_identifier)
+        df = df.loc[new_insertations, :].reset_index().drop_duplicates(subset = [df_identifier]).dropna(subset=[df_identifier])
+    else:
+        df = pd.DataFrame(columns=df.columns)
     return df
 
-def insert_base_data(df, table, conn):
+def insert_base_data(df, table, conn, test_rows = False):
     """
     Insert data into JPOD.
 
@@ -127,17 +155,21 @@ def insert_base_data(df, table, conn):
         A string indicating the JPOD-table the data will be inserted in.
     conn : sqlite3.Connection
         A sqlite Connection to JPOD.
+    test_rows : bool, optional
+        A flag indicating if there should be a test that all rows from `df` have been inserted to JPOD (default is False).
     """
     if len(df) == 0:
         print("No data to insert into JPOD table '{}'.".format(table))
-    else:
+    elif test_rows:
         projected_insertations = len(df)
         rows_pre = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
         df.to_sql(name = table, con = conn, index = False, if_exists = "append")
         rows_post = conn.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
         assert rows_post - rows_pre == projected_insertations, "Number of rows in the original dataframe does not correspond to the number of inserted rows to the database table"
-        print("Data successfully inserted into JPOD table '{}'.".format(table))
-
+        print("Data insertion tested and successfully added into JPOD table '{}'.".format(table))
+    else:
+        df.to_sql(name = table, con = conn, index = False, if_exists = "append")
+        print("Data inserted into JPOD table '{}'.".format(table))
 
 # tbd for updates: create new uniq_ids
 # def create_id(chars = string.ascii_lowercase + string.digits):
