@@ -38,15 +38,14 @@ for file in FILES:
             lowercase = JPOD_STRUCTURE.lowercase_vars, 
             distinct = True
             )
-        if len(pkey_exist[table]) == 0:
-           dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-        else:
+        try: 
+            dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
+        except:
             table_dat = dg.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
             dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-        # update existing p_key_values
         if len(table_dat[p_key]) > 0:
             pkey_exist[table] |= set(table_dat[p_key])
-        print("All data from file '{}' successfully inserted into JPOD.".format(file))
+        print("All data from file '{}' successfully processed.".format(file))
 
 # summarize
 for table in JPOD_STRUCTURE.tables:
