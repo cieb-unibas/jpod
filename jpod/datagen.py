@@ -79,9 +79,12 @@ def structure_data(df, table_vars, table_pkey, lowercase = None, distinct = True
     if lowercase is not None:
         lowercase_vars = [v for v in lowercase if v in table_vars]
         for v in lowercase_vars:
-            df[v] = df[v].astype(str).str.strip().str.lower()
+            v_notnull = df[v].notnull()
+            v_lower = df[v].dropna().astype(str).str.strip().str.lower()
+            df.loc[v_notnull, v] = v_lower
     if distinct:
         df = df.drop_duplicates(subset = [table_pkey]).reset_index().drop("index", axis = 1)
+    df = df.dropna(subset = [table_pkey])
     return df
 
 def retrieve_pkeys(table, p_key, conn):

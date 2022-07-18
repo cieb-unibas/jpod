@@ -7,12 +7,11 @@ import pandas as pd
 JPOD_CONN = nav.db_connect("C:/Users/matth/Desktop/")
 df = pd.read_csv("C:/Users/matth/Desktop/ch_regio_grid.csv", sep = ";")
 df = df.apply(lambda x: x.str.lower()) # lowercase
-nav.empty_table(conn=JPOD_CONN, table = "regio_grid")
 
 # create table in JPOD:
 JPOD_QUERY = """
 DROP TABLE IF EXISTS 
-regio_grid
+regio_grid;
 """
 JPOD_CONN.execute(JPOD_QUERY)
 
@@ -32,12 +31,13 @@ oecd_tl3 VARCHAR(5)
 );
 """
 JPOD_CONN.execute(JPOD_QUERY)
+JPOD_CONN.commit()
 
 # verify that tables and variables exists:
 assert "regio_grid" in nav.get_tables(conn = JPOD_CONN)
 assert all([col in nav.get_table_vars(conn = JPOD_CONN, table = "regio_grid") for col in df.columns])
 
-# insert the table to JPOD
+# insert the data to JPOD the newly created JPOD table
 df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False)
 JPOD_QUERY = """
 SELECT *
@@ -48,25 +48,50 @@ pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY)
 
 #### match postings to regions -------------------
 
-### DEV: create test table:
+# for development: 
+# clone pc to experiment:
 JPOD_QUERY = """
 DROP TABLE IF EXISTS test_nuts;
+CREATE TABLE test_nuts AS
+SELECT *
+FROM position_characteristics;
+"""
+JPOD_CONN.executescript(JPOD_QUERY)
+nav.get_table_vars(conn=JPOD_CONN, table = "test_nuts")
+
+#### NUTS:
+JPOD_QUERY ="""
+UPDATE test_nuts
+SET nuts_2 = rg.nuts_2, 
+    nuts_3 = rg.nuts_3
+    FROM ((
+        SELECT uniq_id, inferred_state
+        FROM position_characteristics
+        ) pc
+    LEFT JOIN (
+        SELECT name_en, nuts_2, nuts_3
+        FROM regio_grid
+        WHERE nuts_3 IS NOT NULL AND nuts_2 IS NOT NULL
+        ) rg on pc.inferred_state = rg.name_en)
+WHERE uniq_id = pc.uniq_id
 """
 JPOD_CONN.execute(JPOD_QUERY)
 
-JPOD_QUERY = """
-CREATE TABLE test_nuts (
-uniq_id TEXT,
-inferred_state TEXT
-);
-"""
-JPOD_CONN.execute(JPOD_QUERY)
 
-JPOD_QUERY = """INSERT INTO test_nuts
-SELECT uniq_id, inferred_state
-FROM position_characteristics
+JPOD_QUERY="""
+SELECT *
+FROM (
+    SELECT uniq_id, inferred_state
+    FROM test_nuts
+    ) tn
+LEFT JOIN (
+    SELECT name_en, nuts_2, nuts_3
+        FROM regio_grid
+        WHERE nuts_3 IS NOT NULL AND nuts_2 IS NOT NULL
+        ) rg on pc.inferred_state = rg.name_en)
+WHERE uniq_id = pc.uniq_id
 """
-JPOD_CONN.execute(JPOD_QUERY)
+
 
 # a) create the new columns:
 JPOD_QUERY = """
@@ -87,22 +112,7 @@ FROM test_nuts
 """
 pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY)
 
-# #### NUTS:
-# JPOD_QUERY = """
-# UPDATE position_characteristics
-# SET nuts_2 = rg.nuts_2, 
-#     nuts_3 = rg.nuts_3
-#     FROM ((
-#         SELECT uniq_id, inferred_state
-#         FROM position_characteristics
-#         ) pc
-#     LEFT JOIN (
-#         SELECT name_en, nuts_2, nuts_3
-#         FROM regio_grid
-#         WHERE nuts_3 IS NOT NULL AND nuts_2 IS NOT NULL
-#         ) rg on pc.inferred_state = rg.name_en)
-# WHERE city = "thun"
-# """
+
 
 
 JPOD_QUERY = """
