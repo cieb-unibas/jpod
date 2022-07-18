@@ -1,22 +1,18 @@
 import sys
-sys.path.append("./jpod")
+#sys.path.append("./jpod")
 import datagen as dg
 import navigate as nav
 
 #### connect to the database and get its base structure -----------------------
-#DB_DIR = sys.argv[1]
-DB_DIR = "C:/Users/matth/Desktop/"
+DB_DIR = sys.argv[1]
+#DB_DIR = "C:/Users/matth/Desktop/"
 #DB_DIR = "C:/Users/nigmat01/Desktop/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 JPOD_STRUCTURE = nav.base_properties()
 
-# empty the tables if necessary (for developement purposes)
-for table in JPOD_STRUCTURE.tables:
-    nav.empty_table(table = table, conn = JPOD_CONN)
-
 #### insert data from JobsPickr -----------------------
-#DAT_DIR = DB_DIR + "jobspickr_raw/"
-DAT_DIR = DB_DIR # desktop
+DAT_DIR = DB_DIR + "jobspickr_raw/"
+#DAT_DIR = DB_DIR # desktop
 FILES = dg.select_raw_files(DAT_DIR)
 
 # get a set of existing pkeys per table.
@@ -56,3 +52,8 @@ for table in JPOD_STRUCTURE.tables:
 #### Save and close connection to .db -------------------
 JPOD_CONN.commit()
 JPOD_CONN.close()
+
+##### For development: --------------------------------------
+# empty the tables if necessary (for developement purposes)
+# for table in JPOD_STRUCTURE.tables:
+#     nav.empty_table(table = table, conn = JPOD_CONN)

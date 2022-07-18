@@ -174,6 +174,9 @@ def insert_base_data(df, table, conn, test_rows = False):
         df.to_sql(name = table, con = conn, index = False, if_exists = "append")
         print("Data inserted into JPOD table '{}'.".format(table))
 
+
+
+
 # tbd for updates: create new uniq_ids
 # def create_id(chars = string.ascii_lowercase + string.digits):
 #     id = ''.join(random.choice(chars) for x in range(32))

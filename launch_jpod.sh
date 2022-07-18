@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-#SBATCH --time=02:00:00
+#SBATCH --time=05:00:00
 #SBATCH --qos=6hours
 
 #SBATCH --output=launch_jpod_logs
@@ -26,4 +26,5 @@ ml purge
 ml load Python/3.7.4-GCCcore-8.3.0
 source "${jpod_path}/jpod_venv/bin/activate"
 python "${jpod_path}jpod/jpod/insert_base.py" $jpod_path
+python "${jpod_path}jpod/jpod/insert_geo.py" $jpod_path
 ml purge
