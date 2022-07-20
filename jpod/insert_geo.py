@@ -2,6 +2,8 @@ import sys
 #sys.path.append("./jpod")
 import navigate as nav
 import pandas as pd
+import sqlite3 
+print(sqlite3.sqlite_version) # has to be >= 3.33.0 in order for the sqlite query to work.
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]
@@ -67,13 +69,14 @@ for geo_level in ["nuts_2", "nuts_3"]:
     for match_var in ["state", "inferred_state"]:
         JPOD_QUERY = insert_geo_level(insert_table="position_characteristics", insert_variable= geo_level, matching_variable=match_var)
         JPOD_CONN.executescript(JPOD_QUERY)
+        print("Terminated insertion of geographical level '{0}' based on string-matching in column '{1}'.".format(geo_level, match_var))
 
 # check for "state" and "city" values that could not be matched but are frequent
 JPOD_QUERY = """
 SELECT state, COUNT(*) AS number_mentions
 FROM position_characteristics
 GROUP BY state
-HAVING nuts_2 IS NULL AND number_mentions > 49
+HAVING nuts_2 IS NULL AND number_mentions > 5000
 ORDER BY number_mentions DESC
 """
 print("Frequently non-matched 'state' values:")
@@ -82,39 +85,102 @@ JPOD_QUERY = """
 SELECT city, state, inferred_state, COUNT(city) AS n_mentions
 FROM position_characteristics
 GROUP BY city
-HAVING nuts_2 IS NULL AND n_mentions > 50
+HAVING nuts_2 IS NULL AND n_mentions > 5000
 ORDER BY n_mentions DESC
 """
 print("Frequently non-matched 'city' values:")
 print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
 
-# custom matching procedure to grab more rows for for sankt gallen, geneve, graubünden, biel, ittigen
+# custom matching procedure to grab more rows for the biggest non-matched entities
 JPOD_QUERY = """
+-- St. Gallen:
 UPDATE position_characteristics
 SET nuts_2 = "CH05", nuts_3 = "CH055"
 WHERE 
     (state LIKE "%gallen%" OR inferred_state = "%gallen%" 
-    OR state = "15" OR state = "sg" OR city = "buchs")
+    OR state LIKE "% gall%" OR state = "sg" OR city = "buchs"
+    OR city = "wil")
     AND nuts_2 IS NULL;
+
+-- Geneva:
 UPDATE position_characteristics
 SET nuts_2 = "CH01", nuts_3 = "CH013"
 WHERE 
     (state LIKE "%geneve%" OR inferred_state = "geneve" 
-    OR state LIKE "% genf%" OR state = "ge" or state = "07")
+    OR state LIKE "% genf%" OR state = "ge")
     AND nuts_2 IS NULL;
+
+-- Graubünden:
 UPDATE position_characteristics
 SET nuts_2 = "CH05", nuts_3 = "CH056"
 WHERE 
-    (state = "gr" OR state = "09")
+    (state = "gr" OR city = "chur")
     AND nuts_2 IS NULL;
+
+-- Bern:
 UPDATE position_characteristics
 SET nuts_2 = "CH02", nuts_3 = "CH021"
 WHERE 
     (city = "biel" OR city = "bienne" OR city = "ittigen")
     AND nuts_2 IS NULL;
+
+-- Basel-Stadt:
+UPDATE position_characteristics
+SET nuts_2 = "CH03", nuts_3 = "CHO31"
+WHERE 
+    (state LIKE "%baselstadt%" OR inferred_state = "bs")
+    AND nuts_2 IS NULL;
+
+-- Basel-Landschaft:
+UPDATE position_characteristics
+SET nuts_2 = "CH03", nuts_3 = "CHO32"
+WHERE 
+    (state LIKE "%basellandschaft%" OR inferred_state = "bl")
+    AND nuts_2 IS NULL;
+
+-- Aargau
+UPDATE position_characteristics
+SET nuts_2 = "CH03", nuts_3 = "CHO33"
+WHERE 
+    (state = "argovia" OR inferred_state = "ag")
+    AND nuts_2 IS NULL;
+
+UPDATE position_characteristics
+SET nuts_2 = "CH03"
+WHERE 
+    (state LIKE "%basel%" OR inferred_state LIKE "%basel%")
+    AND nuts_2 IS NULL;
+
+-- Freiburg:
+UPDATE position_characteristics
+SET nuts_2 = "CH02", nuts_3 = "CH022"
+WHERE 
+    (state LIKE "%freiburg")
+    AND nuts_2 IS NULL;
 """
 JPOD_CONN.executescript(JPOD_QUERY)
-print("Refinde matching procedure for frequent values successful.")
+print("Refined matching procedure for frequent values successful.")
+
+#### Tests
+print("Remaining non-matched 'state' values:")
+JPOD_QUERY = """
+SELECT state, COUNT(*) AS number_mentions
+FROM position_characteristics
+GROUP BY state
+HAVING nuts_2 IS NULL AND number_mentions > 1000
+ORDER BY number_mentions DESC
+"""
+print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
+
+print("Remaining non-matched 'inferred_state' values:")
+JPOD_QUERY = """
+SELECT state, COUNT(*) AS number_mentions
+FROM position_characteristics
+GROUP BY inferred_state
+HAVING nuts_2 IS NULL AND number_mentions > 1000
+ORDER BY number_mentions DESC
+"""
+print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
 
 #### summarize -------------------
 JPOD_QUERY = """
@@ -144,31 +210,9 @@ GROUP BY pc.nuts_2
 HAVING pc.nuts_2 IS NOT NULL
 ORDER BY n_postings DESC
 """
+print("Total number of postings and distinct firms across regions:")
 print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
 
 #### Save and close connection to .db --------------------------------------
 JPOD_CONN.commit()
 JPOD_CONN.close()
-
-##### For development: --------------------------------------
-# clone pc to experiment
-# and create the new columns:
-# JPOD_QUERY = """
-# DROP TABLE IF EXISTS devel;
-# CREATE TABLE devel AS
-# SELECT *
-# FROM position_characteristics;
-# ALTER TABLE devel
-# ADD COLUMN nuts_2 VARCHAR(4);
-# ALTER TABLE devel
-# ADD COLUMN nuts_3 VARCHAR(5);
-# SELECT *
-# FROM devel;
-# """
-# JPOD_CONN.executescript(JPOD_QUERY)
-# JPOD_QUERY = """
-# SELECT *
-# FROM devel
-# """
-# pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY)
-# nav.get_table_vars(conn=JPOD_CONN, table = "devel")
