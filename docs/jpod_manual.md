@@ -22,7 +22,36 @@ Since JPOD's architecture is very closely related to JobsPickR, its original set
 
 ![](jpod_base_er.png)
 
-## Enhancing JPOD: Inserting Regional, Industry and Country Information
+## Enhancing JPOD: Inserting Regional and Industry
+
+### Regional Assignment:
+A key feature of JPOD is to enable analyses on the regional level. To be compatible with commonly used regional taxonomies, job postings are assigned to Eurostat's [NUTS regions](https://ec.europa.eu/eurostat/web/nuts/background/), as well as the [OECD territorial Grid Taxonomy](https://www.oecd.org/regional/regional-statistics/territorial-grid.pdf).
+
+The assignment of job postings to these regions is performed via the script `insert_geo.py` (using slurm, this script can also be sent to the cluster via the `add_data.sh` script). 
+The following operations are performed:
+
+1. **Geography Table Creation**: A new table `regio_grid` is created in JPOD. This table consits of columns indicating a geographical entity's name in English, German and French, its abbrevation (if it exists) and all it's NUTS and OECD TL codes (if they exist).
+
+2. **Data Insertion**: Data from the file `regio_grid.csv` on the cluster is inserted to the `regio_grid` table. This `.csv` file was created manually based on information from Eurostat and the OECD. It lists all the territorial entities of Switzerland (i.e. cantons, grossregionen) and contains their respective names, codes and abbrevations for the `regio_grid` table. An example of rows from this table is given below:
+
+name_en|name_de|name_fr|regio_abbrev|nuts_0|nuts_1|nuts_2|nuts_3|oecd_tl1|oecd_tl2|oecd_tl3
+---|---|---|---|---|---|---|---|---|---|---
+Switzerland|Schweiz|Suisse|CH|CH|CH0|||CH||
+Espace Mittelland|Espace Mittelland|Espace Mittelland||CH|CH0|CH02||CH|CH02|
+Basel-Stadt|Basel-Stadt|Bâle-Ville|BS|CH|CH0|CH03|CH031|CH|CH03|CH031
+
+3. **Job Posting Assignment**: Job postings can be assigned to territorial codes based on JobsPickR information on `city`, `inferred_city`, `state`, `inferred_state`. The values in these columns can be matched to the `name_en`, `name_de`, `name_fr` and/or `regio_abbrev` columns from the `regio_grid` table. In principle, this could be performed everytime an regional analysis has to be performed. However, since it is planned to use geographical information relatively regularly, two new columns `nuts_2` and `nuts_3` are created in the `position_characteristics` table. If a match occurs for a given job posting in this table, the corresponding `nuts_2` and  `nuts_3` values from the `regio_grid` table are inserted into these two new columns. Hence, information on NUTS Levels 2 and 3 are directly present in the `position_characteristics` table. If other terrtorial information has to be retrieved (e.g. another aggregation level, the English, French or German name of the code), this can be retrieved from the `regio_grid` table.
+A graphical overview is given in Figure 2.
+
+**Figure 2: ER Diagram of JPOD's regional information**
+
+![](jpod_regio_er.png)
+
+4. **Refined Matching**: Some job postings state their geographical information in a special way (e.g. 'baselstadt' instead of 'basel-stadt' or 'bs'). To capture these false negatives to some extent, refined matching operations are performed for the largest non-matched entities.
+
+After all of these operations 92.6\% of the 3'211'219 job postings in the baseline JPOD could be matched to NUTS 2 regions. 
+
+### Industry Assignment:
 tbd
 
 ## Updating JPOD: Inserting New Job Adds
