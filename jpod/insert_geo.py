@@ -64,8 +64,10 @@ def insert_geo_level(insert_table, insert_variable, matching_variable):
 
     return JPOD_QUERY
 
+
 for geo_level in ["nuts_2", "nuts_3"]:
-    JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level))
+    JPOD_CONN.execute("UPDATE position_characteristics  SET %s = NULL" % (geo_level)) # for updates
+    #JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level))
     for match_var in ["state", "inferred_state"]:
         JPOD_QUERY = insert_geo_level(insert_table="position_characteristics", insert_variable= geo_level, matching_variable=match_var)
         JPOD_CONN.executescript(JPOD_QUERY)
@@ -126,21 +128,21 @@ WHERE
 
 -- Basel-Stadt:
 UPDATE position_characteristics
-SET nuts_2 = "CH03", nuts_3 = "CHO31"
+SET nuts_2 = "CH03", nuts_3 = "CH031"
 WHERE 
     (state LIKE "%baselstadt%" OR inferred_state = "bs")
     AND nuts_2 IS NULL;
 
 -- Basel-Landschaft:
 UPDATE position_characteristics
-SET nuts_2 = "CH03", nuts_3 = "CHO32"
+SET nuts_2 = "CH03", nuts_3 = "CH032"
 WHERE 
     (state LIKE "%basellandschaft%" OR inferred_state = "bl")
     AND nuts_2 IS NULL;
 
 -- Aargau
 UPDATE position_characteristics
-SET nuts_2 = "CH03", nuts_3 = "CHO33"
+SET nuts_2 = "CH03", nuts_3 = "CH033"
 WHERE 
     (state = "argovia" OR inferred_state = "ag")
     AND nuts_2 IS NULL;
