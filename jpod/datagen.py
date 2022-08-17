@@ -175,19 +175,64 @@ def insert_base_data(df, table, conn, test_rows = False):
         print("Data inserted into JPOD table '{}'.".format(table))
 
 
+def sql_like_statement(keywords, matching_column):
+    """
+    Create a SQL LIKE statement for keyword-search in a matching variable. 
 
+    Parameters:
+    ----------
+    keywords : list
+        A list of keywords to search in the matching variable.
+    matching_variable: str
+        A string specifiying the JPOD column to be searched for the keywords.
 
-# tbd for updates: create new uniq_ids
-# def create_id(chars = string.ascii_lowercase + string.digits):
-#     id = ''.join(random.choice(chars) for x in range(32))
-#     return id
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    keywords = ["'%" + w +"%'" for w in keywords]
+    if len(keywords) > 1:
+        match_string = " OR {} LIKE ".format(matching_column)
+        like_statement = match_string.join(keywords)
+        like_statement = matching_column + " LIKE " + like_statement
+    else:
+        like_statement = matching_column + " LIKE " + keywords
+    return like_statement
 
-# def create_identifiers(n_ids, conn, table, id)
-#     existing_ids = conn.execute("SELECT {} FROM {}".format(id, table)).fetchall()
-#     existing_ids = np.array(existing_ids, dtype=str)
-        
-    
+def keyword_query(keywords, matching_column, output_variables):
+    """
+    Create a SQL query for a keyword search in a matching variable and define output variables from the position characteristics table. 
 
+    Parameters:
+    ----------
+    keywords : list
+        A list of keywords to search in the matching variable.
+    matching_variable: str
+        A string specifiying the JPOD column to be searched for the keywords.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL query format.
+    """
+    output_variables = ", ".join(["pc." + var for var in output_variables])
+    like_statement = sql_like_statement(keywords=keywords, matching_column=matching_column)
+
+    JPOD_QUERY = """
+    SELECT {0}
+    FROM (
+        SELECT *
+        FROM (
+            SELECT uniq_id, lower({1}) as {1}
+            FROM job_postings
+            ) jp
+        WHERE ({2})
+        ) jp
+    LEFT JOIN position_characteristics pc ON pc.uniq_id = jp.uniq_id
+    """.format(output_variables, matching_column,like_statement)
+
+    return JPOD_QUERY
 
 
 
