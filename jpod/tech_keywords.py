@@ -19,4 +19,4 @@ for dest in ["de", "fr", "it", "en"]:
         print("Lowercased keywords in %s" %dest)
 
 # save data
-df.to_csv(DAT_DIR + "bloom_tech.csv")
+df.to_csv(DAT_DIR + "bloom_tech.csv", index=False)

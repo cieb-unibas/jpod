@@ -175,7 +175,7 @@ def insert_base_data(df, table, conn, test_rows = False):
         print("Data inserted into JPOD table '{}'.".format(table))
 
 
-def sql_like_statement(keywords, matching_column):
+def sql_like_statement(keywords, matching_column, escape_expression):
     """
     Create a SQL LIKE statement for keyword-search in a matching variable. 
 
@@ -185,6 +185,8 @@ def sql_like_statement(keywords, matching_column):
         A list of keywords to search in the matching variable.
     matching_variable: str
         A string specifiying the JPOD column to be searched for the keywords.
+    escape_expression: str
+        A string indicating that wildcard characters in SQL ('%', '_') are matched with their literal values. 
 
     Returns:
     --------
@@ -195,12 +197,12 @@ def sql_like_statement(keywords, matching_column):
     if len(keywords) > 1:
         match_string = " OR {} LIKE ".format(matching_column)
         like_statement = match_string.join(keywords)
-        like_statement = matching_column + " LIKE " + like_statement
+        like_statement = matching_column + " LIKE " + like_statement + " ESCAPE '%s'" %escape_expression
     else:
-        like_statement = matching_column + " LIKE " + keywords
+        like_statement = str(matching_column) + " LIKE " + keywords[0] + " ESCAPE '%s'" %escape_expression
     return like_statement
 
-def keyword_query(keywords, matching_column, output_variables):
+def keyword_query(keywords, matching_column, output_variables, escape_expression = "@"):
     """
     Create a SQL query for a keyword search in a matching variable and define output variables from the position characteristics table. 
 
@@ -210,14 +212,26 @@ def keyword_query(keywords, matching_column, output_variables):
         A list of keywords to search in the matching variable.
     matching_variable: str
         A string specifiying the JPOD column to be searched for the keywords.
+    escape_expression: str
+        A string indicating an expression that is placed in front of SQLITE wildcard characters ('%', '_') 
+        to evaluate them based on their literal values. The default is '@'.
 
     Returns:
     --------
     str:
         A string in a SQL query format.
     """
+    if isinstance(keywords, str):
+        keywords = [keywords]
+    if isinstance(output_variables, str):
+        output_variables = [output_variables]
+    
     output_variables = ", ".join(["pc." + var for var in output_variables])
-    like_statement = sql_like_statement(keywords=keywords, matching_column=matching_column)
+    like_statement = sql_like_statement(
+        keywords = keywords, 
+        matching_column = matching_column, 
+        escape_expression = escape_expression
+        )
 
     JPOD_QUERY = """
     SELECT {0}
