@@ -38,7 +38,7 @@ for field in set(df["bloom_field"]):
         output_variables = ["uniq_id"]
         )
     
-    # retrieve an annotate postings with a connection to the techfield:
+    # retrieve and annotate postings with a connection to the techfield:
     tmp = pd.read_sql(con = JPOD_CONN, sql=JPOD_QUERY)
     if len(tmp) > 0:
         tmp["bloom_field"] = field
@@ -73,15 +73,3 @@ ORDER BY N_postings_bloom DESC;
 """
 print("EXAMPLE: Number of postings with connection to technologies from Bloom et al. (2021):")
 print(pd.read_sql(con = JPOD_CONN, sql = JPOD_QUERY))
-
-# keywords = df.loc[(df.bloom_field == "Online streaming"),:]["keyword_en"]
-# for k in keywords:
-#     JPOD_QUERY = dg.keyword_query(
-#         keywords = k, 
-#         matching_column = "job_description", 
-#         output_variables = ["uniq_id"]
-#         )
-    
-#     # retrieve an annotate postings with a connection to the techfield:
-#     N = len(pd.read_sql(con = JPOD_CONN, sql=JPOD_QUERY))
-#     print("Number of postings for keyword {0}: {1}".format(k, N))
