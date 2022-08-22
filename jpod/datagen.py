@@ -193,7 +193,7 @@ def sql_like_statement(keywords, matching_column, escape_expression):
     str:
         A string in a SQL LIKE Statement format.
     """
-    keywords = ["'%" + w +"%'" for w in keywords]
+    keywords = ["'% " + w +"%'" for w in keywords]
     if len(keywords) > 1:
         match_string = " OR {} LIKE ".format(matching_column)
         like_statement = match_string.join(keywords)
