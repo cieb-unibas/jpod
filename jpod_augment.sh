@@ -3,7 +3,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-#SBATCH --time=01:30:00
+#SBATCH --time=06:00:00
 #SBATCH --qos=6hours
 
 #SBATCH --output=add_emtech_logs
@@ -15,4 +15,4 @@
 jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 ml load Python/3.9.5-GCCcore-10.3.0
 source "${jpod_path}/jpod_venv/bin/activate"
-python "${jpod_path}jpod/jpod/insert_emtech.py" $jpod_path
+python "${jpod_path}jpod/jpod/insert_disruptech.py" $jpod_path
