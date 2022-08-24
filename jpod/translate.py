@@ -5,7 +5,7 @@ DAT_DIR = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_da
 translator = Translator()
 
 ### Technology-Field Keywords from Bloom et al. (2021) --------------------------------------
-df = pd.read_csv(DAT_DIR + "augmentation_data/bloom_fields.csv")
+df = pd.read_csv(DAT_DIR + "bloom_fields.csv")
 df = pd.merge(df, pd.read_csv(DAT_DIR + "key_words_tech.csv"), on = "bloom_code")
 df["keyword_en"] = [w.replace(u'\xa0', u' ') for w in df["keyword_en"]]
 for dest in ["de", "fr", "it", "en"]:
