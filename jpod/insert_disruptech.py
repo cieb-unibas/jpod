@@ -1,13 +1,10 @@
 import sys
-#sys.path.append("./jpod")
 import navigate as nav
 import datagen as dg
 import pandas as pd
 
 # connect to JPOD
 DB_DIR = sys.argv[1]
-#DB_DIR = "C:/Users/matth/Desktop/"
-#DB_DIR = "C:/Users/nigmat01/Desktop/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 
 # load techfield specific keywords, refine their translations, indicate SQLITE-wildcard characters and doubble-quote
@@ -62,14 +59,3 @@ PRIMARY KEY (uniq_id, bloom_code)
 JPOD_CONN.executescript(JPOD_QUERY)
 res = pd.merge(res, pd.read_csv(DB_DIR + "bloom_fields.csv"), on = "bloom_field")
 res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
-
-# EXAMPLE: Number of postings with connection to technologies from Bloom et al. (2021):
-JPOD_QUERY = """
-SELECT pc.nuts_2, COUNT(DISTINCT(pc.uniq_id)) AS N_postings_bloom
-FROM position_characteristics pc
-WHERE pc.uniq_id IN (SELECT uniq_id FROM bloom_tech)
-GROUP BY nuts_2
-ORDER BY N_postings_bloom DESC;
-"""
-print("EXAMPLE: Number of postings with connection to technologies from Bloom et al. (2021):")
-print(pd.read_sql(con = JPOD_CONN, sql = JPOD_QUERY))
