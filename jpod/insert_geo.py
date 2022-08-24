@@ -1,5 +1,4 @@
 import sys
-#sys.path.append("./jpod")
 import navigate as nav
 import pandas as pd
 import sqlite3 
@@ -7,9 +6,8 @@ print(sqlite3.sqlite_version) # has to be >= 3.33.0 in order for the sqlite quer
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]
-#DB_DIR = "C:/Users/matth/Desktop/"
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
-df = pd.read_csv(DB_DIR + "regio_grid.csv", sep = ";")
+df = pd.read_csv(DB_DIR + "augmentation_data/regio_grid.csv", sep = ";")
 df[["name_en", "name_de", "name_fr"]] = df[["name_en", "name_de", "name_fr"]].apply(lambda x: x.str.lower()) # lowercase
 
 #### create regio table in JPOD --------------------------------------

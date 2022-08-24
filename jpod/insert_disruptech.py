@@ -8,7 +8,7 @@ DB_DIR = sys.argv[1]
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 
 # load techfield specific keywords, refine their translations, indicate SQLITE-wildcard characters and doubble-quote
-df = pd.read_csv(DB_DIR + "bloom_tech.csv").drop(["Unnamed: 0"], axis = 1)
+df = pd.read_csv(DB_DIR + "augmentation_data/bloom_tech.csv").drop(["Unnamed: 0"], axis = 1)
 df.loc[(df.bloom_field == "Oled display"), ["keyword_en", "keyword_de", "keyword_fr", "keyword_it"]] = " oled"
 df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "pas"), "keyword_it"] = "paas"
 df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "saa"), "keyword_it"] = "saas"
@@ -57,5 +57,9 @@ PRIMARY KEY (uniq_id, bloom_code)
 );
 """
 JPOD_CONN.executescript(JPOD_QUERY)
-res = pd.merge(res, pd.read_csv(DB_DIR + "bloom_fields.csv"), on = "bloom_field")
+res = pd.merge(res, pd.read_csv(DB_DIR + "augmentation_data/bloom_fields.csv"), on = "bloom_field")
 res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
+
+#### Save and close connection to .db -------------------
+JPOD_CONN.commit()
+JPOD_CONN.close()
