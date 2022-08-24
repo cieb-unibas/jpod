@@ -1,5 +1,6 @@
 import sys
 import navigate as nav
+import datagen as dg
 import pandas as pd
 import sqlite3 
 assert float(sqlite3.sqlite_version[:4]) >= 3.33, "SQLITE version must be 3.33.0 or higher. Please upgrade."
