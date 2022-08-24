@@ -2,13 +2,13 @@ import sys
 import navigate as nav
 import pandas as pd
 import sqlite3 
-print(sqlite3.sqlite_version) # has to be >= 3.33.0 in order for the sqlite query to work.
+assert float(sqlite3.sqlite_version[:4]) >= 3.33, "SQLITE version must be 3.33.0 or higher. Please upgrade."
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 df = pd.read_csv(DB_DIR + "augmentation_data/regio_grid.csv", sep = ";")
-df[["name_en", "name_de", "name_fr"]] = df[["name_en", "name_de", "name_fr"]].apply(lambda x: x.str.lower()) # lowercase
+df[["name_en", "name_de", "name_fr"]] = df[["name_en", "name_de", "name_fr"]].apply(lambda x: x.str.lower())
 
 #### create regio table in JPOD --------------------------------------
 JPOD_QUERY = """
@@ -30,68 +30,23 @@ PRIMARY KEY (name_en, nuts_3)
 """
 JPOD_CONN.executescript(JPOD_QUERY)
 JPOD_CONN.commit()
-
-# verify that tables and variables exists:
-# insert the regional data to the newly created JPOD table
 assert "regio_grid" in nav.get_tables(conn = JPOD_CONN)
 assert all([col in nav.get_table_vars(conn = JPOD_CONN, table = "regio_grid") for col in df.columns])
-df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False)
+df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False) # insert the regional data to the newly created JPOD table
 
 #### match postings to regions --------------------------------------
-# create a function to get nuts_codes
-def insert_geo_level(insert_table, insert_variable, matching_variable):
-    JPOD_QUERY = """
-    -- Check for matches with English region expression 
-    UPDATE {0}
-    SET {1} = rg.{1}
-    FROM regio_grid rg
-    WHERE {2} = rg.name_en AND {0}.{1} IS NULL;
-
-    -- Check for matches with German region expression 
-    UPDATE {0}
-    SET {1} = rg.{1}
-    FROM regio_grid rg
-    WHERE {2} = rg.name_de AND {0}.{1} IS NULL;
-
-    -- Check for matches with French region expression 
-    UPDATE {0}
-    SET {1} = rg.{1}
-    FROM regio_grid rg
-    WHERE {2} = rg.name_fr AND {0}.{1} IS NULL;
-    """.format(insert_table, insert_variable, matching_variable)
-
-    return JPOD_QUERY
-
-
 for geo_level in ["nuts_2", "nuts_3"]:
-    JPOD_CONN.execute("UPDATE position_characteristics  SET %s = NULL" % (geo_level)) # for updates
-    #JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level))
+    if geo_level in get_table_vars(conn = JPOD_CON, table = "position_characteristics"):
+        JPOD_CONN.execute("UPDATE position_characteristics  SET %s = NULL" % (geo_level))
+    else:
+        JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level)) for initial 
     for match_var in ["state", "inferred_state"]:
-        JPOD_QUERY = insert_geo_level(insert_table="position_characteristics", insert_variable= geo_level, matching_variable=match_var)
+        JPOD_QUERY = dg.geo_query(insert_table="position_characteristics", insert_variable= geo_level, matching_variable=match_var)
         JPOD_CONN.executescript(JPOD_QUERY)
         print("Terminated insertion of geographical level '{0}' based on string-matching in column '{1}'.".format(geo_level, match_var))
 
-# check for "state" and "city" values that could not be matched but are frequent
-JPOD_QUERY = """
-SELECT state, COUNT(*) AS number_mentions
-FROM position_characteristics
-GROUP BY state
-HAVING nuts_2 IS NULL AND number_mentions > 5000
-ORDER BY number_mentions DESC
-"""
-print("Frequently non-matched 'state' values:")
-print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
-JPOD_QUERY = """
-SELECT city, state, inferred_state, COUNT(city) AS n_mentions
-FROM position_characteristics
-GROUP BY city
-HAVING nuts_2 IS NULL AND n_mentions > 5000
-ORDER BY n_mentions DESC
-"""
-print("Frequently non-matched 'city' values:")
-print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
 
-# custom matching procedure to grab more rows for the biggest non-matched entities
+#### custom matching procedure to grab more rows for the biggest non-matched entities --------------------------------------
 JPOD_QUERY = """
 -- St. Gallen:
 UPDATE position_characteristics
@@ -161,27 +116,6 @@ WHERE
 JPOD_CONN.executescript(JPOD_QUERY)
 print("Refined matching procedure for frequent values successful.")
 
-#### Tests
-print("Remaining non-matched 'state' values:")
-JPOD_QUERY = """
-SELECT state, COUNT(*) AS number_mentions
-FROM position_characteristics
-GROUP BY state
-HAVING nuts_2 IS NULL AND number_mentions > 1000
-ORDER BY number_mentions DESC
-"""
-print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
-
-print("Remaining non-matched 'inferred_state' values:")
-JPOD_QUERY = """
-SELECT state, COUNT(*) AS number_mentions
-FROM position_characteristics
-GROUP BY inferred_state
-HAVING nuts_2 IS NULL AND number_mentions > 1000
-ORDER BY number_mentions DESC
-"""
-print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
-
 #### summarize -------------------
 JPOD_QUERY = """
 SELECT 
@@ -193,25 +127,6 @@ WHERE nuts_2 IS NOT NULL AND nuts_3 IS NOT NULL
 tmp = pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY)
 tmp["share"] = tmp["n_matched"] / tmp["n_total"]
 print("{0} of {1} job postings assigned to geographical levels (share of {2}).".format(*(tmp.iloc[0,:])))
-
-#### Example -------------------
-JPOD_QUERY = """
-SELECT 
-    rg.name_en AS Region, 
-    COUNT(*) AS N_Postings,
-    COUNT(DISTINCT(company_name)) AS N_Firms
-FROM position_characteristics pc
-LEFT JOIN 
-    (SELECT nuts_2, name_en
-    FROM regio_grid
-    WHERE regio_abbrev IS NULL AND nuts_3 IS NULL) rg
-    ON pc.nuts_2 = rg.nuts_2
-GROUP BY pc.nuts_2
-HAVING pc.nuts_2 IS NOT NULL
-ORDER BY n_postings DESC
-"""
-print("Total number of postings and distinct firms across regions:")
-print(pd.read_sql_query(con=JPOD_CONN, sql=JPOD_QUERY))
 
 #### Save and close connection to .db --------------------------------------
 JPOD_CONN.commit()

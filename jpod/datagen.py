@@ -174,6 +174,44 @@ def insert_base_data(df, table, conn, test_rows = False):
         df.to_sql(name = table, con = conn, index = False, if_exists = "append")
         print("Data inserted into JPOD table '{}'.".format(table))
 
+def geo_query(insert_table, insert_variable, matching_variable):
+    """
+    Create a SQL LIKE statement for keyword-search in a matching variable. 
+
+    Parameters:
+    ----------
+    insert_table : str
+        A string specifiying the table, where a new column that indicates geo labels should be inserted.
+    insert_variable: str
+        A string specifiying the name of a new JPOD column indicating geographical information.
+    matching_variable: str
+        A string indicating a JPOD column in the table `insert_table` that is used to match against regions' names from the `regio_grid` table (normally 'state' or 'inferred state').
+
+    Returns:
+    --------
+    str:
+        A string in a SQL format to update the table `insert_table`.
+    """
+    JPOD_QUERY = """
+    -- Check for matches with English region expression 
+    UPDATE {0}
+    SET {1} = rg.{1}
+    FROM regio_grid rg
+    WHERE {2} = rg.name_en AND {0}.{1} IS NULL;
+
+    -- Check for matches with German region expression 
+    UPDATE {0}
+    SET {1} = rg.{1}
+    FROM regio_grid rg
+    WHERE {2} = rg.name_de AND {0}.{1} IS NULL;
+
+    -- Check for matches with French region expression 
+    UPDATE {0}
+    SET {1} = rg.{1}
+    FROM regio_grid rg
+    WHERE {2} = rg.name_fr AND {0}.{1} IS NULL;
+    """.format(insert_table, insert_variable, matching_variable)
+    return JPOD_QUERY
 
 def sql_like_statement(keywords, matching_column, escape_expression):
     """
