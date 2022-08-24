@@ -32,14 +32,14 @@ JPOD_CONN.executescript(JPOD_QUERY)
 JPOD_CONN.commit()
 assert "regio_grid" in nav.get_tables(conn = JPOD_CONN)
 assert all([col in nav.get_table_vars(conn = JPOD_CONN, table = "regio_grid") for col in df.columns])
-df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False) # insert the regional data to the newly created JPOD table
+df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False)
 
 #### match postings to regions --------------------------------------
 for geo_level in ["nuts_2", "nuts_3"]:
     if geo_level in get_table_vars(conn = JPOD_CON, table = "position_characteristics"):
         JPOD_CONN.execute("UPDATE position_characteristics  SET %s = NULL" % (geo_level))
     else:
-        JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level)) for initial 
+        JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level))
     for match_var in ["state", "inferred_state"]:
         JPOD_QUERY = dg.geo_query(insert_table="position_characteristics", insert_variable= geo_level, matching_variable=match_var)
         JPOD_CONN.executescript(JPOD_QUERY)
