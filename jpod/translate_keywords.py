@@ -16,6 +16,10 @@ for dest in ["de", "fr", "it", "en"]:
     else:
         df["keyword_" + dest] = df["keyword_" + dest].str.lower()
         print("Lowercased keywords in %s" %dest)
+df.loc[(df.bloom_field == "Oled display"), ["keyword_en", "keyword_de", "keyword_fr", "keyword_it"]] = " oled"
+df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "pas"), "keyword_it"] = "paas"
+df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "saa"), "keyword_it"] = "saas"
+df.loc[(df.bloom_field == "Online streaming") & (df.keyword_fr == "direct"), "keyword_fr"] = "transmission en direct"
 df.to_csv(DAT_DIR + "bloom_tech.csv", index=False)
 
 ### AI-Keywords from Acemoglu et al. (2022) --------------------------------------

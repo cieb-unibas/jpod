@@ -8,12 +8,7 @@ DB_DIR = sys.argv[1]
 JPOD_CONN = nav.db_connect(db_path = DB_DIR)
 
 # load techfield specific keywords, refine their translations, indicate SQLITE-wildcard characters and doubble-quote
-df = pd.read_csv(DB_DIR + "augmentation_data/bloom_tech.csv").drop(["Unnamed: 0"], axis = 1)
-df.loc[(df.bloom_field == "Oled display"), ["keyword_en", "keyword_de", "keyword_fr", "keyword_it"]] = " oled"
-df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "pas"), "keyword_it"] = "paas"
-df.loc[(df.bloom_field == "Cloud computing") & (df.keyword_it == "saa"), "keyword_it"] = "saas"
-df.loc[(df.bloom_field == "Online streaming") & (df.keyword_fr == "direct"), "keyword_fr"] = "transmission en direct"
-
+df = pd.read_csv(DB_DIR + "augmentation_data/bloom_tech.csv")
 for v in ["en", "de", "fr", "it"]:
    df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
    df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
