@@ -176,7 +176,7 @@ def insert_base_data(df, table, conn, test_rows = False):
 
 def geo_query(insert_table, insert_variable, matching_variable):
     """
-    Create a SQL LIKE statement for keyword-search in a matching variable. 
+    Updates an existing table with a new column specifying geographical information (NUTS level) of job postings, by matching their canton or city information to NUTS data.  
 
     Parameters:
     ----------
