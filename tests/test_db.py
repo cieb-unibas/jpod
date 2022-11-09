@@ -1,9 +1,13 @@
 import sqlite3
 import sys
 import os
-os.chdir("../")
-from jpod import navigate as nav
-from jpod import datagen as dg
+#os.chdir("../")
+print(os.getcwd())
+#from jpod import navigate as nav
+#from jpod import datagen as dg
+sys.path.append(os.getcwd()+"/jpod/")
+import navigate as nav
+import datagen as dg
 
 #### connect to JPOD -----------------------
 #DB_DIR = "C:/Users/nigmat01/Desktop/"
