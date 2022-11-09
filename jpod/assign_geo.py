@@ -38,7 +38,7 @@ df.to_sql("regio_grid", con = JPOD_CONN, if_exists="append", index=False)
 
 #### match postings to regions --------------------------------------
 for geo_level in ["nuts_2", "nuts_3"]:
-    if geo_level in get_table_vars(conn = JPOD_CON, table = "position_characteristics"):
+    if geo_level in nav.get_table_vars(conn = JPOD_CONN, table = "position_characteristics"):
         JPOD_CONN.execute("UPDATE position_characteristics  SET %s = NULL" % (geo_level))
     else:
         JPOD_CONN.execute("ALTER TABLE position_characteristics ADD COLUMN %s VARCHAR(5)" % (geo_level))
