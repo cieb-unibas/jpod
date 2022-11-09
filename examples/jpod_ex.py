@@ -14,7 +14,8 @@ def get_table_vars(conn, table):
     return res
 
 #### connect to the database and get its current structure ---------------------
-JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
+JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db") # complete database
+# JPOD_CONN = sqlite3.connect(DB_DIR + "jpod_test.db") # random subsample for 0.5% of all postings
 TABLES_VARS = {}
 for table in get_tables(conn=JPOD_CONN):
     TABLES_VARS[table] = get_table_vars(table = table, conn = JPOD_CONN)

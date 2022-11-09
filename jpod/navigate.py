@@ -1,22 +1,5 @@
 import sqlite3
 
-def db_connect(db_path):
-    """
-    Connect to JPOD.
-    
-    Parameters:
-    -----------
-    db_path : str
-        A string indicating the location of JPOD.
-    
-    Returns:
-    --------
-    sqlite3.Connection:
-        A sqlite3 connection object to JPOD.
-    """
-    conn = sqlite3.connect(db_path + "jpod.db")
-    return conn
-
 def get_tables(conn):
     """
     Retrieve all tables from JPOD

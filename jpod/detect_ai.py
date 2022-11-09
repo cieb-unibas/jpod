@@ -1,11 +1,13 @@
 import sys
+import sqlite3
 import navigate as nav
 import datagen as dg
 import pandas as pd
 
 #### connect to JPOD
 DB_DIR = sys.argv[1]
-JPOD_CONN = nav.db_connect(db_path = DB_DIR)
+DB_VERSION = sys.argv[2]
+JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 #### load AI keywords and translations used by Acemoglu et al. (2019)
 df = pd.read_csv(DB_DIR + "augmentation_data/acemoglu_ai_keywords.csv")

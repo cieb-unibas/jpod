@@ -17,6 +17,7 @@ package_setup(packages = pkgs)
 
 #### Access JPOD ---------------------------------------------------------
 DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod.db"
+#DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod_test.db"
 JPOD_CONN <- dbConnect(RSQLite::SQLite(), DB_DIR)
 if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 

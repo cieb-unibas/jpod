@@ -1,10 +1,11 @@
 import sys
+import sqlite3
 import datagen as dg
 import navigate as nav
 
 #### connect to the database and get its base structure -----------------------
 DB_DIR = sys.argv[1]
-JPOD_CONN = nav.db_connect(db_path = DB_DIR)
+JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
 JPOD_STRUCTURE = nav.base_properties()
 
 #### insert data from JobsPickr -----------------------

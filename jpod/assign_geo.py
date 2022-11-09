@@ -7,7 +7,8 @@ assert float(sqlite3.sqlite_version[:4]) >= 3.33, "SQLITE version must be 3.33.0
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]
-JPOD_CONN = nav.db_connect(db_path = DB_DIR)
+DB_VERSION = sys.argv[2]
+JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 df = pd.read_csv(DB_DIR + "augmentation_data/regio_grid.csv", sep = ";")
 df[["name_en", "name_de", "name_fr"]] = df[["name_en", "name_de", "name_fr"]].apply(lambda x: x.str.lower())
 
