@@ -1,11 +1,10 @@
 import sqlite3
+
 import sys
 import os
-#os.chdir("../")
 print(os.getcwd())
-#from jpod import navigate as nav
-#from jpod import datagen as dg
 sys.path.append(os.getcwd()+"/jpod/")
+
 import navigate as nav
 import datagen as dg
 

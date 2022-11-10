@@ -15,21 +15,24 @@
 ## directories & database version
 jpod_test_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
 jpod_version="jpod_test.db"
-rm "${jpod_test_path}${jpod_version}"
 cd $jpod_test_path
+if test -f $jpod_version; then
+  rm "${jpod_test_path}${jpod_version}"
+fi
 
 ## create sqlite database
 ml load SQLite/3.35.4-GCCcore-10.3.0
-sqlite3 jpod_test.db ".read ${jpod_test_path}jpod/scicore/test_db.sqlite"
+sqlite3 $jpod_version ".read ${jpod_test_path}jpod/scicore/jpod_create.sqlite"
 ml purge
 
 ## insert base data from JobsPickR using Python
 ml load Python/3.9.5-GCCcore-10.3.0
 source "${jpod_test_path}/jpod_venv/bin/activate"
 cd ./jpod/
-python tests/test_db.py $jpod_test_path
+python scicore/test_db.py $jpod_test_path
 
 ## add geographical information & detect postings with a connection to AI and disruptive technologies from Bloom(2021)
-python jpod/assign_geo.py $jpod_test_path $jpod_version
-python jpod/detect_ai.py $jpod_test_path $jpod_version
-python jpod/detect_disruptech.py $jpod_test_path $jpod_version
+for f in assign_geo.py detect_ai.py detect_disruptech.py
+do
+  python jpod/$f $jpod_test_path $jpod_version
+done

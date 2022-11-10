@@ -1,6 +1,3 @@
--- specify the paths and create the database:
-.cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/
-.open jpod.db
 PRAGMA foreign_keys = ON;
 
 -- create table structures:
