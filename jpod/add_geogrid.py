@@ -1,5 +1,5 @@
 import sys
-from jpod import navigate as nav
+import navigate as nav
 import pandas as pd
 import sqlite3
 
