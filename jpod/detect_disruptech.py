@@ -10,7 +10,7 @@ DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 # load techfield specific keywords, refine their translations, indicate SQLITE-wildcard characters and doubble-quote
-df = pd.read_csv(DB_DIR + "augmentation_data/bloom_tech.csv")
+df = pd.read_csv("data/bloom_tech.csv")
 for v in ["en", "de", "fr", "it"]:
    df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
    df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
@@ -54,7 +54,7 @@ PRIMARY KEY (uniq_id, bloom_code)
 );
 """
 JPOD_CONN.executescript(JPOD_QUERY)
-res = pd.merge(res, pd.read_csv(DB_DIR + "augmentation_data/bloom_fields.csv"), on = "bloom_field")
+res = pd.merge(res, pd.read_csv("data/raw_data/bloom_fields.csv"), on = "bloom_field")
 res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
 
 #### Save and close connection to .db -------------------

@@ -10,7 +10,7 @@ DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 #### load AI keywords and translations used by Acemoglu et al. (2019)
-df = pd.read_csv(DB_DIR + "augmentation_data/acemoglu_ai_keywords.csv")
+df = pd.read_csv("data/acemoglu_ai_keywords.csv")
 for v in ["en", "de", "fr", "it"]:
    df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
    df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]

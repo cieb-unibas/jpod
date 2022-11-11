@@ -1,15 +1,12 @@
 import sqlite3
-
 import sys
 import os
 print(os.getcwd())
 sys.path.append(os.getcwd()+"/jpod/")
-
 import navigate as nav
 import datagen as dg
 
 #### connect to JPOD -----------------------
-#DB_DIR = "C:/Users/nigmat01/Desktop/"
 DB_DIR = sys.argv[1]
 JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
 JPOD_STRUCTURE = nav.base_properties()
