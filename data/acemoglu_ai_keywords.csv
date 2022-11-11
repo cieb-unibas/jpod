@@ -1,0 +1,36 @@
+keyword_en,keyword_de,keyword_fr,keyword_it
+machine learning,maschinelles lernen,apprentissage automatique,apprendimento automatico
+computer vision,computer vision,vision par ordinateur,visione computerizzata
+machine vision,maschinelles sehen,vision industrielle,visione artificiale
+deep learning,tiefes lernen,l'apprentissage en profondeur,apprendimento approfondito
+virtual agents,virtuelle agenten,agents virtuels,agenti virtuali
+image recognition,bilderkennung,reconnaissance d'images,riconoscimento delle immagini
+natural language processing,verarbeitung natürlicher sprache,traitement du langage naturel,elaborazione del linguaggio naturale
+speech recognition,spracherkennung,reconnaissance de la parole,riconoscimento vocale
+pattern recognition,mustererkennung,la reconnaissance de formes,riconoscimento del modello
+object recognition,objekterkennung,reconnaissance d'objet,riconoscimento di oggetti
+neural networks,neuronale netze,les réseaux de neurones,reti neurali
+ai chatbot,ai-chatbot,chatbot ia,ai chatbot
+supervised learning,überwachtes lernen,enseignement supervisé,apprendimento supervisionato
+text mining,text-mining,exploration de texte,estrazione di testo
+support vector machines,support-vektor-maschinen,prendre en charge les machines vectorielles,supportare le macchine vettoriali
+unsupervised learning,unbeaufsichtigtes lernen,apprentissage non supervisé,apprendimento senza supervisione
+image processing,bildverarbeitung,traitement d'image,elaborazione delle immagini
+mahout,mahout,cornac,mahout
+recommender systems,empfehlungssysteme,systèmes de recommandation,sistemi di raccomandazione
+support vector machines (svm),support-vektor-maschinen (svm),prendre en charge les machines vectorielles (svm),supporto macchine vettoriali (svm)
+random forests,zufällige wälder,forêts aléatoires,foreste casuali
+latent semantic analysis,latent semantische analyse,analyse sémantique latente,analisi semantica latente
+sentiment analysis,stimmungsanalyse,analyse des sentiments,analisi del sentimento
+opinion mining,meinungsmining,exploration d'opinions,mining di opinioni
+latent dirichlet allocation,latente dirichlet-allokation,allocation dirichlet latente,allocazione di dirichlet latente
+predictive models,vorhersagemodelle,modèles prédictifs,modelli predittivi
+kernel methods,kernel-methoden,méthodes du noyau,metodi del kernel
+keras,keras,keras,chera
+gradient boosting,gradientenanhebung,renforcement du gradient,aumento del gradiente
+opencv,opencv,opencv,opencv
+xgboost,xgboost,xgboost,xgboost
+libsvm,libsvm,libsvm,libsvm
+word2vec,wort2vec,word2vec,parola2vec
+chatbot,chatbot,chatbot,chatbot
+machine translation and sentiment classification,maschinelle übersetzung und stimmungsklassifikation,traduction automatique et classification des sentiments,traduzione automatica e classificazione dei sentimenti

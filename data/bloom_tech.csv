@@ -1,0 +1,177 @@
+bloom_field,bloom_code,keyword_en,keyword_de,keyword_fr,keyword_it
+3d printing,1,3d print,3d-druck,impression 3d,stampa 3d
+3d printing,1,additive manufactur,additive fertigung,la fabrication additive,produzione di additivi
+Autonomous Cars,2,self-driving car,selbstfahrendes auto,voiture autonome,auto a guida autonoma
+Autonomous Cars,2,robot car,roboterauto,voiture robotisée,macchina robotica
+Autonomous Cars,2,autonomous vehicle,autonomes fahrzeug,véhicule autonome,veicolo autonomo
+Autonomous Cars,2,autonomous car,autonomes auto,voiture autonome,auto autonoma
+Autonomous Cars,2,automated driving,automatisiertes fahren,conduite automatisée,guida automatizzata
+Autonomous Cars,2,driverless car,fahrerloses auto,voiture sans conducteur,auto senza conducente
+Autonomous Cars,2,autonomous driving,autonomes fahren,conduite autonome,guida autonoma
+Autonomous Cars,2,autonomous vehicle,autonomes fahrzeug,véhicule autonome,veicolo autonomo
+Autonomous Cars,2,driverless truck ,fahrerloser lkw,camion sans conducteur,camion senza conducente
+Bispecific monoclonal antibody,3,bispecific,bispezifisch,bispécifique,bispecifico
+Cloud computing,4,paas,paas,paas,paas
+Cloud computing,4,cloud infrastructure,cloud-infrastruktur,infrastructure cloud,infrastruttura cloud
+Cloud computing,4,distributed cloud,verteilte wolke,nuage distribué,nuvola distribuita
+Cloud computing,4,cloud provider,cloud-anbieter,fournisseur de cloud,fornitore cloud
+Cloud computing,4,cloud offering,cloud-angebot,offre cloud,offerta cloud
+Cloud computing,4,cloud service,cloud-dienst,service cloud,servizio cloud
+Cloud computing,4,cloud applic,cloud-anwendung,application cloud,applicazione cloud
+Cloud computing,4,community cloud,community-cloud,nuage communautaire,nuvola comunitaria
+Cloud computing,4,private cloud,private wolke,nuage privé,cloud privato
+Cloud computing,4,public cloud,öffentliche cloud,nuage public,nuvola pubblica
+Cloud computing,4,cloud deployment,cloud-bereitstellung,déploiement cloud,distribuzione cloud
+Cloud computing,4,cloud environment,cloud-umgebung,environnement cloud,ambiente cloud
+Cloud computing,4,cloud management,cloud-management,gestion du nuage,gestione del cloud
+Cloud computing,4,cloud service,cloud-dienst,service cloud,servizio cloud
+Cloud computing,4,cloud security,cloud-sicherheit,sécurité du nuage,sicurezza nel cloud
+Cloud computing,4,enterprise class,unternehmensklasse,classe entreprise,classe aziendale
+Cloud computing,4,iaas,iaas,iaas,iaas
+Cloud computing,4,hybrid cloud,hybride cloud,nuage hybride,nuvola ibrida
+Cloud computing,4,cloud platform,cloud-plattform,plate-forme cloud,piattaforma cloud
+Cloud computing,4,cloud provider,cloud-anbieter,fournisseur de cloud,fornitore cloud
+Cloud computing,4,cloud hosting,cloud-hosting,hébergement cloud,hosting cloud
+Cloud computing,4,personal cloud,persönliche wolke,nuage personnel,nuvola personale
+Cloud computing,4,enterprise network,unternehmensnetzwerk,réseau d'entreprise,rete aziendale
+Cloud computing,4,cloud computing,cloud computing,cloud computing,cloud computing
+Cloud computing,4,saas,saas,saas,saas
+Cloud computing,4,cloud storage,cloud-speicher,stockage en ligne,archiviazione cloud
+Cloud computing,4,enterprise application,unternehmensanwendung,application d'entreprise,applicazione aziendale
+Cloud computing,4,cloud solution,cloud-lösung,infonuagique,soluzione cloud
+Cloud computing,4,enterprise cloud,unternehmens-cloud,nuage d'entreprise,nuvola aziendale
+Cloud computing,4,cloud deployment,cloud-bereitstellung,déploiement cloud,distribuzione cloud
+Computer vision,5,pose estimation,posenschätzung,estimation de la pose,stima della posa
+Computer vision,5,motion estimation,bewegungsschätzung,estimation de mouvement,stima del movimento
+Computer vision,5,visual servoing,visuelles servon,asservissement visuel,servocomando visivo
+Computer vision,5,facial recognition,gesichtserkennung,la reconnaissance faciale,riconoscimento facciale
+Computer vision,5,gesture recognition,gestenerkennung,reconnaissance gestuelle,riconoscimento gestuale
+Computer vision,5,computer vision,computer vision,vision par ordinateur,visione computerizzata
+Computer vision,5,image recognition,bilderkennung,reconnaissance d'images,riconoscimento delle immagini
+Computer vision,5,sensor fusion,sensorfusion,fusion de capteur,fusione dei sensori
+Computer vision,5,object recognition,objekterkennung,reconnaissance d'objet,riconoscimento di oggetti
+Drug conjugates,6,kinase inhibitor,kinase-inhibitor,inhibiteur de kinase,inibitore della chinasi
+Drug conjugates,6,drug conjugate,drogenkonjugat,médicament conjugué,coniugato di droga
+Drug conjugates,6,antibody drug,antikörper-medikament,médicament anticorps,farmaco anticorpale
+Electronic gaming,7,social game,soziales spiel,jeu social,gioco sociale
+Electronic gaming,7,video gam,videospiel,jeu vidéo,videogioco
+Electronic gaming,7,game content,spielinhalt,contenu du jeu,contenuto del gioco
+Electronic gaming,7,electronic gaming,elektronisches spielen,jeu électronique,gioco elettronico
+Electronic gaming,7,gaming products,gaming-produkte,produits de jeu,prodotti di gioco
+Millimeter wave,8,millimeter wave,millimeterwelle,onde millimétrique,onda millimetrica
+Fingerprint sensor,9,fingerprint sensor,fingerabdruck sensor,détecteur d'empreintes digitales,sensore di impronte digitali
+Fingerprint sensor,9,fingerprint scanner,fingerabdruck-scanner,lecteur d'empreintes digitales,scanner delle impronte digitali
+Fracking,10,fraccing,fracking,fracturation,frazionamento
+Fracking,10,hydrofracking,hydrofracking,hydrofracturation,hydrofracking
+Fracking,10,hydrofracturing,hydrofrakturierung,hydrofracturation,idrofratturazione
+Fracking,10,hydraulic fracturing,hydraulische frakturierung,fracturation hydraulique,frattura idraulica
+Fracking,10,fracking,fracking,fractionnement,fracking
+GPS,11,gps system,gps-system,système gps,sistema gps
+GPS,11,global positioning,globale positionierung,positionnement global,posizionamento globale
+GPS,11,navigation device,navigationsgerät,appareil de navigation,dispositivo di navigazione
+Hybrid vehicle electric car,12,hybrid vehicle,hybridfahrzeug,véhicule hybride,veicolo ibrido
+Hybrid vehicle electric car,12,electric vehicle,elektrisches fahrzeug,véhicule électrique,veicolo elettrico
+Hybrid vehicle electric car,12,electric motorcycle,elektrisches motorrad,moto électrique,moto elettrica
+Hybrid vehicle electric car,12,vehicle charging,fahrzeug aufladen,recharge du véhicule,ricarica del veicolo
+Hybrid vehicle electric car,12,hybrid electric,hybrid elektrisch,hybride électrique,elettrico ibrido
+Hybrid vehicle electric car,12,plugin hybrid,plugin-hybrid,plugin hybride,plug-in ibrido
+Hybrid vehicle electric car,12,electric buses,elektrische busse,bus électriques,autobus elettrici
+Hybrid vehicle electric car,12,electric car,elektroauto,voiture électrique,macchina elettrica
+Lane departure warning,13,lane departure,spurabfahrt,sortie de voie,partenza di corsia
+Lane departure warning,13,departure warning,abfahrtswarnung,avertissement de départ,avviso di partenza
+Lithium battery,14,ion batter,ionen-akku,batterie ionique,batteria agli ioni
+Lithium battery,14,lithium batter,lithium batterie,batterie au lithium,batteria al litio
+Lithium battery,14,lithium polymer,lithium-polymer,lithium-polymère,polimero di litio
+Lithium battery,14,lithium ion,lithium-ionen,lithium-ion,ioni di litio
+Machine Learning AI,15,neural network,neurales netzwerk,réseau neuronal,rete neurale
+Machine Learning AI,15,deep learning,tiefes lernen,l'apprentissage en profondeur,apprendimento approfondito
+Machine Learning AI,15,language processing,sprachverarbeitung,traitement du langage,elaborazione del linguaggio
+Machine Learning AI,15,machine learning,maschinelles lernen,apprentissage automatique,apprendimento automatico
+Machine Learning AI,15,machine intelligence,maschinelle intelligenz,intelligence artificielle,intelligenza della macchina
+Machine Learning AI,15,natural language,natürliche sprache,langage naturel,linguaggio naturale
+Machine Learning AI,15,artificial intelligence,künstliche intelligenz,intelligence artificielle,intelligenza artificiale
+Machine Learning AI,15,ai technology,ki-technologie,technologie ia,tecnologia ia
+Machine Learning AI,15,supervised learning,überwachtes lernen,enseignement supervisé,apprendimento supervisionato
+Machine Learning AI,15,learning algorithm,lernalgorithmus,algorithme d'apprentissage,algoritmo di apprendimento
+Machine Learning AI,15,unsupervised learning,unbeaufsichtigtes lernen,apprentissage non supervisé,apprendimento senza supervisione
+Machine Learning AI,15,reinforcement learning,verstärkungslernen,apprentissage par renforcement,insegnamento rafforzativo
+Mobile payment,16,mobile commerce,mobile commerce,commerce ambulant,commercio mobile
+Mobile payment,16,mobile payment,mobiles bezahlen,paiement mobile,pagamento mobile
+Mobile payment,16,mobile wallet,mobile geldbörse,portefeuille mobile,portafoglio mobile
+Mobile payment,16,mobile money,mobiles geld,argent mobile,denaro mobile
+Oled display,17, oled, oled, oled, oled
+Online streaming,18,streaming content,streaming-inhalte,contenu diffusé en continu,contenuto in streaming
+Online streaming,18,music streaming,musik streaming,diffusion de musique,streaming di musica
+Online streaming,18,interactive tv,interaktiver fernseher,tv interactive,tv interattiva
+Online streaming,18,live stream,liveübertragung,transmission en direct,trasmissione in diretta
+Online streaming,18,video conferenc,videokonferenz,conférence vidéo,video conferenza
+Online streaming,18,online streaming,online-streaming,diffusion en ligne,streaming in linea
+Online streaming,18,mobile video,mobiles video,vidéo mobile,video mobile
+Online streaming,18,streaming servic,streaming-dienst,service de diffusion en continu,servizio di streaming
+Online streaming,18,streaming media,streaming medien,médias en continu,streaming media
+Online streaming,18,live video,live-video,vidéo en direct,video dal vivo
+Online streaming,18,video ondemand,video auf nachfrage,vidéo à la demande,video su richiesta
+Online streaming,18,internet radio,internetradio,webradio,radio internet
+Online streaming,18,video streaming,video streaming,streaming vidéo,video streaming
+Online streaming,18,streaming video,ein video streamen,vidéo en continu,streaming video
+Rfid tags,19,keyless entry,schlüsselloser zugang,entrée sans clé,entrata senza chiave
+Rfid tags,19,rfid,rfid,rfid,rfid
+Search Engine,20,search engine,suchmaschine,moteur de recherche,motore di ricerca
+Smart devices,21,mobile device,mobilgerät,appareil mobile,dispositivo mobile
+Smart devices,21,tablet computer,tablet,tablette,tablet
+Smart devices,21,wearable device,tragbares gerät,appareil portable,dispositivo indossabile
+Smart devices,21,tablet pcs,tablet-pcs,pc tablette,tablet pc
+Smart devices,21,smartphone tablet,smartphone-tablet,tablette smartphone,tablet smartphone
+Smart devices,21,android phone,android telefon,téléphone android,telefono android
+Smart devices,21,media device,mediengerät,périphérique multimédia,dispositivo multimediale
+Smart devices,21,smart phone,smartphone,téléphone intelligent,smartphone
+Smart devices,21,smart device,schlaues gerät,appareil intelligent,dispositivo intelligente
+Smart devices,21,smart tv,smart-tv,smart tv,smart tv
+Smart devices,21,smart speaker,intelligenter lautsprecher,haut-parleur intelligent,altoparlante intelligente
+Smart devices,21,smart watch,smartwatch,montre intelligente,orologio intelligente
+Smart devices,21,smart car,intelligentes auto,voiture intelligente,macchina intelligente
+Smart devices,21,iphone,iphone,iphone,i phone
+Smart devices,21,portable media,tragbare medien,support portable,supporto portatile
+Smart devices,21,smart tablet,intelligentes tablet,tablette intelligente,tablet intelligente
+Smart devices,21,smartphones tablet,smartphone-tablet,tablette smartphone,tablet smartphone
+Smart devices,21,android smartphone,android-smartphone,téléphone intelligent androïde,smartphone android
+Smart devices,21,phones tablet,telefone tablette,téléphones tablette,tablet telefoni
+Smart devices,21,android device,android-gerät,appareil android,dispositivo android
+Smart devices,21,smart refrigerator,intelligenter kühlschrank,réfrigérateur intelligent,frigorifero intelligente
+Smart devices,21,smart car,intelligentes auto,voiture intelligente,macchina intelligente
+Smart devices,21,smart band,intelligente band,bande intelligente,banda intelligente
+Social Networking,22,social platform,soziale plattform,plate-forme sociale,piattaforma sociale
+Social Networking,22,networking site,netzwerkseite,site de réseautage,sito di rete
+Social Networking,22,social channel,sozialer kanal,canal social,canale sociale
+Social Networking,22,social media,sozialen medien,des médias sociaux,social media
+Social Networking,22,social network,soziales netzwerk,réseau social,rete sociale
+Software defined radio,23,defined radio,definierten funk,radio définie,radio definita
+Solar Power,24,solar wafer,solarwafer,plaquette solaire,fetta solare
+Solar Power,24,rooftop solar,solar auf dem dach,solaire sur le toit,solare sul tetto
+Solar Power,24,solar module,solarzelle,module solaire,modulo solare
+Solar Power,24,solar cell,solarzelle,cellule photovoltaïque,celle a energia solare
+Solar Power,24,crystalline silicon,kristallines silizium,silicium cristallin,silicio cristallino
+Solar Power,24,silicon solar,silizium-solar,silicium solaire,solare al silicio
+Solar Power,24,solar panel,sonnenkollektor,panneau solaire,pannello solare
+Solar Power,24,solar power,solarenergie,énergie solaire,energia solare
+Solar Power,24,solar wafer,solarwafer,plaquette solaire,fetta solare
+Solar Power,24,solar energy,solarenergie,énergie solaire,energia solare
+Solar Power,24,solar application,solaranwendung,application solaire,applicazione solare
+Solar Power,24,solar module,solarzelle,module solaire,modulo solare
+Solar Power,24,solar pv,solar-pv,solaire pv,solare fotovoltaico
+Solar Power,24,solar grade,solarklasse,qualité solaire,grado solare
+Solar Power,24,photovoltaic,photovoltaik,photovoltaïque,fotovoltaico
+Solar Power,24,solar thermal,solarthermie,solaire thermique,solare termico
+Stent graft,25,stent graft,stentgraft,endoprothèse,innesto di stent
+Touchscreen,26,touchscreen,berührungssensitiver bildschirm,écran tactile,touch screen
+Touchscreen,26,touch screen,berührungssensitiver bildschirm,écran tactile,touch screen
+Touchscreen,26,touch sensor,berührungssensor,senseur tactile,sensore tattile
+Virtual Reality,27,virtual reality,virtuelle realität,réalité virtuelle,realta virtuale
+Virtual Reality,27,augmented reality,erweiterte realität,réalité augmentée,realtà aumentata
+Virtual Reality,27,mixed reality,gemischte realität,réalité mixte,realtà mista
+Virtual Reality,27,extended reality,erweiterte realität,réalité étendue,realtà estesa
+Wifi,28,wifi,w-lan,wifi,wifi
+Wifi,28,broadband connectivity,breitband-konnektivität,connectivité à large bande,connettività a banda larga
+Wifi,28,wireless network,drahtloses netzwerk,réseau sans fil,rete senza fili
+Wireless charging,29,wireless charging,kabelloses laden,chargement sans fil,ricarica senza fili
+Wireless charging,29,inductive charging,induktives laden,charge inductive,carica induttiva

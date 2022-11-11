@@ -1,0 +1,35 @@
+﻿name_en;name_de;name_fr;regio_abbrev;nuts_level;oecd_level;iso_2;iso_3;nuts_0;nuts_1;nuts_2;nuts_3;oecd_tl1;oecd_tl2;oecd_tl3
+Switzerland;Schweiz;Suisse;CH;1;1;CH;CHE;CH;CH0;;;CH;;
+Région lemanique;Région lemanique;Région lemanique;;2;2;CH;CHE;CH;CH0;CH01;;CH;CH01;
+Vaud;Waadt;Vaud;VD;3;3;CH;CHE;CH;CH0;CH01;CH011;CH;CH01;CH011
+Valais;Wallis;Valais;VS;3;3;CH;CHE;CH;CH0;CH01;CH012;CH;CH01;CH012
+Geneva;Genf;Genève;GE;3;3;CH;CHE;CH;CH0;CH01;CH013;CH;CH01;CH013
+Espace Mittelland;Espace Mittelland;Espace Mittelland;;2;2;CH;CHE;CH;CH0;CH02;;CH;CH02;
+Bern;Bern;Berne;BE;3;3;CH;CHE;CH;CH0;CH02;CH021;CH;CH02;CH021
+Fribourg;Freiburg;Fribourg;FR;3;3;CH;CHE;CH;CH0;CH02;CH022;CH;CH02;CH022
+Solothurn;Solothurn;Soleure;SO;3;3;CH;CHE;CH;CH0;CH02;CH023;CH;CH02;CH023
+Neuchatel;Neuenburg;Neuchâtel;NE;3;3;CH;CHE;CH;CH0;CH02;CH024;CH;CH02;CH024
+Jura;Jura;Jura;JU;3;3;CH;CHE;CH;CH0;CH02;CH025;CH;CH02;CH025
+Northwestern Switzerland;Nordwestschweiz;Suisse du Nord-Ouest;;2;2;CH;CHE;CH;CH0;CH03;;CH;CH03;
+Basel-Stadt;Basel-Stadt;Bâle-Ville;BS;3;3;CH;CHE;CH;CH0;CH03;CH031;CH;CH03;CH031
+Basel-Landschaft;Basel-Landschaft;Bâle-Campagne;BL;3;3;CH;CHE;CH;CH0;CH03;CH032;CH;CH03;CH032
+Aargau;Aargau;Argovie;AG;3;3;CH;CHE;CH;CH0;CH03;CH033;CH;CH03;CH033
+Zurich;Zürich;Zurich;;2;2;CH;CHE;CH;CH0;CH04;;CH;CH04;
+Zurich;Zürich;Zurich;ZH;3;3;CH;CHE;CH;CH0;CH04;CH040;CH;CH04;CH040
+Eastern Switzerland;Ostschweiz;Suisse orientale;;2;2;CH;CHE;CH;CH0;CH05;;CH;CH05;
+Glarus;Glarus;Glaris;GL;3;3;CH;CHE;CH;CH0;CH05;CH051;CH;CH05;CH051
+Schaffhausen;Schaffhausen;Schaffhouse;SH;3;3;CH;CHE;CH;CH0;CH05;CH052;CH;CH05;CH052
+Appenzell Ausserrhoden;Appenzell Ausserrhoden;Appenzell Rhodes-Extérieures;AR;3;3;CH;CHE;CH;CH0;CH05;CH053;CH;CH05;CH053
+Appenzell Innerrhoden;Appenzell Innerrhoden;Appenzell Rhodes-Intérieures;AI;3;3;CH;CHE;CH;CH0;CH05;CH054;CH;CH05;CH054
+St. Gallen;St. Gallen;Saint-Gall;SG;3;3;CH;CHE;CH;CH0;CH05;CH055;CH;CH05;CH055
+Grisons;Graubünden;Grisons;GR;3;3;CH;CHE;CH;CH0;CH05;CH056;CH;CH05;CH056
+Thurgau;Thurgau;Thurgovie;TG;3;3;CH;CHE;CH;CH0;CH05;CH057;CH;CH05;CH057
+Central Switzerland;Zentralschweiz;Suisse centrale;;2;2;CH;CHE;CH;CH0;CH06;;CH;CH06;
+Luzern;Luzern;Lucerne;LU;3;3;CH;CHE;CH;CH0;CH06;CH061;CH;CH06;CH061
+Uri;Uri;Uri;UR;3;3;CH;CHE;CH;CH0;CH06;CH062;CH;CH06;CH062
+Schwyz;Schwyz;Schwyz;SZ;3;3;CH;CHE;CH;CH0;CH06;CH063;CH;CH06;CH063
+Obwalden;Obwalden;Obwald;OW;3;3;CH;CHE;CH;CH0;CH06;CH064;CH;CH06;CH064
+Nidwalden;Nidwalden;Nidwald;NW;3;3;CH;CHE;CH;CH0;CH06;CH065;CH;CH06;CH065
+Zug;Zug;Zoug;ZG;3;3;CH;CHE;CH;CH0;CH06;CH066;CH;CH06;CH066
+Ticino;Tessin;Tessin;;2;2;CH;CHE;CH;CH0;CH07;;CH;CH07;
+Ticino;Tessin;Tessin;TI;3;3;CH;CHE;CH;CH0;CH07;CH070;CH;CH07;CH070
