@@ -1,90 +1,87 @@
+import sqlite3
 import sys
 import pandas as pd
-import sqlite3
+from matplotlib import pyplot as plt
+from tests import jpod_tests
 
-# connect to the databse
+# connect to the databse --------------------------------
 DB_DIR = sys.argv[1]
 DB_VERSION = sys.argv[2]
-DB_DIR = "C:/Users/matth/Desktop/"
-DB_VERSION = "jpod_test.db"
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
-def get_geo_dist(month = "full_sample", nuts_level = "2"):
-    """
-    Retrieve the spatial distribution of job postings by crawling month
+# A) get nuts_2 distribution of full sample & snapshot sample from a particular month --------------------------------
+geo_dist = jpod_tests.get_geo_dist(con = JPOD_CONN, month="full_sample", nuts_level="2")
+months = ["2021-05", "2021-09", "2021-01"]
+for m in months:
+    geo_dist = pd.concat([geo_dist, jpod_tests.get_geo_dist(con =JPOD_CONN, month = m, nuts_level=2)])
+print("Number of postings per time window:")
+print(geo_dist.groupby(["sample"])["total_postings"].sum())
+plot_df = geo_dist.dropna()
+jpod_tests.plot_dist(df = plot_df)
+plt.legend()
+#plt.show()
+plt.savefig("tests/img/nuts_2_dist.png")
 
-    Parameters
-    ----------
-    month : str
-        A string indicating the crawl time. The string must be specified as 'YYYY-MM'.
-        For retrieving the full sample spatial distribution month can be specified as 'full_sample' (the default)
-    nuts_level : str, int
-        A string indicating the nuts level the distribution should be calculated for (default is '2')
+# B) get nuts_3 distribution of full sample & snapshot sample --------------------------------
+geo_dist = jpod_tests.get_geo_dist(con = JPOD_CONN, month = "full_sample", nuts_level=3)
+months = ["2021-05", "2021-09", "2021-01"]
+for m in months:
+    geo_dist = pd.concat([geo_dist, jpod_tests.get_geo_dist(con = JPOD_CONN,month = m, nuts_level=3)])
+plot_df = geo_dist.dropna()
+plot_df = plot_df[plot_df["region"] != "glarus"]
+jpod_tests.plot_dist(df = plot_df)
+plt.legend()
+plt.savefig("tests/img/nuts_3_dist.png")
 
-    Returns
-    -------
-    pd.DataFrame :
-        A pandas DataFrame consisting the number of postings retrieved across regions and their sample shares.
+# C) get share of postings with connection to overall bloom_tech in full sample & snapshot sample --------------------------------
+tech = "bloom"
+months = ["2021-05", "2021-09", "2021-01"]
+tech_shares = jpod_tests.get_tech_share(con = JPOD_CONN, month = "full_sample", tech = tech)
+for m in months:
+    tech_shares = pd.concat([tech_shares, jpod_tests.get_tech_share(con = JPOD_CONN, month = m, tech = tech)])
+print("Distribution of job postings with connection to Bloom (2021) disruptive technologies:")
+print(tech_shares)
 
-    """
-    if isinstance(nuts_level, str) == False:
-        nuts_level = str(nuts_level)
-    if month == "full_sample":
-        where_clause = ""
-    else:
-        where_clause = "WHERE pc.uniq_id IN (SELECT uniq_id FROM job_postings jp WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s')" % month
+# D) get bloom field distribution of full sample & snapshot sample --------------------------------
+months = ["2021-05", "2021-09", "2021-01"]
+field_shares = jpod_tests.get_bloomfield_shares(con = JPOD_CONN, month = "full_sample")
+for m in months:
+    field_shares = pd.concat([field_shares, jpod_tests.get_bloomfield_shares(con = JPOD_CONN, month = m)])
+plot_df = jpod_tests.plot_groups(df = field_shares, group="field", n_periods=len(months) +1)
+jpod_tests.plot_dist(df = plot_df, group="field", outcome="share")
+#plt.legend()
+#plt.show()
+plt.savefig("tests/img/bloomfields_dist.png")
 
-    JPOD_QUERY = """
-    SELECT COUNT(*) as total_postings, pc.nuts_{1}, rg.name_en region
-    FROM (
-        SELECT *
-        FROM position_characteristics pc
-        {0}
-        ) pc
-    LEFT JOIN (
-        SELECT nuts_{1}, name_en
-        FROM regio_grid
-        WHERE nuts_level = {1}
-        ) rg on pc.nuts_{1} = rg.nuts_{1}
-    GROUP BY pc.nuts_{1}
-    """.format(where_clause, nuts_level)
-    dist = pd.read_sql_query(JPOD_QUERY, con=JPOD_CONN)
-    dist["postings_share"] = dist["total_postings"] / sum(dist["total_postings"])
-    dist = dist.dropna()
-    dist["sample"] = month
-    return(dist)
+# E) get spatial distribution of bloom_tech in full sample & snapshot sample --------------------------------
+tech = "bloom"
+months = ["2021-05", "2021-09", "2021-01"]
+tech_shares = jpod_tests.get_spatial_tech(con = JPOD_CONN, month = "full_sample", tech = tech)
+for m in months:
+    tech_shares = pd.concat([tech_shares, jpod_tests.get_spatial_tech(con = JPOD_CONN, month = m, tech = tech)])
+plot_df = jpod_tests.plot_groups(df = tech_shares, group="region", n_periods=len(months) +1)
+jpod_tests.plot_dist(df = plot_df, group="region", outcome="share")
+plt.legend()
+#plt.show()
+plt.savefig("tests/img/bloom_nuts_dist.png")
 
+# F) get AI distribution of full sample & snapshot sample --------------------------------
+tech = "ai"
+months = ["2021-05", "2021-09", "2021-01"]
+tech_shares = jpod_tests.get_tech_share(con = JPOD_CONN, month = "full_sample", tech = tech)
+for m in months:
+    tech_shares = pd.concat([tech_shares, jpod_tests.get_tech_share(con = JPOD_CONN, month = m, tech = tech)])
+print("Distribution of job postings with connection to Acemoglu (2022) AI technology:")
+print(tech_shares)
 
-def get_bloom_dist(month = "full_sample", spatial = False):
-    """
-    ...
-    """
-    return()
-
-
-def get_ai_dist(month = "full_sample", spatial = False):
-    """
-    ...
-    """
-    return()
-
-
-#### Distribution Comparison tests
-
-# get nuts_2 distribution of full sample & snapshot sample from a particular month
-geo_dist = get_geo_dist("full_sample", nuts_level="2")
-for m in ["2021-05", "2021-09", "2021-01"]:
-    geo_dist = pd.concat([geo_dist, get_geo_dist(month = m, nuts_level=2)])
-
-# get nuts_3 distribution of full sample & snapshot sample
-geo_dist = get_geo_dist("full_sample", nuts_level=3)
-for m in ["2021-05", "2021-09", "2021-01"]:
-    geo_dist = pd.concat([geo_dist, get_geo_dist(month = m, nuts_level=3)])
-
-# get bloom_tech distribution of full sample & snapshot sample
-
-# get ai distribution of full sample & snapshot sample
-
-# get spatial distribution of bloom_tech in full sample & snapshot sample
-
-# get spatial distribution of ai in full sample & snapshot sample
+# G) get spatial distribution of AI in full sample & snapshot sample--------------------------------
+tech = "ai"
+months = ["2021-05", "2021-09", "2021-01"]
+tech_shares = jpod_tests.get_spatial_tech(con = JPOD_CONN, month = "full_sample", tech = tech)
+for m in months:
+    tech_shares = pd.concat([tech_shares, jpod_tests.get_spatial_tech(con = JPOD_CONN, month = m, tech = tech)])
+plot_df = jpod_tests.plot_groups(df = tech_shares, group = "region", n_periods= len(months) + 1)
+jpod_tests.plot_dist(df = plot_df, outcome="share")
+plt.legend()
+#plt.show()
+plt.savefig("tests/img/ai_nuts_dist.png")
