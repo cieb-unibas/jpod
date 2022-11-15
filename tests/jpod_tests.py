@@ -211,6 +211,7 @@ def plot_dist(
     barWidth = 1 / (n_periods + 1)
     periods = [x for x in df[timewindow].drop_duplicates()]
 
+    plt.figure(figsize=(21, 16))
     for i, p in enumerate(periods):
         if p == "full_sample":
             br = list(np.arange(n_groups))
@@ -223,4 +224,4 @@ def plot_dist(
     plt.ylabel(y_label, fontweight ='bold', fontsize = 15)
     plt.xticks([r + barWidth for r in range(n_groups)],
             list(df[group].drop_duplicates()), rotation = 45)
-    #plt.legend()
+    plt.legend()
