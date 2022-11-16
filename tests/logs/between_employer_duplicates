@@ -1,0 +1,30 @@
+Performing test for period: ['2021-04', '2021-05', '2021-06']
+Searching for matches regarding postings of 1000 employers within this period.
+Performing test for 568826 postings within this period.
+                                  employer  ...  n_counterparts
+0              software-entwickler-jobs.ch  ...              97
+0                        creative job gmbh  ...              31
+0                        reckitt benckiser  ...              17
+0                                     icrc  ...              15
+0                                newyorker  ...              15
+0                                berest ag  ...              14
+0                          afry zürich, zh  ...              14
+0    manpower 18,066 bewertungen basel, bs  ...              10
+0                         corporate center  ...               9
+0                         möbel pfister ag  ...               8
+0                  h+o communications ltd.  ...               7
+0                             lidl schweiz  ...               7
+0                        trumpf schweiz ag  ...               6
+0              kantonale verwaltung luzern  ...               5
+0                              swiss steel  ...               5
+0  work selection 5 bewertungen zürich, zh  ...               5
+0                     gastro s howald gmbh  ...               5
+0  kollabo ag 5 bewertungen st. gallen, sg  ...               4
+0                               mcdonald's  ...               4
+0                    afry saint moritz, gr  ...               4
+
+[20 rows x 4 columns]
+Number of employers with postings that match those of other employers: 146
+Share of employers with postings that match those of other employers: 0.146
+Number of postings with a counterpart in other employers' postings: 447
+Share of postings with a counterpart in other employers' postings: 0.04926705610051802

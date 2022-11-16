@@ -33,8 +33,15 @@ def eval_timewindow(month):
     periods = [str(p[0]) + "-" + p[1] for p in periods]
     return periods
 
+# parameters:
+MONTH = "2021-05"
+PERIOD = eval_timewindow(MONTH)
+print("Performing test for period:", PERIOD)
+N_POSTINGS = 1000000
+N_SAMPLE_EMPLOYERS = 1000
+print("Searching for matches regarding postings of", N_SAMPLE_EMPLOYERS, "employers within this period.")
+
 # retrieve all postings for period PERIOD
-PERIOD = eval_timewindow("2021-05")
 JPOD_QUERY = """
 SELECT pc.company_name, jp.uniq_id, jp.job_description
 FROM (
@@ -47,15 +54,14 @@ LEFT JOIN (SELECT uniq_id, company_name FROM position_characteristics) pc on pc.
 period_postings = pd.read_sql(JPOD_QUERY, con = JPOD_CONN)
 
 # generate a random subsample of these postings
-N_POSTINGS = 100000
 if N_POSTINGS > len(period_postings):
     N_POSTINGS = len(period_postings)
+print("Performing test for", N_POSTINGS, "postings within this period.")
 period_postings = period_postings.iloc[random.sample(range(len(period_postings)), N_POSTINGS)]
 
 # retrieve a sample of employers to evaluate
-N_SAMPLE_EMPLOYERS = 200
 employers = set(list(period_postings["company_name"]))
-employers = random.sample(employers, N_SAMPLE_EMPLOYERS)
+employers = random.sample(list(employers), N_SAMPLE_EMPLOYERS)
 
 # for every employer look for matches regarding their postings in other employers' postings
 df = pd.DataFrame()
