@@ -1,0 +1,11 @@
+Performing tests for spatial distribution:
+  nuts_2               Grossregion  ...  abs_diff  rel_diff
+0   CH01          région lemanique  ... -0.087930 -0.457850
+1   CH02         espace mittelland  ... -0.024980 -0.123403
+2   CH03  northwestern switzerland  ...  0.002170  0.016320
+3   CH04                    zurich  ...  0.079238  0.394451
+4   CH05       eastern switzerland  ... -0.016186 -0.126958
+5   CH06       central switzerland  ...  0.017426  0.176490
+6   CH07                    ticino  ... -0.035259 -0.775881
+
+[7 rows x 6 columns]
