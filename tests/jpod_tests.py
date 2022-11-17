@@ -225,3 +225,45 @@ def plot_dist(
     plt.xticks([r + barWidth for r in range(n_groups)],
             list(df[group].drop_duplicates()), rotation = 45)
     plt.legend()
+
+def get_employer_sample(con, n = 1000, min_postings = 1):
+    """
+    ....
+    """
+    JPOD_QUERY ="""
+    SELECT company_name
+    FROM position_characteristics
+    GROUP BY company_name
+    HAVING COUNT(*) >= %d
+    ORDER BY RANDOM()
+    LIMIT %d
+    """ % (min_postings, n)
+    sample_employers = con.execute(JPOD_QUERY).fetchall()
+    sample_employers = [e[0] for e in sample_employers]
+    if len(sample_employers) < n:
+        print("Retrieved number of sample employers is", len(sample_employers), "and thus smaller than the specified number `n` =", n)
+    return sample_employers
+
+def get_employer_postings(con, employers):
+    """"
+    ...
+    """
+    JPOD_QUERY ="""
+    SELECT jp.uniq_id, pc.company_name, jp.job_description
+    FROM (
+        SELECT uniq_id, job_description
+        FROM job_postings
+        WHERE uniq_id IN (
+            SELECT uniq_id 
+            FROM position_characteristics 
+            WHERE company_name IN ({0})
+            )
+        ) jp
+    LEFT JOIN (
+        SELECT company_name, uniq_id
+        FROM position_characteristics
+        ) 
+        pc on pc.uniq_id = jp.uniq_id
+    """.format(str(employers)[1:-1])
+    res = pd.read_sql(con = con, sql = JPOD_QUERY)
+    return res

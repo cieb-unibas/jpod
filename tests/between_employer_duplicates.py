@@ -10,32 +10,8 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
-def eval_timewindow(month):
-    mo = int(month[-2:])
-    year = int(month[:4])
-
-    mo_prev = mo - 1
-    mo_next = mo + 1
-    year_prev = year
-    year_next = year
-    
-    if mo_prev == 0:
-        mo_prev = 12
-        year_prev = year - 1
-    if mo_next == 13:
-        mo_next = 1
-        year_next = year + 1
-    
-    months = [mo_prev, mo, mo_next]
-    months = ["0"+ str(m) if m < 10 else str(m) for m in months]
-    years = [year_prev, year, year_next]
-    periods = list(zip(years, months))
-    periods = [str(p[0]) + "-" + p[1] for p in periods]
-    return periods
-
-# parameters:
-MONTH = "2021-05"
-PERIOD = eval_timewindow(MONTH)
+# set parameters:
+PERIOD = ["2021-04", "2021-05", "2021-06"]
 print("Performing test for period:", PERIOD)
 N_POSTINGS = 1000000
 N_SAMPLE_EMPLOYERS = 1000
@@ -53,13 +29,13 @@ LEFT JOIN (SELECT uniq_id, company_name FROM position_characteristics) pc on pc.
 """ % str(PERIOD)[1:-1]
 period_postings = pd.read_sql(JPOD_QUERY, con = JPOD_CONN)
 
-# generate a random subsample of these postings
+# generate a random subsample from these postings
 if N_POSTINGS > len(period_postings):
     N_POSTINGS = len(period_postings)
 print("Performing test for", N_POSTINGS, "postings within this period.")
 period_postings = period_postings.iloc[random.sample(range(len(period_postings)), N_POSTINGS)]
 
-# retrieve a sample of employers to evaluate
+# retrieve a sample of employers to evaluate from these postings
 employers = set(list(period_postings["company_name"]))
 employers = random.sample(list(employers), N_SAMPLE_EMPLOYERS)
 
