@@ -267,3 +267,20 @@ def get_employer_postings(con, employers):
     """.format(str(employers)[1:-1])
     res = pd.read_sql(con = con, sql = JPOD_QUERY)
     return res
+
+def get_3mtimewindow(month = "2021-05"):
+    """
+    ...
+    """
+    
+    start_date = month + "-01"
+    
+    prev_month = datetime.date.fromisoformat(start_date) - datetime.timedelta(days=1)
+    prev_month = prev_month.strftime("%Y-%m")
+    
+    next_month = datetime.date.fromisoformat(start_date) + datetime.timedelta(days=31)
+    next_month = next_month.strftime("%Y-%m")
+    
+    time_window = [prev_month, month, next_month]
+    return time_window
+

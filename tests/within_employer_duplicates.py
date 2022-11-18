@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 import sqlite3
+import datetime
 try:
     import jpod_tests
 except:
@@ -15,6 +16,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 # evaluate within employer duplicates
 N = 1000
+MONTH = "2021-05"
 
 for c in [1, 2, 3, 5, 10]:
     MIN_POSTINGS = c
