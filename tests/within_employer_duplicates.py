@@ -1,7 +1,6 @@
 import sys
 import pandas as pd
 import sqlite3
-import datetime
 try:
     import jpod_tests
 except:

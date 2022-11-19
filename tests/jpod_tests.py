@@ -2,6 +2,7 @@ import sqlite3
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
+import datetime
 
 def get_geo_dist(con, month = "full_sample", nuts_level = "2"):
     """
@@ -268,19 +269,34 @@ def get_employer_postings(con, employers):
     res = pd.read_sql(con = con, sql = JPOD_QUERY)
     return res
 
-def get_3mtimewindow(month = "2021-05"):
+def get_timewindow(month, month_window = 1):
     """
-    ...
-    """
-    
-    start_date = month + "-01"
-    
-    prev_month = datetime.date.fromisoformat(start_date) - datetime.timedelta(days=1)
-    prev_month = prev_month.strftime("%Y-%m")
-    
-    next_month = datetime.date.fromisoformat(start_date) + datetime.timedelta(days=31)
-    next_month = next_month.strftime("%Y-%m")
-    
-    time_window = [prev_month, month, next_month]
-    return time_window
+    Retrieve a selection of months that define a timewindow for queriying JPOD.
 
+    Parameters
+    ----------
+    month : str
+        A string indicating the base month. The string must be specified as 'YYYY-MM'.
+    month_window : int
+        A integer indicating how many previous and subsequent months from the baseline `month` 
+        should be considered for the time-window (default is 1). 
+
+    Returns
+    -------
+    list :
+        A list consisting of all months in iso-format 'YYYY-MM' that are part of the specified time-window.
+
+    """
+    assert isinstance(month_window, int) and month_window >= 0, "`month_window` must be of type `int` and >= 0"
+
+    start_date = month + "-01"
+    n_months = range(month_window)
+
+    prev_months = [datetime.date.fromisoformat(start_date) - datetime.timedelta(days = 1 + (31 * m)) for m in n_months]
+    prev_months = [m.strftime("%Y-%m") for m in prev_months]
+    subsequent_months = [datetime.date.fromisoformat(start_date) + datetime.timedelta(days = 31 * (m + 1)) for m in n_months]
+    subsequent_months = [m.strftime("%Y-%m") for m in subsequent_months]
+
+    time_window = prev_months + [month] + subsequent_months
+
+    return time_window
