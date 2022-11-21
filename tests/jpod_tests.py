@@ -227,37 +227,107 @@ def plot_dist(
             list(df[group].drop_duplicates()), rotation = 45)
     plt.legend()
 
-def get_employer_sample(con, n = 1000, min_postings = 1):
+def jpod_month_condition(months = "full_sample"):
     """
-    ....
+    Create a sql WHERE statement to subset JPOD to postings from a given period.
+    
+    Parameters
+    ----------
+    months : list
+        A list of strings indicating the months to consider. The strings must be specified as 'YYYY-MM'.
+    month : str
+        A string or list of strings indicating the months to consider. The strings must be specified as 'YYYY-MM'.
+        For specifiying no condition `month` can be specified as 'full_sample' which then returns an empty string (the default)
+
+    Returns
+    -------
+    str :
+        A sql WHERE condition for subsetting postings in JPOD to those of the specified months.
     """
+    if months != "full_sample":
+        assert isinstance(months, list), "Months to consider must be specified as a list of strings"
+        months = "WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE SUBSTR(crawl_timestamp, 1, 7) IN ({0}))".format(str(months)[1:-1])
+    else:
+        months = ""
+    return months
+
+def get_employer_sample(con, n = 1000, min_postings = 1, months = "full_sample"):
+    """
+    Retrieve a random sample of employers with a minimum number of postings within the full sample or a temporal subsample. 
+    
+    Parameters
+    ----------
+    con : sqlite3 object
+        A sqlite3 connection to the JPOD database.
+    n :
+        A integer indicating the number of employers to retrieve.        
+    min_postings : int
+        An integer indicating the minimum number of postings employers should have within the specified timeframe 
+    months = list
+        A list of strings indicating the months to consider. The strings must be specified as 'YYYY-MM'.
+        For specifiying no condition, `month` can be set to 'full_sample'.
+
+    Returns
+    -------
+    list :
+        A list of `n` employers with at least `min_postings` job adds retrieved from the selected `months`. If the
+        number of retireved employers is smaller than the specified number `n`, a message is printed.
+    """
+    month_condition = jpod_month_condition(months = months)
+
     JPOD_QUERY ="""
     SELECT company_name
-    FROM position_characteristics
+    FROM (
+        SELECT *
+        FROM position_characteristics
+        %s
+        )
     GROUP BY company_name
     HAVING COUNT(*) >= %d
     ORDER BY RANDOM()
     LIMIT %d
-    """ % (min_postings, n)
+    """ % (month_condition, min_postings, n)
     sample_employers = con.execute(JPOD_QUERY).fetchall()
     sample_employers = [e[0] for e in sample_employers]
     if len(sample_employers) < n:
         print("Retrieved number of sample employers is", len(sample_employers), "and thus smaller than the specified number `n` =", n)
     return sample_employers
 
-def get_employer_postings(con, employers):
+
+def get_employer_postings(con, employers, months = "full_sample"):
     """"
-    ...
+    Retrieve all the job postings for a selection of employers within a given time frame. 
+    
+    Parameters
+    ----------
+    con : sqlite3 object
+        A sqlite3 connection to the JPOD database.
+    employers : list
+        A list of strings indicating the the employers. This names will be matched to the `company_name` column in JPOD. 
+    months = list
+        A list of strings indicating the months to consider. The strings must be specified as 'YYYY-MM'.
+        For specifiying no condition, `month` can be set to 'full_sample'.
+
+    Returns
+    -------
+    pd.DataFrame :
+        A pandas DataFrame consisting consisting of the full texts of all employers' job postings in this time window.
     """
+    months = jpod_month_condition(months = months)
+    if len(months) > 0:
+        months = months + " AND"
+    else:
+        months = "WHERE"
+
     JPOD_QUERY ="""
     SELECT jp.uniq_id, pc.company_name, jp.job_description
     FROM (
         SELECT uniq_id, job_description
         FROM job_postings
-        WHERE uniq_id IN (
+        {0} uniq_id IN (
             SELECT uniq_id 
             FROM position_characteristics 
-            WHERE company_name IN ({0})
+            WHERE company_name IN ({1})
             )
         ) jp
     LEFT JOIN (
@@ -265,7 +335,7 @@ def get_employer_postings(con, employers):
         FROM position_characteristics
         ) 
         pc on pc.uniq_id = jp.uniq_id
-    """.format(str(employers)[1:-1])
+    """.format(months, str(employers)[1:-1])
     res = pd.read_sql(con = con, sql = JPOD_QUERY)
     return res
 
