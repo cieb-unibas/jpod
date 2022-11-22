@@ -1,0 +1,219 @@
+Performing tests for +/- 1-month time window around 2020-12
+Evaluating within employer duplicates for employers with at least 1 postings
+Retrieved 1000 employers from time period ['2020-11', '2020-12', '2021-01']
+Retrieved 17422 postings from 1000 employers in time period ['2020-11', '2020-12', '2021-01']
+
+            Total number of duplicated postings from employers with at least 1 published posting(s): 6339 of 17422 (36.39%)
+            
+
+            Share of employers with at least 1 published posting(s) that have duplicates: 38.08%
+            
+
+            Average number of duplicated postings from employers with at least 1 published posting(s): 6.4
+            
+
+            Average share of unique postings from employers with at least 1 published posting(s): 86.02%
+            
+                                   n_postings  ...  duplicates
+company_name                                   ...            
+pädagogische hochschule st.gallen         292  ...         277
+devigus engineering ag                     11  ...          10
+j&b personal                               83  ...          75
+bergrestaurant weissfluhjoch               37  ...          33
+nielsen                                     8  ...           7
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 3 postings
+Retrieved 1000 employers from time period ['2020-11', '2020-12', '2021-01']
+Retrieved 44924 postings from 1000 employers in time period ['2020-11', '2020-12', '2021-01']
+
+            Total number of duplicated postings from employers with at least 3 published posting(s): 18675 of 44924 (41.57%)
+            
+
+            Share of employers with at least 3 published posting(s) that have duplicates: 65.4%
+            
+
+            Average number of duplicated postings from employers with at least 3 published posting(s): 18.7
+            
+
+            Average share of unique postings from employers with at least 3 published posting(s): 75.85%
+            
+                           n_postings  ...  duplicates
+company_name                           ...            
+wüstenrot gruppe                   89  ...          87
+spitex für stadt und land        3401  ...        3302
+afry                             3125  ...        3001
+bit                                33  ...          31
+sandsiv                            31  ...          29
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 7 postings
+Retrieved 1000 employers from time period ['2020-11', '2020-12', '2021-01']
+Retrieved 61176 postings from 1000 employers in time period ['2020-11', '2020-12', '2021-01']
+
+            Total number of duplicated postings from employers with at least 7 published posting(s): 26491 of 61176 (43.3%)
+            
+
+            Share of employers with at least 7 published posting(s) that have duplicates: 83.8%
+            
+
+            Average number of duplicated postings from employers with at least 7 published posting(s): 26.5
+            
+
+            Average share of unique postings from employers with at least 7 published posting(s): 70.49%
+            
+                         n_postings  ...  duplicates
+company_name                         ...            
+partner-fur-partner gbr         685  ...         681
+reha bad erlach gmbh             40  ...          39
+fideco ag                        28  ...          27
+afry                           3125  ...        3001
+planster                         24  ...          23
+
+[5 rows x 4 columns]
+Performing tests for +/- 1-month time window around 2021-05
+Evaluating within employer duplicates for employers with at least 1 postings
+Retrieved 1000 employers from time period ['2021-04', '2021-05', '2021-06']
+Retrieved 14567 postings from 1000 employers in time period ['2021-04', '2021-05', '2021-06']
+
+            Total number of duplicated postings from employers with at least 1 published posting(s): 2576 of 14567 (17.68%)
+            
+
+            Share of employers with at least 1 published posting(s) that have duplicates: 20.5%
+            
+
+            Average number of duplicated postings from employers with at least 1 published posting(s): 2.6
+            
+
+            Average share of unique postings from employers with at least 1 published posting(s): 93.07%
+            
+                                                    n_postings  ...  duplicates
+company_name                                                    ...            
+afry brunnen, sz                                            20  ...          18
+gerard perrier industrie                                     7  ...           6
+engene statistics gmbh                                       7  ...           6
+university of applied sciences and arts northwe...           7  ...           6
+restaurant attisholz                                        12  ...          10
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 3 postings
+Retrieved 1000 employers from time period ['2021-04', '2021-05', '2021-06']
+Retrieved 38384 postings from 1000 employers in time period ['2021-04', '2021-05', '2021-06']
+
+            Total number of duplicated postings from employers with at least 3 published posting(s): 8698 of 38384 (22.66%)
+            
+
+            Share of employers with at least 3 published posting(s) that have duplicates: 48.5%
+            
+
+            Average number of duplicated postings from employers with at least 3 published posting(s): 8.7
+            
+
+            Average share of unique postings from employers with at least 3 published posting(s): 84.1%
+            
+                                    n_postings  ...  duplicates
+company_name                                    ...            
+oxford knight                               80  ...          78
+os social media                             98  ...          95
+forum fur medizinische fortbildung          34  ...          32
+evn ag                                      27  ...          25
+s&p global                                  73  ...          67
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 7 postings
+Retrieved 1000 employers from time period ['2021-04', '2021-05', '2021-06']
+Retrieved 89930 postings from 1000 employers in time period ['2021-04', '2021-05', '2021-06']
+
+            Total number of duplicated postings from employers with at least 7 published posting(s): 23665 of 89930 (26.31%)
+            
+
+            Share of employers with at least 7 published posting(s) that have duplicates: 64.4%
+            
+
+            Average number of duplicated postings from employers with at least 7 published posting(s): 23.7
+            
+
+            Average share of unique postings from employers with at least 7 published posting(s): 80.37%
+            
+                                   n_postings  ...  duplicates
+company_name                                   ...            
+panasonic industry switzerland ag          20  ...          20
+amazon gera gmbh                          261  ...         257
+vaneck                                     45  ...          44
+spitex für stadt und land                3385  ...        3298
+os social media                            98  ...          95
+
+[5 rows x 4 columns]
+Performing tests for +/- 1-month time window around 2021-10
+Evaluating within employer duplicates for employers with at least 1 postings
+Retrieved 1000 employers from time period ['2021-09', '2021-10', '2021-11']
+Retrieved 13270 postings from 1000 employers in time period ['2021-09', '2021-10', '2021-11']
+
+            Total number of duplicated postings from employers with at least 1 published posting(s): 2561 of 13270 (19.3%)
+            
+
+            Share of employers with at least 1 published posting(s) that have duplicates: 21.9%
+            
+
+            Average number of duplicated postings from employers with at least 1 published posting(s): 2.6
+            
+
+            Average share of unique postings from employers with at least 1 published posting(s): 90.72%
+            
+                                               n_postings  ...  duplicates
+company_name                                               ...            
+hotel bellavista (ftan im engadin)                     17  ...          16
+synerma                                                10  ...           9
+kurhaus bergun                                         27  ...          24
+backereikonditorei caferestaurant weber davos          67  ...          59
+leclanche gmbh                                          8  ...           7
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 3 postings
+Retrieved 1000 employers from time period ['2021-09', '2021-10', '2021-11']
+Retrieved 60571 postings from 1000 employers in time period ['2021-09', '2021-10', '2021-11']
+
+            Total number of duplicated postings from employers with at least 3 published posting(s): 15705 of 60571 (25.93%)
+            
+
+            Share of employers with at least 3 published posting(s) that have duplicates: 47.5%
+            
+
+            Average number of duplicated postings from employers with at least 3 published posting(s): 15.7
+            
+
+            Average share of unique postings from employers with at least 3 published posting(s): 82.38%
+            
+                                                 n_postings  ...  duplicates
+company_name                                                 ...            
+notterkran                                             1247  ...        1223
+forum fur medizinische fortbildung                       19  ...          18
+bergrestaurant alpenblick arosa                          18  ...          17
+bws consulting group gmbh                                24  ...          22
+golfrestaurant alvaneu (zw. davos und savognin)          36  ...          33
+
+[5 rows x 4 columns]
+Evaluating within employer duplicates for employers with at least 7 postings
+Retrieved 1000 employers from time period ['2021-09', '2021-10', '2021-11']
+Retrieved 52732 postings from 1000 employers in time period ['2021-09', '2021-10', '2021-11']
+
+            Total number of duplicated postings from employers with at least 7 published posting(s): 14827 of 52732 (28.12%)
+            
+
+            Share of employers with at least 7 published posting(s) that have duplicates: 61.7%
+            
+
+            Average number of duplicated postings from employers with at least 7 published posting(s): 14.8
+            
+
+            Average share of unique postings from employers with at least 7 published posting(s): 77.77%
+            
+                                       n_postings  ...  duplicates
+company_name                                       ...            
+fitness island                               1405  ...        1398
+skihutte gruobenalp (klosters  davos)         161  ...         158
+domino gastro                                 838  ...         819
+clean fitness gmbh                            120  ...         114
+pratschli alpine spa hotel  arosa             247  ...         234
+
+[5 rows x 4 columns]

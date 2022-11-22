@@ -15,7 +15,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 # evaluate within employer duplicates
 N = 1000
-FULL_SAMPLE = False
+FULL_SAMPLE = True
 PERIODS = {}
 
 if FULL_SAMPLE:
@@ -35,6 +35,7 @@ for p in PERIODS:
         sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N, min_postings=min_postings, months = PERIODS[p])
         n_employers = len(sample_employers)
         print("Retrieved %d employers from time period %s" % (n_employers, PERIODS[p]))
+        sample_employers = [e for e in sample_employers if e != None]
         sample_employers = jpod_tests.get_employer_postings(con = JPOD_CONN, employers = sample_employers, months = PERIODS[p])
         print("Retrieved %d postings from %d employers in time period %s" % (len(sample_employers), n_employers, PERIODS[p]))
         

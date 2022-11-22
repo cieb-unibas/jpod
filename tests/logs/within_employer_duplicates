@@ -1,110 +1,73 @@
+performing tests for the full sample.
 Evaluating within employer duplicates for employers with at least 1 postings
+Retrieved 1000 employers from time period full_sample
+Retrieved 50701 postings from 1000 employers in time period full_sample
 
-        Total number of duplicated postings from employers with at least 1 published posting(s): 8026 of 25000 (32.1%)
-        
+            Total number of duplicated postings from employers with at least 1 published posting(s): 18914 of 50701 (37.3%)
+            
 
-        Share of employers with at least 1 published posting(s) that have duplicates: 32.4%
-        
+            Share of employers with at least 1 published posting(s) that have duplicates: 33.7%
+            
 
-        Average number of duplicated postings from employers with at least 1 published posting(s): 8.0
-        
+            Average number of duplicated postings from employers with at least 1 published posting(s): 18.9
+            
 
-        Average share of unique postings from employers with at least 1 published posting(s): 87.2%
-        
-                                            n_postings  ...  duplicates
-company_name                                            ...            
-weact ag                                            20  ...          19
-oxford knight                                      102  ...          96
-j&b personal                                        83  ...          75
-bergbahnen samnaun ag  gastronomiebetriebe          73  ...          65
-diakonieklinikum stuttgart                           9  ...           8
-
-[5 rows x 4 columns]
-Evaluating within employer duplicates for employers with at least 2 postings
-
-        Total number of duplicated postings from employers with at least 2 published posting(s): 26237 of 98512 (26.63%)
-        
-
-        Share of employers with at least 2 published posting(s) that have duplicates: 55.26%
-        
-
-        Average number of duplicated postings from employers with at least 2 published posting(s): 26.3
-        
-
-        Average share of unique postings from employers with at least 2 published posting(s): 78.67%
-        
-                              n_postings  ...  duplicates
-company_name                              ...            
-os social media                       98  ...          95
-flughafen berlin brandenburg         264  ...         252
-ciba-izbv                             27  ...          25
-dolder hotel                         128  ...         117
-bucherinvest                         165  ...         150
+            Average share of unique postings from employers with at least 1 published posting(s): 87.51%
+            
+                                    n_postings  ...  duplicates
+company_name                                    ...            
+amazon gera gmbh                           261  ...         257
+hr consulting alexander wozak gmbh          47  ...          45
+restaurant zum braunen mutz                 66  ...          63
+arrow systems integration                   48  ...          45
+fisch asset management ag                  114  ...         105
 
 [5 rows x 4 columns]
 Evaluating within employer duplicates for employers with at least 3 postings
+Retrieved 1000 employers from time period full_sample
+Retrieved 48044 postings from 1000 employers in time period full_sample
 
-        Total number of duplicated postings from employers with at least 3 published posting(s): 23482 of 54514 (43.08%)
-        
+            Total number of duplicated postings from employers with at least 3 published posting(s): 15910 of 48044 (33.12%)
+            
 
-        Share of employers with at least 3 published posting(s) that have duplicates: 67.1%
-        
+            Share of employers with at least 3 published posting(s) that have duplicates: 63.9%
+            
 
-        Average number of duplicated postings from employers with at least 3 published posting(s): 23.5
-        
+            Average number of duplicated postings from employers with at least 3 published posting(s): 15.9
+            
 
-        Average share of unique postings from employers with at least 3 published posting(s): 74.74%
-        
-                                    n_postings  ...  duplicates
-company_name                                    ...            
-coberonchronos consulting                  230  ...         226
-notterkran                                2836  ...        2780
-hr consulting alexander wozak gmbh          47  ...          45
-nbn                                         22  ...          21
-geoteck heating & cooling limited           91  ...          86
-
-[5 rows x 4 columns]
-Evaluating within employer duplicates for employers with at least 5 postings
-
-        Total number of duplicated postings from employers with at least 5 published posting(s): 346731 of 489507 (70.83%)
-        
-
-        Share of employers with at least 5 published posting(s) that have duplicates: 76.48%
-        
-
-        Average number of duplicated postings from employers with at least 5 published posting(s): 347.1
-        
-
-        Average share of unique postings from employers with at least 5 published posting(s): 72.27%
-        
-                                   n_postings  ...  duplicates
-company_name                                   ...            
-amazon gera gmbh                          261  ...         257
-h+o communications ltd.                  4370  ...        4288
-hotel grimsel passhohe                    162  ...         153
-hangl  hotel post  samnaun                 58  ...          54
-morgan &amp; mallet international          28  ...          26
+            Average share of unique postings from employers with at least 3 published posting(s): 76.07%
+            
+                           n_postings  ...  duplicates
+company_name                           ...            
+coberonchronos consulting         230  ...         226
+south shore health system          13  ...          12
+hotel kirchbuhl                   223  ...         203
+a. marchon sa                      11  ...          10
+dhl express                      1543  ...        1374
 
 [5 rows x 4 columns]
-Evaluating within employer duplicates for employers with at least 10 postings
+Evaluating within employer duplicates for employers with at least 7 postings
+Retrieved 1000 employers from time period full_sample
+Retrieved 124858 postings from 1000 employers in time period full_sample
 
-        Total number of duplicated postings from employers with at least 10 published posting(s): 43951 of 114494 (38.39%)
-        
+            Total number of duplicated postings from employers with at least 7 published posting(s): 44874 of 124858 (35.94%)
+            
 
-        Share of employers with at least 10 published posting(s) that have duplicates: 86.2%
-        
+            Share of employers with at least 7 published posting(s) that have duplicates: 81.0%
+            
 
-        Average number of duplicated postings from employers with at least 10 published posting(s): 44.0
-        
+            Average number of duplicated postings from employers with at least 7 published posting(s): 44.9
+            
 
-        Average share of unique postings from employers with at least 10 published posting(s): 68.1%
-        
-                                  n_postings  ...  duplicates
-company_name                                  ...            
-amazon logistik suelzetal gmbh           699  ...         692
-grandhotel giessbach brienzersee          35  ...          34
-vaneck                                    48  ...          46
-hotel haus homann s samnaun              286  ...         274
-fingerprint for success                   18  ...          17
+            Average share of unique postings from employers with at least 7 published posting(s): 69.58%
+            
+                       n_postings  ...  duplicates
+company_name                       ...            
+romantik hotel santis         257  ...         250
+el-lucent                      74  ...          71
+hotel palafitte                18  ...          17
+brock & decker                118  ...         111
+bautech personal             1050  ...         983
 
 [5 rows x 4 columns]

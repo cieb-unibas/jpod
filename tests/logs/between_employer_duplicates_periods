@@ -1,0 +1,88 @@
+Performing test for period: ['2020-08', '2020-09', '2020-10']
+Searching for identical postings registered under other employers for 1000 employers within this period.
+Performing serach among 556390 postings within this period.
+                    employer  n_postings  n_unique_postings  n_counterparts
+0                     adecco       28798              12244             845
+0          join solutions ag         673                474             135
+0                    tamedia         567                203              26
+0                        bdo          68                 54              22
+0        dekra arbeit gruppe          32                 28              14
+0                 timberland         103                 25              10
+0                 octapharma          58                 20               9
+0              octapharma ag          46                 13               9
+0               prosearch ag         128                 57               7
+0                   prime 21        1859                533               6
+0               die mobiliar         258                186               6
+0            ivf hartmann ag          26                 15               5
+0                     globus         130                112               5
+0                   kone a/s           4                  4               4
+0  mascot international gmbh          25                  4               4
+0              kanton zürich         368                282               4
+0   bellevue parkhotel & spa          77                 51               3
+0                    ricardo         151                 51               3
+0               work with us          12                  4               3
+0               chatroulette          23                  5               3
+Number of employers with postings that match those of other employers: 69
+Share of employers with postings that match those of other employers: 0.069
+Number of identical postings found among employers: 1188
+Share of postings with a counterpart in other employers' postings: 0.05018163385993073
+Performing test for period: ['2021-04', '2021-05', '2021-06']
+Searching for identical postings registered under other employers for 1000 employers within this period.
+Performing serach among 568826 postings within this period.
+                                       employer  ...  n_counterparts
+0                                    eth zurich  ...              23
+0                                     fresenius  ...              21
+0                              jamtech by smood  ...              20
+0            adecco 18,086 bewertungen bern, be  ...              17
+0  adisag personal 3 bewertungen 5000 aarau, ag  ...              16
+0                                       bellini  ...              15
+0                       die schweizerische post  ...              12
+0         manpower 18,066 bewertungen basel, bs  ...              10
+0       schaffmann consultants executive search  ...               6
+0                          bristol-myers squibb  ...               5
+0            adecco 17,811 bewertungen bern, be  ...               5
+0    adecco 18,086 bewertungen schaffhausen, sh  ...               5
+0                             julius baer group  ...               5
+0                                    trek bikes  ...               4
+0          manpower 18,063 bewertungen bern, be  ...               4
+0                                    notterkran  ...               4
+0   kollabo ag 5 bewertungen sihlbrugg dorf, zg  ...               4
+0                                           fao  ...               3
+0                                   permserv ag  ...               3
+0  manpower 18,065 bewertungen kanton neuenburg  ...               3
+
+[20 rows x 4 columns]
+Number of employers with postings that match those of other employers: 155
+Share of employers with postings that match those of other employers: 0.155
+Number of identical postings found among employers: 341
+Share of postings with a counterpart in other employers' postings: 0.024044563531236778
+Performing test for period: ['2021-09', '2021-10', '2021-11']
+Searching for identical postings registered under other employers for 1000 employers within this period.
+Performing serach among 534431 postings within this period.
+                                            employer  ...  n_counterparts
+0                                            siemens  ...              74
+0                                        google emea  ...              53
+0                                     the north face  ...              17
+0              johnson & johnson family of companies  ...              13
+0                                   mediamarktsaturn  ...               9
+0                                               ikea  ...               8
+0                                               ruag  ...               6
+0                                                 bg  ...               6
+0                                          biotronik  ...               5
+0                                         bâlehotels  ...               4
+0                          mitarbeiterin  bei migros  ...               3
+0                                           logitech  ...               3
+0                                      sanofi sanofi  ...               3
+0                                  ef go ahead tours  ...               2
+0                                      tiffany & co.  ...               2
+0                         ions bei julius baer group  ...               2
+0         icien cfc (hfx)  rentrée 2022 bei liebherr  ...               2
+0                   geriatrische klinik st.gallen ag  ...               2
+0                                              eaton  ...               2
+0  stiftung wirtschaftsinformatikschule schweiz wiss  ...               2
+
+[20 rows x 4 columns]
+Number of employers with postings that match those of other employers: 87
+Share of employers with postings that match those of other employers: 0.087
+Number of identical postings found among employers: 285
+Share of postings with a counterpart in other employers' postings: 0.026415793864120865

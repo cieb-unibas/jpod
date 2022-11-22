@@ -15,31 +15,39 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 # set parameters:
-MONTHS = ["2020-09", "2021-05", "2021-10"]
+N_POSTINGS = 1000000
+N_SAMPLE_EMPLOYERS = 1000
+FULL_SAMPLE = True
 PERIODS = {}
-for m in MONTHS:
-    PERIODS[m] = jpod_tests.get_timewindow(month = m, month_window = 1)
+
+if FULL_SAMPLE:
+    PERIODS["full_sample"] = "full_sample"
+else:
+    for m in ["2020-12", "2021-05", "2021-10"]:
+        PERIODS[m] = jpod_tests.get_timewindow(month = m, month_window = 1)
 
 for p in PERIODS:
-    
     print("Performing test for period:", PERIODS[p])
-    N_POSTINGS = 1000000
-    N_SAMPLE_EMPLOYERS = 1000
     print(
         "Searching for identical postings registered under other employers for", 
         N_SAMPLE_EMPLOYERS, "employers within this period."
         )
 
     # retrieve all postings for period PERIOD
+    if PERIODS[p] == "full_sample":
+      where_clause = ""
+    else:
+      where_clause = "WHERE (SUBSTR(crawl_timestamp, 1, 7) IN (%s))" % str(PERIODS[p])[1:-1]
+    
     JPOD_QUERY = """
     SELECT pc.company_name, jp.uniq_id, jp.job_description
     FROM (
         SELECT uniq_id, job_description
         FROM job_postings
-        WHERE (SUBSTR(crawl_timestamp, 1, 7) IN (%s))
+        %s
         ) jp
     LEFT JOIN (SELECT uniq_id, company_name FROM position_characteristics) pc on pc.uniq_id = jp.uniq_id
-    """ % str(PERIODS[p])[1:-1]
+    """ % where_clause
     period_postings = pd.read_sql(JPOD_QUERY, con = JPOD_CONN)
 
     # generate a random subsample from these postings
