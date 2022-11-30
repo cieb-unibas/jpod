@@ -370,3 +370,38 @@ def get_timewindow(month, month_window = 1):
     time_window = prev_months + [month] + subsequent_months
 
     return time_window
+
+
+def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5, ):
+    """
+    Retrieve randomly chosen, non-overlapping sequences of tokens from a text.
+    
+    Parameters
+    ----------
+    text : str
+        A text from which token sequences will be extracted
+    sequence_length : int
+        An integer indicating the number of tokens per sequence.        
+    n_sequences : int
+        An integer indicating the number of sequences to extract. 
+
+    Returns
+    -------
+    list :
+        A list of `n_sequences` token sequences of length sequence_length..
+    """
+    tokenized_text = text.split(" ")
+    
+    token_sequence_start = np.random.randint(0, len(tokenized_text), n_sequences)
+    sequence_diff = abs(np.diff(list(token_sequence_start) + [token_sequence_start[0]]))
+    
+    while sum(sequence_diff > sequence_length) < n_sequences or max(token_sequence_start) + 10 > len(tokenized_text):
+        token_sequence_start = np.random.randint(0, len(tokenized_text), n_sequences)
+        sequence_diff = abs(np.diff(list(token_sequence_start) + [token_sequence_start[0]]))
+
+    token_sequences = []
+    for s in token_sequence_start:
+        token_sequences.append(tokenized_text[s: (s + sequence_length)])
+    token_sequences = [" ".join(s) for s in token_sequences]
+
+    return(token_sequences)
