@@ -14,16 +14,16 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 # set parameters for the test
-N_EMPLOYERS = 10
+N_EMPLOYERS = 1000
 PERIOD = "full_sample"
 MIN_POSTINGS = 2
 N_TOKEN_SEQUENCES = 5
-TOKEN_SEQUENCE_LENGTH = 10
+TOKEN_SEQUENCE_LENGTH = 7
 
 # retrieve a random sample of employers for a specific period
-sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N, min_postings=MIN_POSTINGS, months = PERIOD)
+sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N_EMPLOYERS, min_postings=MIN_POSTINGS, months = PERIOD)
 n_employers = len(sample_employers)
-print("Retrieved %d employers from time period %s" % (N_EMPLOYERS, PERIOD))
+print("Retrieved %d employers from time period %s" % (n_employers, PERIOD))
 sample_employers = [e for e in sample_employers if e != None]
 sample_employers = jpod_tests.get_employer_postings(con = JPOD_CONN, employers = sample_employers, months = PERIOD)
 print("Retrieved %d postings from %d employers in time period %s" % (len(sample_employers), N_EMPLOYERS, PERIOD))
@@ -81,10 +81,47 @@ for e in sample_employers["company_name"]:
 # summarize:
 employer_postings["unique_postings"] = employer_postings["non_identical_postings"] - employer_postings["token_based_duplicates"]
 employer_postings["unique_share"] = employer_postings["unique_postings"] / employer_postings["n_postings"]
+n_exact_duplicates = sum(employer_postings["exact_duplicates"])
+n_token_based_duplicates = sum(employer_postings["token_based_duplicates"])
+employer_postings["n_duplicates"] = employer_postings["exact_duplicates"] + employer_postings["token_based_duplicates"] 
+n_duplicates =  n_exact_duplicates + n_token_based_duplicates
+n_total = sum(employer_postings["n_postings"])
+
+# print results ----
+print("""
+    Total number of duplicated postings from employers with at least {0} published posting(s): {1} of {2} ({3}%)
+    """.format(MIN_POSTINGS, n_duplicates , n_total, round(100 * n_duplicates / n_total, 2))
+    )
+print("""
+    Total number of exactly duplicated postings from employers with at least {0} published posting(s): {1} of {2} ({3}%)
+    """.format(MIN_POSTINGS, n_exact_duplicates , n_total, round(100 * n_exact_duplicates / n_total, 2))
+    )
+print("""
+    Total number of token-based duplicated postings from employers with at least {0} published posting(s): {1} of {2} ({3}%)
+    """.format(MIN_POSTINGS, n_token_based_duplicates , n_total, round(100 * n_token_based_duplicates / n_total, 2))
+    )
+print("""
+    Share of token-based methodology duplicates among all detected duplicates from employers with at least {0} published posting(s): {1}%
+    """.format(MIN_POSTINGS, round(100 * n_token_based_duplicates / n_duplicates, 2))
+    )
+print("""
+    Share of employers with at least {0} published posting(s) that have duplicates: {1}%
+    """.format(MIN_POSTINGS, round(100 * len(employer_postings[employer_postings["n_duplicates"] > 0]) / len(employer_postings), 2))
+    )
+print("""
+    Average number of duplicated postings from employers with at least {0} published posting(s): {1}
+    """.format(MIN_POSTINGS, round(employer_postings["n_duplicates"].mean(), 1))
+    )
+print("""
+    Average share of unique postings from employers with at least {0} published posting(s): {1}%
+    """.format(MIN_POSTINGS, round(100 * employer_postings["unique_share"].mean(), 2))
+    )
+
+print(employer_postings.sort_values("unique_share").head(10).loc[:,["n_postings", "unique_postings", "unique_share"]])
 
 # for testing:
-# e = "hornbach"
-# posting_idx = 6
+# e = "homeservice24"
+# posting_idx = 1
 # employer_posting = emp_postings["job_description"][posting_idx]
-# emp_postings["job_description"][7]
+# emp_postings["job_description"][0]
 # [len(x) for x in emp_postings["job_description"]]

@@ -372,7 +372,7 @@ def get_timewindow(month, month_window = 1):
     return time_window
 
 
-def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5, ):
+def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5):
     """
     Retrieve randomly chosen, non-overlapping sequences of tokens from a text.
     
@@ -388,20 +388,39 @@ def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5
     Returns
     -------
     list :
-        A list of `n_sequences` token sequences of length sequence_length..
+        A list of length `n_sequences`. Each element is a string representing a 
+        token sequences of length sequence_length.
     """
+    assert isinstance(sequence_length, int), "`sequence_length` must be of type 'int'"
+    assert isinstance(n_sequences, int), "`n_sequences` must be of type 'int'"
+
     tokenized_text = text.split(" ")
     
-    token_sequence_start = np.random.randint(0, len(tokenized_text), n_sequences)
-    sequence_diff = abs(np.diff(list(token_sequence_start) + [token_sequence_start[0]]))
-    
-    while sum(sequence_diff > sequence_length) < n_sequences or max(token_sequence_start) + 10 > len(tokenized_text):
-        token_sequence_start = np.random.randint(0, len(tokenized_text), n_sequences)
-        sequence_diff = abs(np.diff(list(token_sequence_start) + [token_sequence_start[0]]))
+    # if posting is too short to extract sequences, cut it in half and create two sequences:
+    if len(tokenized_text) < (n_sequences * sequence_length * 2):
+        cut_point = round(np.median(range(len(tokenized_text))))
+        token_sequences = [text[:cut_point], text[cut_point:]]
 
-    token_sequences = []
-    for s in token_sequence_start:
-        token_sequences.append(tokenized_text[s: (s + sequence_length)])
-    token_sequences = [" ".join(s) for s in token_sequences]
+    else:
+        # evaluate if sequences will be non-overlapping 
+        # That is, none of the randonly chosen starting points 
+        # can lie within the defined sequence span of another  
+        eval_distance = False
+        while eval_distance == False:
+            # randomly choose sequence starting points
+            token_sequence_start = np.random.randint(0, len(tokenized_text) - sequence_length, n_sequences)
+            # calculate distances between starting points
+            eval_distance = []
+            starting_distances = [list(abs(token_sequence_start - token_sequence_start[i])) for i in range(len(token_sequence_start))]
+            for x in range(len(starting_distances)):
+                starting_distances[x].remove(0)
+                res = sum([e > sequence_length for e in starting_distances[x]]) >= (n_sequences - 1)
+                eval_distance.append(res)
+            eval_distance = all(eval_distance)
+        
+        token_sequences = []
+        for s in token_sequence_start:
+            token_sequences.append(tokenized_text[s: (s + sequence_length)])
+        token_sequences = [" ".join(s) for s in token_sequences]
 
     return(token_sequences)
