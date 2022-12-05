@@ -372,34 +372,40 @@ def get_timewindow(month, month_window = 1):
     return time_window
 
 
-def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5):
+def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5, seq_multiple = 5):
     """
     Retrieve randomly chosen, non-overlapping sequences of tokens from a text.
-    
+  
     Parameters
     ----------
     text : str
-        A text from which token sequences will be extracted
+        A text from which token sequences will be extracted. If the length len(`text`) is
+        shorter than (sequence_length * n_sequences * 5)
     sequence_length : int
         An integer indicating the number of tokens per sequence.        
     n_sequences : int
-        An integer indicating the number of sequences to extract. 
+        An integer indicating the number of sequences to extract.
+    seq_multiple : int
+        An integer indicating the minimum length `text` must have to extract random token sequences.
+        This ensures that the text is extensive enough to extract non-overlapping token sequences.
+        The minimum length is calculated as (`sequence_length` * `n_sequences`) * `seq_multiple`.
 
     Returns
     -------
     list :
-        A list of length `n_sequences`. Each element is a string representing a 
-        token sequences of length sequence_length.
+        A list of length `n_sequences` containing strings that each represent a 
+        token sequences of length `sequence_length`.
     """
     assert isinstance(sequence_length, int), "`sequence_length` must be of type 'int'"
     assert isinstance(n_sequences, int), "`n_sequences` must be of type 'int'"
+    assert isinstance(seq_multiple, int), "`seq_multiple` must be of type 'int'"
 
     tokenized_text = text.split(" ")
     
-    # if posting is too short to extract sequences, cut it in half and create two sequences:
-    if len(tokenized_text) < (n_sequences * sequence_length * 2):
-        cut_point = round(np.median(range(len(tokenized_text))))
-        token_sequences = [text[:cut_point], text[cut_point:]]
+    # if posting is too short to extract sequences, cut it in thirds and create three sequences:
+    if len(tokenized_text) < (n_sequences * sequence_length * seq_multiple):
+        cut_point = round(len(tokenized_text) / 3)
+        token_sequences = [text[:cut_point], text[cut_point:(cut_point * 2)], text[(cut_point * 2):]]
 
     else:
         # evaluate if sequences will be non-overlapping 

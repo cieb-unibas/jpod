@@ -17,29 +17,45 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 N_EMPLOYERS = 1000
 PERIOD = "full_sample"
 MIN_POSTINGS = 2
-N_TOKEN_SEQUENCES = 5
-TOKEN_SEQUENCE_LENGTH = 7
+# try different combinations and check if they are always the same postings
+N_TOKEN_SEQUENCES = 3
+TOKEN_SEQUENCE_LENGTH = 10
 
 # retrieve a random sample of employers for a specific period
 sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N_EMPLOYERS, min_postings=MIN_POSTINGS, months = PERIOD)
 n_employers = len(sample_employers)
 print("Retrieved %d employers from time period %s" % (n_employers, PERIOD))
 sample_employers = [e for e in sample_employers if e != None]
-sample_employers = jpod_tests.get_employer_postings(con = JPOD_CONN, employers = sample_employers, months = PERIOD)
-print("Retrieved %d postings from %d employers in time period %s" % (len(sample_employers), N_EMPLOYERS, PERIOD))
+employer_postings = jpod_tests.get_employer_postings(con = JPOD_CONN, employers = sample_employers, months = PERIOD)
+print("Retrieved %d postings from %d employers in time period %s" % (len(employer_postings), N_EMPLOYERS, PERIOD))
 
 # find all postings with the exact same postings text
-employer_postings = pd.DataFrame(sample_employers.groupby(["company_name"])["company_name"].count().rename("n_postings"))
-employer_postings = employer_postings.merge(sample_employers.groupby(["company_name"])["job_description"].nunique().rename("non_identical_postings"), on="company_name")
-employer_postings["exact_duplicates"] = employer_postings["n_postings"] - employer_postings["non_identical_postings"]
-employer_postings["token_based_duplicates"] = 0
+employer_evaluation = pd.DataFrame(employer_postings.groupby(["company_name"])["company_name"].count().rename("n_postings"))
+employer_evaluation = employer_evaluation.merge(employer_postings.groupby(["company_name"])["job_description"].nunique().rename("non_identical_postings"), on="company_name")
+employer_evaluation["exact_duplicates"] = employer_evaluation["n_postings"] - employer_evaluation["non_identical_postings"]
+employer_evaluation["token_based_duplicates"] = 0
 
 # evaluate duplicates:
-for e in sample_employers["company_name"]:
+# for testing:
+# e = "coop"
+# posting_idx = 0
+# employer_posting = emp_postings["job_description"][posting_idx]
+# emp_postings["job_description"][0]
+# [len(x) for x in emp_postings["job_description"]]
+
+emp_counter = 0
+for e in sample_employers:
+    
+    # keep count of progress:
+    emp_counter += 1
+    if emp_counter in [50 * x for x in range(N_EMPLOYERS)]:
+        print("Proceeding search for %dth employer" % emp_counter)
+    
+    # placeholder for identified duplicates of employer e
     token_based_duplicates = []
     
     # select all non-duplicated postings by employer e and skip to the next if there is only one posting
-    emp_postings = sample_employers[sample_employers["company_name"] == e]
+    emp_postings = employer_postings[employer_postings["company_name"] == e]
     emp_postings = emp_postings.drop_duplicates(subset="job_description").reset_index().drop("index", axis = 1)
     if len(emp_postings) <= 1:
         continue 
@@ -58,12 +74,13 @@ for e in sample_employers["company_name"]:
         token_sequences = jpod_tests.random_token_sequences_from_text(
             text = employer_posting, 
             sequence_length = TOKEN_SEQUENCE_LENGTH, 
-            n_sequences = N_TOKEN_SEQUENCES
+            n_sequences = N_TOKEN_SEQUENCES,
+            seq_multiple=5
             )
 
         # select all other postings from employer e that have not been checked or not been identified as duplicates already:
-        remaining_postings = emp_postings.iloc[emp_postings.index.drop(range(posting_idx+1))] # exclude already checked
-        remaining_postings = remaining_postings[remaining_postings["uniq_id"].isin(token_based_duplicates) == False] # already labelled as duplicates
+        remaining_postings = emp_postings.iloc[emp_postings.index.drop(range(posting_idx+1))] # exclude already checked postings
+        remaining_postings = remaining_postings[remaining_postings["uniq_id"].isin(token_based_duplicates) == False] # exclude already labelled as duplicate postings
         if len(remaining_postings) <= 1:
             continue
         
@@ -76,16 +93,16 @@ for e in sample_employers["company_name"]:
     # count token-based duplicates of this firm:
     n_token_based_duplicates = len(token_based_duplicates)
     if len(token_based_duplicates) > 0:
-        employer_postings.loc[e, "token_based_duplicates"] = n_token_based_duplicates
+        employer_evaluation.loc[e, "token_based_duplicates"] = n_token_based_duplicates
 
 # summarize:
-employer_postings["unique_postings"] = employer_postings["non_identical_postings"] - employer_postings["token_based_duplicates"]
-employer_postings["unique_share"] = employer_postings["unique_postings"] / employer_postings["n_postings"]
-n_exact_duplicates = sum(employer_postings["exact_duplicates"])
-n_token_based_duplicates = sum(employer_postings["token_based_duplicates"])
-employer_postings["n_duplicates"] = employer_postings["exact_duplicates"] + employer_postings["token_based_duplicates"] 
+employer_evaluation["unique_postings"] = employer_evaluation["non_identical_postings"] - employer_evaluation["token_based_duplicates"]
+employer_evaluation["unique_share"] = employer_evaluation["unique_postings"] / employer_evaluation["n_postings"]
+n_exact_duplicates = sum(employer_evaluation["exact_duplicates"])
+n_token_based_duplicates = sum(employer_evaluation["token_based_duplicates"])
+employer_evaluation["n_duplicates"] = employer_evaluation["exact_duplicates"] + employer_evaluation["token_based_duplicates"] 
 n_duplicates =  n_exact_duplicates + n_token_based_duplicates
-n_total = sum(employer_postings["n_postings"])
+n_total = sum(employer_evaluation["n_postings"])
 
 # print results ----
 print("""
@@ -106,22 +123,14 @@ print("""
     )
 print("""
     Share of employers with at least {0} published posting(s) that have duplicates: {1}%
-    """.format(MIN_POSTINGS, round(100 * len(employer_postings[employer_postings["n_duplicates"] > 0]) / len(employer_postings), 2))
+    """.format(MIN_POSTINGS, round(100 * len(employer_evaluation[employer_evaluation["n_duplicates"] > 0]) / len(employer_evaluation), 2))
     )
 print("""
     Average number of duplicated postings from employers with at least {0} published posting(s): {1}
-    """.format(MIN_POSTINGS, round(employer_postings["n_duplicates"].mean(), 1))
+    """.format(MIN_POSTINGS, round(employer_evaluation["n_duplicates"].mean(), 1))
     )
 print("""
     Average share of unique postings from employers with at least {0} published posting(s): {1}%
-    """.format(MIN_POSTINGS, round(100 * employer_postings["unique_share"].mean(), 2))
+    """.format(MIN_POSTINGS, round(100 * employer_evaluation["unique_share"].mean(), 2))
     )
-
-print(employer_postings.sort_values("unique_share").head(10).loc[:,["n_postings", "unique_postings", "unique_share"]])
-
-# for testing:
-# e = "homeservice24"
-# posting_idx = 1
-# employer_posting = emp_postings["job_description"][posting_idx]
-# emp_postings["job_description"][0]
-# [len(x) for x in emp_postings["job_description"]]
+print(employer_evaluation.sort_values("unique_share").head(10).loc[:,["n_postings", "unique_postings", "unique_share"]])
