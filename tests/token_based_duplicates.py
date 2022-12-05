@@ -14,12 +14,22 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 # set parameters for the test
+print("Setting the following parameters")
 N_EMPLOYERS = 1000
 PERIOD = "full_sample"
 MIN_POSTINGS = 2
-# try different combinations and check if they are always the same postings
 N_TOKEN_SEQUENCES = 3
 TOKEN_SEQUENCE_LENGTH = 10
+print("""
+    Number of employers: {0}; 
+    Period: {1}; 
+    Minimal Number of Postings: {2}; 
+    Number of sequences: {3};
+    Number of tokens per sequence: {4}
+    """.format(N_EMPLOYERS, PERIOD, MIN_POSTINGS, N_TOKEN_SEQUENCES, TOKEN_SEQUENCE_LENGTH)
+    )
+# => try different combinations for number of sequences and sequence length and check if they are always the same postings
+
 
 # retrieve a random sample of employers for a specific period
 sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N_EMPLOYERS, min_postings=MIN_POSTINGS, months = PERIOD)
@@ -75,7 +85,7 @@ for e in sample_employers:
             text = employer_posting, 
             sequence_length = TOKEN_SEQUENCE_LENGTH, 
             n_sequences = N_TOKEN_SEQUENCES,
-            seq_multiple=5
+            seq_multiple = 5
             )
 
         # select all other postings from employer e that have not been checked or not been identified as duplicates already:

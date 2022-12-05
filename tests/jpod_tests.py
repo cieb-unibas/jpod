@@ -406,6 +406,7 @@ def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5
     if len(tokenized_text) < (n_sequences * sequence_length * seq_multiple):
         cut_point = round(len(tokenized_text) / 3)
         token_sequences = [text[:cut_point], text[cut_point:(cut_point * 2)], text[(cut_point * 2):]]
+        # ALTERNATIVE: JUST GET TWO RANDOM NON-OVERLAPPING STARTING POINTS ENDOGENOUSLY DEPENDING ON THE LENGTH OF THE TEXT
 
     else:
         # evaluate if sequences will be non-overlapping 
@@ -415,7 +416,7 @@ def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5
         while eval_distance == False:
             # randomly choose sequence starting points
             token_sequence_start = np.random.randint(0, len(tokenized_text) - sequence_length, n_sequences)
-            # calculate distances between starting points
+            # calculate distances between starting points to ensure that token-sequences are non-overlapping
             eval_distance = []
             starting_distances = [list(abs(token_sequence_start - token_sequence_start[i])) for i in range(len(token_sequence_start))]
             for x in range(len(starting_distances)):
@@ -423,6 +424,10 @@ def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5
                 res = sum([e > sequence_length for e in starting_distances[x]]) >= (n_sequences - 1)
                 eval_distance.append(res)
             eval_distance = all(eval_distance)
+            # ALTERNATIVE:
+            # 1) sort the starting sequence using sort(token_sequence_start)
+            # 2) calculate differences with diffs = np.diff()
+            # 3) if any(diffs <= sequence_length) then repeat the process
         
         token_sequences = []
         for s in token_sequence_start:

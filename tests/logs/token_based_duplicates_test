@@ -1,0 +1,55 @@
+Retrieved 1000 employers from time period full_sample
+Retrieved 37647 postings from 1000 employers in time period full_sample
+Proceeding search for 50th employer
+Proceeding search for 100th employer
+Proceeding search for 150th employer
+Proceeding search for 200th employer
+Proceeding search for 250th employer
+Proceeding search for 300th employer
+Proceeding search for 350th employer
+Proceeding search for 400th employer
+Proceeding search for 450th employer
+Proceeding search for 500th employer
+Proceeding search for 550th employer
+Proceeding search for 600th employer
+Proceeding search for 650th employer
+Proceeding search for 700th employer
+Proceeding search for 750th employer
+Proceeding search for 800th employer
+Proceeding search for 850th employer
+Proceeding search for 900th employer
+Proceeding search for 950th employer
+Proceeding search for 1000th employer
+
+    Total number of duplicated postings from employers with at least 2 published posting(s): 19595 of 37647 (52.05%)
+    
+
+    Total number of exactly duplicated postings from employers with at least 2 published posting(s): 12374 of 37647 (32.87%)
+    
+
+    Total number of token-based duplicated postings from employers with at least 2 published posting(s): 7221 of 37647 (19.18%)
+    
+
+    Share of token-based methodology duplicates among all detected duplicates from employers with at least 2 published posting(s): 36.85%
+    
+
+    Share of employers with at least 2 published posting(s) that have duplicates: 64.3%
+    
+
+    Average number of duplicated postings from employers with at least 2 published posting(s): 19.6
+    
+
+    Average share of unique postings from employers with at least 2 published posting(s): 71.38%
+    
+                                    n_postings  unique_postings  unique_share
+company_name                                                                 
+tug gastro ag                              232                3      0.012931
+domino gastro                             1334               40      0.029985
+impuls                                      27                1      0.037037
+pta schweiz gmbh                            21                1      0.047619
+merck kgaa                                 704               37      0.052557
+baunat switzerland ag                       18                1      0.055556
+museumscafé                                 18                1      0.055556
+meditrial europe ltd.                      135                8      0.059259
+ivm technical consultants                  969               79      0.081527
+tcm praxis fur chinesische medizin          24                2      0.083333
