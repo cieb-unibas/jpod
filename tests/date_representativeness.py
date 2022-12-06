@@ -9,7 +9,30 @@ import jpod_tests
 DB_DIR = sys.argv[1]
 DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
-#JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
+# JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
+# JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
+
+# get number of samples by month:
+JPOD_QUERY = """
+SELECT COUNT(*) as n_postings, SUBSTR(crawl_timestamp, 1, 7) as month 
+FROM job_postings
+GROUP BY month
+"""
+plot_df = pd.read_sql(sql=JPOD_QUERY, con=JPOD_CONN)
+total_postings = sum(plot_df["n_postings"])
+plot_df["share"] = plot_df["n_postings"] / total_postings
+br = range(len(plot_df))
+y = plot_df["share"]
+x = list(plot_df["month"])
+average = sum(y) / len(y)
+plt.figure(figsize=(21, 16))
+plt.bar(x = x, height = y, color = "blue", edgecolor = "grey")
+plt.axhline(y = average, color = "red", linestyle = "--" ,label = "average share across months")
+plt.xlabel("Month", fontweight ='bold', fontsize = 15)
+plt.ylabel("Sample Share", fontweight ='bold', fontsize = 15)
+plt.xticks(rotation = 45)
+plt.legend()
+plt.savefig("tests/img/month_dist.png")
 
 # A) get nuts_2 distribution of full sample & snapshot sample from a particular month --------------------------------
 geo_dist = jpod_tests.get_geo_dist(con = JPOD_CONN, month="full_sample", nuts_level="2")

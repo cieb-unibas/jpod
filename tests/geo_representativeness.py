@@ -1,11 +1,15 @@
 import sys
 import pandas as pd
 import sqlite3
+from tests import jpod_tests
+from matplotlib import pyplot as plt
 
 # connect to the databse
 DB_DIR = sys.argv[1]
 DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
+# JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
+# JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 #### Representativeness wrt spatial distribution of employemnt in CH -------------------------------------
 print("Performing tests for spatial distribution:")
@@ -29,21 +33,31 @@ postings_dist = postings_dist.dropna()
 # https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0602000000_102/-/px-x-0602000000_102.px/
 emp_dist = pd.read_csv("data/raw_data/ch_total_employed_people_02_2022.csv", sep = ";")
 
+# get the distribution of vacancies in Switzerland for 2Q2022 from BFS at
+# https://www.bfs.admin.ch/bfs/de/home/statistiken/industrie-dienstleistungen/unternehmen-beschaeftigte/beschaeftigungsstatistik/offene-stellen.assetdetail.23748689.html
+vac_dist = pd.read_csv("data/raw_data/ch_total_vacancies_02_2022.csv", sep = ";")
+
 # compare the distributions:
-dist = postings_dist.merge(emp_dist, on = "nuts_2")
-dist["abs_diff"] = dist["postings_share"] - dist["employed_share"]
-dist["rel_diff"] = dist["postings_share"] / dist["employed_share"] - 1
-print(dist.loc[:, ["nuts_2", "Grossregion", "postings_share", "employed_share", "abs_diff", "rel_diff"]])
-#   nuts_2               Grossregion  postings_share  employed_share  abs_diff  rel_diff
-# 0   CH01          région lemanique        0.104119        0.192049 -0.087930 -0.457850
-# 1   CH02         espace mittelland        0.177448        0.202428 -0.024980 -0.123403
-# 2   CH03  northwestern switzerland        0.135140        0.132970  0.002170  0.016320
-# 3   CH04                    zurich        0.280118        0.200881  0.079238  0.394451
-# 4   CH05       eastern switzerland        0.111307        0.127493 -0.016186 -0.126958
-# 5   CH06       central switzerland        0.116161        0.098735  0.017426  0.176490
-# 6   CH07                    ticino        0.010185        0.045444 -0.035259 -0.775881
-
-
-# => Lake Geneva and Ticino are likely strongly underrepresented (thus alos bias possible)
+dist = pd.merge(emp_dist, vac_dist, on = "nuts_2")
+dist = dist.merge(postings_dist, on = "nuts_2")
+print(dist.loc[:, ["nuts_2", "Grossregion", "postings_share", "employed_share", "vacancy_share"]])
+#   nuts_2               Grossregion  postings_share  employed_share  vacancy_share
+# 0   CH01          région lemanique        0.103264        0.192049       0.145449
+# 1   CH02         espace mittelland        0.177068        0.202428       0.192696
+# 2   CH03  northwestern switzerland        0.137581        0.132970       0.153582
+# 3   CH04                    zurich        0.280082        0.200881       0.241906
+# 4   CH05       eastern switzerland        0.109990        0.127493       0.130216
+# 5   CH06       central switzerland        0.112544        0.098735       0.119674
+# 6   CH07                    ticino        0.010899        0.045444       0.016475
+# => Lake Geneva and Ticino are likely strongly underrepresented (thus also bias possible)
 # => Zurich is likely strongly overrepresented
 # => Espace Mittelland & Eastern Switzerland somewhat underrepresented, Central Switzerland somewhat overrepresented
+
+# plot:
+plot_df = pd.DataFrame()
+for x in ["postings", "employed", "vacancy"]:
+    tmp = dist.loc[:, ["nuts_2", "Grossregion", x+"_share"]].rename(columns={x+"_share": "share"})
+    tmp["measure"] = x
+    plot_df = pd.concat([plot_df, tmp])
+jpod_tests.plot_dist(df = plot_df, timewindow = "measure", group = "Grossregion", outcome="share")
+plt.savefig("tests/img/representativeness.png")
