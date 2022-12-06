@@ -21,7 +21,6 @@ GROUP BY month
 plot_df = pd.read_sql(sql=JPOD_QUERY, con=JPOD_CONN)
 total_postings = sum(plot_df["n_postings"])
 plot_df["share"] = plot_df["n_postings"] / total_postings
-br = range(len(plot_df))
 y = plot_df["share"]
 x = list(plot_df["month"])
 average = sum(y) / len(y)

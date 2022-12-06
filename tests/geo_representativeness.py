@@ -1,7 +1,10 @@
 import sys
 import pandas as pd
 import sqlite3
-from tests import jpod_tests
+try:
+  from tests import jpod_tests
+except:
+  import jpod_tests
 from matplotlib import pyplot as plt
 
 # connect to the databse
@@ -42,13 +45,13 @@ dist = pd.merge(emp_dist, vac_dist, on = "nuts_2")
 dist = dist.merge(postings_dist, on = "nuts_2")
 print(dist.loc[:, ["nuts_2", "Grossregion", "postings_share", "employed_share", "vacancy_share"]])
 #   nuts_2               Grossregion  postings_share  employed_share  vacancy_share
-# 0   CH01          région lemanique        0.103264        0.192049       0.145449
-# 1   CH02         espace mittelland        0.177068        0.202428       0.192696
-# 2   CH03  northwestern switzerland        0.137581        0.132970       0.153582
-# 3   CH04                    zurich        0.280082        0.200881       0.241906
-# 4   CH05       eastern switzerland        0.109990        0.127493       0.130216
-# 5   CH06       central switzerland        0.112544        0.098735       0.119674
-# 6   CH07                    ticino        0.010899        0.045444       0.016475
+# 0   CH01          région lemanique        0.104119        0.192049       0.145449
+# 1   CH02         espace mittelland        0.177448        0.202428       0.192696
+# 2   CH03  northwestern switzerland        0.135140        0.132970       0.153582
+# 3   CH04                    zurich        0.280118        0.200881       0.241906
+# 4   CH05       eastern switzerland        0.111307        0.127493       0.130216
+# 5   CH06       central switzerland        0.116161        0.098735       0.119674
+# 6   CH07                    ticino        0.010185        0.045444       0.016475
 # => Lake Geneva and Ticino are likely strongly underrepresented (thus also bias possible)
 # => Zurich is likely strongly overrepresented
 # => Espace Mittelland & Eastern Switzerland somewhat underrepresented, Central Switzerland somewhat overrepresented
