@@ -40,6 +40,9 @@ for file in FILES:
             pkey_exist[table] |= set(table_dat[p_key])
         print("All data from file '{}' successfully processed.".format(file))
 
+# add batch information:
+JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN data_batch VARCHAR DEFAULT 'jobspickr_2022_01'")
+
 # summarize
 for table in JPOD_STRUCTURE.tables:
     N_obs = JPOD_CONN.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
