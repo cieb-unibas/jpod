@@ -12,7 +12,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 #### Identify exact duplicates: ------------------------------
 
 # test how time-consuming it is to just check all postings for duplicates using the sql DISTINCT
-for n in [100000, 500000, 1000000]:
+for n in [100000, 200000, 400000, 800000]:
     JPOD_QUERY = """
     SELECT COUNT(*)
     FROM(

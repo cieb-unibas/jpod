@@ -23,7 +23,7 @@ employers = JPOD_CONN.execute(JPOD_QUERY).fetchall()
 
 # check
 n_dictinct_companies = JPOD_CONN.execute("SELECT COUNT(DISTINCT(company_name)) FROM position_characteristics").fetchone()[0]
-assert len(employers) == n_dictinct_companies, "Retrieved number of companies does not match the number retrieved by DISTINCT."
+#assert len(employers) == n_dictinct_companies, "Retrieved number of companies does not match the number retrieved by DISTINCT."
 
 # find the one that is None
 none_employer = [x for x in employers if x[1] == None]

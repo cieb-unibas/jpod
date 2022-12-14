@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/tests/none_val.py", line 30, in <module>
+    assert len(none_employer) == 2, "No employer registered with a 'None' entry found."
+AssertionError: No employer registered with a 'None' entry found.
