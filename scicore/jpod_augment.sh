@@ -3,8 +3,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-#SBATCH --time=01:30:00
-#SBATCH --qos=6hours
+#SBATCH --time=00:30:00
+#SBATCH --qos=30min
 
 #SBATCH --output=tests/logs/duplicate_cleaning_time
 #SBATCH --error=tests/logs/duplicate_cleaning_time
