@@ -1,0 +1,6 @@
+Added column unique_posting_text
+Added column unique_posting_textlocation
+Duplicate cleaning successful for column 'unique_posting_text'
+Duplicate cleaning successful for column 'unique_posting_textlocation'
+Found 340 unique and 15716 duplicated postings in JPOD for column 'unique_posting_text'
+Found 277 unique and 15779 duplicated postings in JPOD for column 'unique_posting_textlocation'
