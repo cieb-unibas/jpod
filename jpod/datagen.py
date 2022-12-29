@@ -286,7 +286,49 @@ def keyword_query(keywords, matching_column, output_variables, escape_expression
 
     return JPOD_QUERY
 
+class DuplicateCleaner():
+    """
+    Clean and identify duplicated job postings.
+    """
+    def __init__(self, con, data_batch):
+        self.batch = data_batch
+        self.con = con
 
+    def duplicate_query(self, assign_to = "unique_posting_text", levels = ["job_description"]):
+        """
+        SQL-Query to identify duplicated job postings
+        """
+        level = ", ".join(levels)
+        self.assign_to = assign_to
+        
+        jpod_query = """
+        UPDATE job_postings 
+        SET %s = 'no' 
+        WHERE uniq_id IN (
+            SELECT uniq_id
+            FROM(
+                SELECT uniq_id,
+                ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) as rnr
+                FROM(
+                    SELECT jp.uniq_id, jp.job_description, pc.city
+                    FROM job_postings jp
+                    LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id
+                    WHERE jp.data_batch = '%s' 
+                    )
+                )
+            WHERE rnr > 1
+        );
+        """ % (assign_to, level, self.batch)
+
+        return(jpod_query)
+
+    def find_duplicates(self, query):
+        """
+        Run SQL-Query to identify and mark duplicated job postings in JPOD
+        """
+        self.con.execute(query)
+        self.con.commit()
+        print("Duplicate cleaning successful for column '%s'" % self.assign_to)
 
 
 
