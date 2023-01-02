@@ -327,7 +327,6 @@ class DuplicateCleaner():
         Run SQL-Query to identify and mark duplicated job postings in JPOD
         """
         self.con.execute(query)
-        self.con.commit()
         print("Duplicate cleaning successful for column '%s'" % self.assign_to)
 
 

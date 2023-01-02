@@ -47,3 +47,7 @@ for c in new_cols:
     n_duplicated = JPOD_CONN.execute("SELECT COUNT(*) FROM job_postings WHERE %s == 'yes'" % c).fetchone()[0]
     n_unique = JPOD_CONN.execute("SELECT COUNT(*) FROM job_postings WHERE %s == 'no'" % c).fetchone()[0]
     print("Found %d unique and %d duplicated postings in JPOD for column '%s'" % (n_unique, n_duplicated, c))
+
+#### Save and close connection to .db -------------------
+JPOD_CONN.commit()
+JPOD_CONN.close()
