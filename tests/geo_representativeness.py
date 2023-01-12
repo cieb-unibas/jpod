@@ -18,6 +18,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 print("Performing tests for spatial distribution:")
 
 # get regional distribution of job postings in the database
+### => needs update for cleaned duplicates
 JPOD_QUERY = """
 SELECT COUNT(*) as total_postings, pc.nuts_2, rg.name_en AS Grossregion
 FROM position_characteristics pc

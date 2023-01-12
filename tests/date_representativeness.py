@@ -13,6 +13,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 # get number of samples by month:
+### => needs update for cleaned duplicates
 JPOD_QUERY = """
 SELECT COUNT(*) as n_postings, SUBSTR(crawl_timestamp, 1, 7) as month 
 FROM job_postings

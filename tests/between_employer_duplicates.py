@@ -34,6 +34,7 @@ for p in PERIODS:
         )
 
     # retrieve all postings for period PERIOD
+    ### => needs update for cleaned duplicates
     if PERIODS[p] == "full_sample":
       where_clause = ""
     else:

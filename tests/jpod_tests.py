@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import datetime
 
-def get_geo_dist(con, month = "full_sample", nuts_level = "2"):
+def get_geo_dist(con, month = "full_sample", nuts_level = "2", cleaned_duplicates = True):
     """
     Retrieve the spatial distribution of job postings for a specific temporal subset
 
@@ -25,10 +25,17 @@ def get_geo_dist(con, month = "full_sample", nuts_level = "2"):
     """
     if isinstance(nuts_level, str) == False:
         nuts_level = str(nuts_level)
-    if month == "full_sample":
-        where_clause = ""
+    
+    where_clause = []
+    if cleaned_duplicates:
+        where_clause += ["pc.uniq_id IN (SELECT uniq_id FROM job_postings jp WHERE jp.unique_posting_textlocation == 'yes')"]
+    if month != "full_sample":
+        where_clause += ["pc.uniq_id IN (SELECT uniq_id FROM job_postings jp WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s')" % month]
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause
     else:
-        where_clause = "WHERE pc.uniq_id IN (SELECT uniq_id FROM job_postings jp WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s')" % month
+        where_clause = ""
 
     JPOD_QUERY = """
     SELECT COUNT(*) as total_postings, pc.nuts_{1}, rg.name_en region
@@ -50,7 +57,7 @@ def get_geo_dist(con, month = "full_sample", nuts_level = "2"):
     return(dist)
 
 
-def get_tech_share(con, month = "full_sample", tech = "bloom"):
+def get_tech_share(con, month = "full_sample", tech = "bloom", cleaned_duplicates = True):
     """
     Retrieve the share of postings with a connection to technological keywords for a specific temporal subset
 
@@ -69,18 +76,23 @@ def get_tech_share(con, month = "full_sample", tech = "bloom"):
     pd.DataFrame :
         A pandas DataFrame consisting the number and shares of postings retrieved across temporal subsets.
     """
-    if month == "full_sample":
-        where_clause = ""
+    where_clause = []
+    if cleaned_duplicates:
+        where_clause += ["jp.unique_posting_textlocation == 'yes'"]
+    if month != "full_sample":
+        where_clause += ["SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month]
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause
     else:
-        where_clause = "WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month
-    
+        where_clause = ""
+
     assert tech in ["bloom", "ai"], "Invalid `tech` keyword '%s'. Pleaser specify one of 'bloom' or 'ai'." % tech
     if tech == "bloom":
         tech = "bloom_tech"
     else:
         tech = "acemoglu_ai"
     
-
     JPOD_QUERY = """
     SELECT COUNT(*) as total_postings
     FROM job_postings jp
@@ -101,6 +113,7 @@ def get_tech_share(con, month = "full_sample", tech = "bloom"):
     res["share"] = res["tech_postings"] / res["total_postings"]
     return res
 
+### => needs update for cleaned duplicates
 def get_spatial_tech(con, month = "full_sample", tech = "bloom"):
     """
     Retrieve the spatial distribution of job postings with a connection to technology fields
@@ -155,7 +168,7 @@ def get_spatial_tech(con, month = "full_sample", tech = "bloom"):
     res["share"] = res["n_postings"] / sum(res["n_postings"])
     return res
 
-
+### => needs update for cleaned duplicates
 def get_bloomfield_shares(con, month = "full_sample"):
     """
     Retrieve the distribution of postings with a connection to technological keywords from bloom across fields for a specific temporal subset
@@ -293,7 +306,7 @@ def get_employer_sample(con, n = 1000, min_postings = 1, months = "full_sample")
         print("Retrieved number of sample employers is", len(sample_employers), "and thus smaller than the specified number `n` =", n)
     return sample_employers
 
-
+### => needs update for cleaned duplicates
 def get_employer_postings(con, employers, months = "full_sample"):
     """"
     Retrieve all the job postings for a selection of employers within a given time frame. 
@@ -371,7 +384,7 @@ def get_timewindow(month, month_window = 1):
 
     return time_window
 
-
+### => needs update for cleaned duplicates
 def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5, seq_multiple = 5):
     """
     Retrieve randomly chosen, non-overlapping sequences of tokens from a text.
