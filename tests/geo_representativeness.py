@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 DB_DIR = sys.argv[1]
 DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
+CLEANED_DUPLICATES = True
 # JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
@@ -18,17 +19,24 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 print("Performing tests for spatial distribution:")
 
 # get regional distribution of job postings in the database
-### => needs update for cleaned duplicates
+where_clause = ""
+if CLEANED_DUPLICATES:
+  where_clause = "WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE unique_posting_textlocation = 'yes')"
+
 JPOD_QUERY = """
 SELECT COUNT(*) as total_postings, pc.nuts_2, rg.name_en AS Grossregion
-FROM position_characteristics pc
+FROM (
+  SELECT *
+  FROM position_characteristics
+  %s
+  ) pc
 LEFT JOIN (
     SELECT nuts_2, name_en
     FROM regio_grid
     WHERE nuts_level = 2
     ) rg on pc.nuts_2 = rg.nuts_2
 GROUP BY pc.nuts_2
-"""
+""" % (where_clause)
 postings_dist = pd.read_sql_query(JPOD_QUERY, con=JPOD_CONN)
 postings_dist["postings_share"] = postings_dist["total_postings"] / sum(postings_dist["total_postings"])
 postings_dist = postings_dist.dropna()

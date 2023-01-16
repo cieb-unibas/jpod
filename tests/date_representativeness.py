@@ -9,16 +9,22 @@ import jpod_tests
 DB_DIR = sys.argv[1]
 DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
+CLEANED_DUPLICATES = True
 # JPOD_CONN = sqlite3.connect("C:/Users/nigmat01/Desktop/jpod_test.db")
 # JPOD_CONN = sqlite3.connect("C:/Users/matth/Desktop/jpod_test.db")
 
 # get number of samples by month:
-### => needs update for cleaned duplicates
+if CLEANED_DUPLICATES:
+    where_clause = "WHERE unique_posting_textlocation == 'yes'"
+else:
+    where_clause = ""
+
 JPOD_QUERY = """
 SELECT COUNT(*) as n_postings, SUBSTR(crawl_timestamp, 1, 7) as month 
 FROM job_postings
+%s
 GROUP BY month
-"""
+""" % (where_clause)
 plot_df = pd.read_sql(sql=JPOD_QUERY, con=JPOD_CONN)
 total_postings = sum(plot_df["n_postings"])
 plot_df["share"] = plot_df["n_postings"] / total_postings
@@ -35,7 +41,10 @@ plt.legend()
 plt.savefig("tests/img/month_dist.png")
 
 # A) get nuts_2 distribution of full sample & snapshot sample from a particular month --------------------------------
-geo_dist = jpod_tests.get_geo_dist(con = JPOD_CONN, month="full_sample", nuts_level="2")
+geo_dist = jpod_tests.get_geo_dist(
+    con = JPOD_CONN, month="full_sample", 
+    cleaned_duplicates=CLEANED_DUPLICATES, nuts_level="2"
+    )
 months = ["2021-05", "2021-09", "2021-01"]
 for m in months:
     geo_dist = pd.concat([geo_dist, jpod_tests.get_geo_dist(con =JPOD_CONN, month = m, nuts_level=2)])
@@ -52,7 +61,10 @@ jpod_tests.plot_dist(df = plot_df)
 plt.savefig("tests/img/nuts_2_dist.png")
 
 # B) get nuts_3 distribution of full sample & snapshot sample --------------------------------
-geo_dist = jpod_tests.get_geo_dist(con = JPOD_CONN, month = "full_sample", nuts_level=3)
+geo_dist = jpod_tests.get_geo_dist(
+    con = JPOD_CONN, month = "full_sample", 
+    cleaned_duplicates = CLEANED_DUPLICATES, nuts_level=3
+    )
 months = ["2021-05", "2021-09", "2021-01"]
 for m in months:
     geo_dist = pd.concat([geo_dist, jpod_tests.get_geo_dist(con = JPOD_CONN,month = m, nuts_level=3)])
@@ -64,7 +76,10 @@ plt.savefig("tests/img/nuts_3_dist.png")
 # C) get share of postings with connection to overall bloom_tech in full sample & snapshot sample --------------------------------
 tech = "bloom"
 months = ["2021-05", "2021-09", "2021-01"]
-tech_shares = jpod_tests.get_tech_share(con = JPOD_CONN, month = "full_sample", tech = tech)
+tech_shares = jpod_tests.get_tech_share(
+    con = JPOD_CONN, month = "full_sample", 
+    cleaned_duplicates=CLEANED_DUPLICATES, tech = tech
+    )
 for m in months:
     tech_shares = pd.concat([tech_shares, jpod_tests.get_tech_share(con = JPOD_CONN, month = m, tech = tech)])
 print("Distribution of job postings with connection to Bloom (2021) disruptive technologies:")

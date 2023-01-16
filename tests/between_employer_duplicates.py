@@ -17,8 +17,9 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 # set parameters:
 N_POSTINGS = 1000000
 N_SAMPLE_EMPLOYERS = 1000
-FULL_SAMPLE = True
+FULL_SAMPLE = False
 PERIODS = {}
+CLEANED_DUPLICATES = True
 
 if FULL_SAMPLE:
     PERIODS["full_sample"] = "full_sample"
@@ -34,11 +35,21 @@ for p in PERIODS:
         )
 
     # retrieve all postings for period PERIOD
-    ### => needs update for cleaned duplicates
-    if PERIODS[p] == "full_sample":
-      where_clause = ""
+    # if PERIODS[p] == "full_sample":
+    #   where_clause = ""
+    # else:
+    #   where_clause = "WHERE (SUBSTR(crawl_timestamp, 1, 7) IN (%s))" % str(PERIODS[p])[1:-1]    
+    # define where clause
+    where_clause = []
+    if CLEANED_DUPLICATES:
+        where_clause += ["unique_posting_textlocation == 'yes'"]
+    if p != "full_sample":
+        where_clause += ["SUBSTR(crawl_timestamp, 1, 7) IN (%s)" % str(PERIODS[p])[1:-1]]
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause
     else:
-      where_clause = "WHERE (SUBSTR(crawl_timestamp, 1, 7) IN (%s))" % str(PERIODS[p])[1:-1]
+        where_clause = ""
     
     JPOD_QUERY = """
     SELECT pc.company_name, jp.uniq_id, jp.job_description

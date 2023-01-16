@@ -113,8 +113,7 @@ def get_tech_share(con, month = "full_sample", tech = "bloom", cleaned_duplicate
     res["share"] = res["tech_postings"] / res["total_postings"]
     return res
 
-### => needs update for cleaned duplicates
-def get_spatial_tech(con, month = "full_sample", tech = "bloom"):
+def get_spatial_tech(con, month = "full_sample", cleaned_duplicates = True, tech = "bloom"):
     """
     Retrieve the spatial distribution of job postings with a connection to technology fields
     for a specific temporal subset.
@@ -134,10 +133,16 @@ def get_spatial_tech(con, month = "full_sample", tech = "bloom"):
     pd.DataFrame :
         A pandas DataFrame consisting the number and shares of postings retrieved across nuts_2 regions and temporal subsets.
     """
-    if month == "full_sample":
-        where_clause = ""
+    where_clause = []
+    if cleaned_duplicates:
+        where_clause += ["jp.unique_posting_textlocation == 'yes'"]
+    if month != "full_sample":
+        where_clause += ["SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month]
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause
     else:
-        where_clause = "WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month
+        where_clause = ""
     
     assert tech in ["bloom", "ai"], "Invalid `tech` keyword '%s'. Pleaser specify one of 'bloom' or 'ai'." % tech
     if tech == "bloom":
@@ -168,8 +173,7 @@ def get_spatial_tech(con, month = "full_sample", tech = "bloom"):
     res["share"] = res["n_postings"] / sum(res["n_postings"])
     return res
 
-### => needs update for cleaned duplicates
-def get_bloomfield_shares(con, month = "full_sample"):
+def get_bloomfield_shares(con, month = "full_sample", cleaned_duplicates = True):
     """
     Retrieve the distribution of postings with a connection to technological keywords from bloom across fields for a specific temporal subset
 
@@ -187,11 +191,17 @@ def get_bloomfield_shares(con, month = "full_sample"):
         A pandas DataFrame consisting the number and shares of postings retrieved across different technology
         fields for a temporal subset.
     """
-    if month == "full_sample":
-        where_clause = ""
+    where_clause = []
+    if cleaned_duplicates:
+        where_clause += ["jp.unique_posting_textlocation == 'yes'"]
+    if month != "full_sample":
+        where_clause += ["SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month]
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause
     else:
-        where_clause = "WHERE SUBSTR(crawl_timestamp, 1, 7) = '%s'" % month
-    
+        where_clause = ""
+
     JPOD_QUERY = """
     SELECT bt.bloom_field as field, COUNT(DISTINCT(uniq_id)) as tech_postings
     FROM bloom_tech bt
@@ -259,7 +269,7 @@ def jpod_month_condition(months = "full_sample"):
     """
     if months != "full_sample":
         assert isinstance(months, list), "Months to consider must be specified as a list of strings"
-        months = "WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE SUBSTR(crawl_timestamp, 1, 7) IN ({0}))".format(str(months)[1:-1])
+        months = "uniq_id IN (SELECT uniq_id FROM job_postings WHERE SUBSTR(crawl_timestamp, 1, 7) IN ({0}))".format(str(months)[1:-1])
     else:
         months = ""
     return months
@@ -287,6 +297,8 @@ def get_employer_sample(con, n = 1000, min_postings = 1, months = "full_sample")
         number of retireved employers is smaller than the specified number `n`, a message is printed.
     """
     month_condition = jpod_month_condition(months = months)
+    if len(month_condition) > 0:
+        month_condition = "WHERE " + month_condition
 
     JPOD_QUERY ="""
     SELECT company_name
@@ -306,8 +318,7 @@ def get_employer_sample(con, n = 1000, min_postings = 1, months = "full_sample")
         print("Retrieved number of sample employers is", len(sample_employers), "and thus smaller than the specified number `n` =", n)
     return sample_employers
 
-### => needs update for cleaned duplicates
-def get_employer_postings(con, employers, months = "full_sample"):
+def get_employer_postings(con, employers, months = "full_sample", cleaned_duplicates = True):
     """"
     Retrieve all the job postings for a selection of employers within a given time frame. 
     
@@ -326,11 +337,17 @@ def get_employer_postings(con, employers, months = "full_sample"):
     pd.DataFrame :
         A pandas DataFrame consisting consisting of the full texts of all employers' job postings in this time window.
     """
+    where_clause = []
     months = jpod_month_condition(months = months)
+    if cleaned_duplicates:
+        where_clause += ["unique_posting_text == 'yes'"]
     if len(months) > 0:
-        months = months + " AND"
+        where_clause += months
+    if len(where_clause) > 0:
+        where_clause = " AND ".join(where_clause)
+        where_clause = "WHERE " + where_clause + " AND "
     else:
-        months = "WHERE"
+        where_clause = "WHERE"
 
     JPOD_QUERY ="""
     SELECT jp.uniq_id, pc.company_name, jp.job_description
@@ -348,7 +365,7 @@ def get_employer_postings(con, employers, months = "full_sample"):
         FROM position_characteristics
         ) 
         pc on pc.uniq_id = jp.uniq_id
-    """.format(months, str(employers)[1:-1])
+    """.format(where_clause, str(employers)[1:-1])
     res = pd.read_sql(con = con, sql = JPOD_QUERY)
     return res
 
@@ -384,7 +401,6 @@ def get_timewindow(month, month_window = 1):
 
     return time_window
 
-### => needs update for cleaned duplicates
 def random_token_sequences_from_text(text, sequence_length = 10, n_sequences = 5, seq_multiple = 5):
     """
     Retrieve randomly chosen, non-overlapping sequences of tokens from a text.

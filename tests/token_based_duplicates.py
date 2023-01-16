@@ -17,26 +17,33 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 print("Setting the following parameters")
 N_EMPLOYERS = 1000
 PERIOD = "full_sample"
+CLEAN_DUPLICATES = True
 MIN_POSTINGS = 2
 N_TOKEN_SEQUENCES = 3
 TOKEN_SEQUENCE_LENGTH = 10
 print("""
     Number of employers: {0}; 
-    Period: {1}; 
-    Minimal Number of Postings: {2}; 
-    Number of sequences: {3};
-    Number of tokens per sequence: {4}
-    """.format(N_EMPLOYERS, PERIOD, MIN_POSTINGS, N_TOKEN_SEQUENCES, TOKEN_SEQUENCE_LENGTH)
+    Period: {1};
+    Only unique postings = {2}
+    Minimal Number of Postings: {3}; 
+    Number of sequences: {4};
+    Number of tokens per sequence: {5}
+    """.format(N_EMPLOYERS, PERIOD, CLEAN_DUPLICATES, MIN_POSTINGS, N_TOKEN_SEQUENCES, TOKEN_SEQUENCE_LENGTH)
     )
 # => try different combinations for number of sequences and sequence length and check if they are always the same postings
 
 
 # retrieve a random sample of employers for a specific period
-sample_employers = jpod_tests.get_employer_sample(con = JPOD_CONN, n=N_EMPLOYERS, min_postings=MIN_POSTINGS, months = PERIOD)
+sample_employers = jpod_tests.get_employer_sample(
+    con = JPOD_CONN, n=N_EMPLOYERS, 
+    min_postings=MIN_POSTINGS, months = PERIOD
+    )
 n_employers = len(sample_employers)
 print("Retrieved %d employers from time period %s" % (n_employers, PERIOD))
 sample_employers = [e for e in sample_employers if e != None]
-employer_postings = jpod_tests.get_employer_postings(con = JPOD_CONN, employers = sample_employers, months = PERIOD)
+employer_postings = jpod_tests.get_employer_postings(
+    con = JPOD_CONN, employers = sample_employers, 
+    months = PERIOD, cleaned_duplicates=CLEAN_DUPLICATES)
 print("Retrieved %d postings from %d employers in time period %s" % (len(employer_postings), N_EMPLOYERS, PERIOD))
 
 # find all postings with the exact same postings text
@@ -54,7 +61,7 @@ employer_evaluation["token_based_duplicates"] = 0
 # [len(x) for x in emp_postings["job_description"]]
 
 emp_counter = 0
-for e in sample_employers:
+for e in sample_employers[:100]:
     
     # keep count of progress:
     emp_counter += 1
