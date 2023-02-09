@@ -47,7 +47,22 @@ The actual assignment of job postings to the stated regions in the `regio_grid` 
 
 
 ### Duplicate Cleaning
-tbd
+JPOD features job postings that have distinct identifiers from Jobspickr. That means, *exact duplicates* should have been removed already before insertion to JPOD. However, there is still a substantial fraction of postings that has exactly duplicated counterparts. 
+
+There are several possible reason for this. First, it is possible that Jobspickr's duplicate cleaning process failed to clean the duplicates. Second, it is possible that an employer published the same posting at different times (e.g., a restaurant searches for a waiter in the beginning and the end of the year), implying that it should not be treated as a duplicate. Finally, it can also be that an employer publishes the same posting at different locations (e.g., a restaurant chain searches for waiters at different locations), again suggesting that such postings should not be treated as duplicates.
+
+JPOD takes these issues into account. The columns `unique_posting_text` and `unique_posting_textlocation` in the `job_postings` table provide the respective information. Both columns take on the value `no` if a certain posting has a counterpart with an exactly identical `job_description`. The difference between the two columns `unique_posting_text` and `unique_posting_textlocation` is that the former searches for exact duplicates in the overall database, and the latter only checks for duplicates in the same `city`. 
+
+Hence, JPOD can be easily subsetted to unique job postings using the values of these two columns in a `WHERE` statement. For example, the following statement will extract all non-duplicated postings' uniq_id, the corresponding employer, the city and the job_description.
+
+```sql
+SELECT jp.uniq_id, pc.compay_name, pc.city, jp.job_description
+FROM job_postings jp
+WHERE jp.unique_posting_text == 'yes'
+LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id;
+```
+
+**Notes on Duplicates**: Duplicated postings are substantial in JPOD. In fact, 1'446'838 of the 3’211’219 postings in the database have at least one exact duplicate in the overall database (i.e. 45%). Think carefully what kind of data your analyses requires and set the `unique_posting_text` filters in your queries accordingly.
 
 ## Updating JPOD: Inserting New Job Adds
 tbd
