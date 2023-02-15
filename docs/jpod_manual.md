@@ -1,58 +1,68 @@
 # JPOD MANUAL
-JPOD is short for 'Job Postings Database'. It hosts data on job adds the CIEB first acquired in 2022 from JobsPickr. The idea of JPOD is to have an easily updateable and manageable database that allows to store further data in the future - be it from JobsPickR or other sources.
+JPOD is short for '**J**ob **Po**stings **D**atabase'. It hosts job adds data the CIEB first acquired in 2022 from JobsPickr. The idea of JPOD is to have an easily updateable and manageable database that allows to add further job-ads data in the future - be it from JobsPickR or other providers.
 
 ## JPOD in Brief
-JPOD is set up as a SQLite Database, which is one of the most common relational database management systems (RDBMS) in the world (https://www.sqlite.org/). SQLite is especially suitable for relatively 'small' databases and is easily transferable since the entire database is stored as a single file. SQLite features a lightweight command line program called 'sqlite3', which allows to execute SQL statements from the CL. Besides, sqlite is compatible to interact with all kinds of IDEs (e.g. DBeaver, DB Browser, Beekeper Studio) and there are several solutions to directly interact with sqlite using Python and/or R libraries.  
+For now, JPOD is set up as a SQLite Database, which is one of the most common relational database management systems (RDBMS) in the world (https://www.sqlite.org/). SQLite is especially suitable for relatively 'small' databases and is easily transferable since the entire database is stored as a single file. SQLite features a lightweight command line program called 'sqlite3', which allows one to execute SQL statements from the CL. Besides, sqlite is compatible to interact with all kinds of IDEs (e.g. DBeaver, DB Browser, Beekeper Studio) and there are several libraries to directly interact with sqlite using Python and/or R.  
 
-JPOD as well as its source code is stored on scicore in the CIEB's GROUP folder under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The created sqlite database is stored in the file `jpod.db` (about 17.2 GB). The source code is available in the repository `jpod`, which is also on GitHub (https://github.com/cieb-unibas/jpod). 
+JPOD as well as its source code is stored on scicore in the CIEB's GROUP folder under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The created sqlite database is stored in the file `jpod.db` (about 17.2 GB). The source code is available in the directory `jpod/`, which is also on GitHub (https://github.com/cieb-unibas/jpod). 
 
-Currently (i.e. July 2022), JPOD contains 3'211'219 Swiss job postings from 76'935 different institutions.
+Currently (i.e. January 2023), JPOD contains 3'211'219 Swiss job postings from 76'935 different institutions.
 
-## Setting Up JPOD: Insert 2022 JobsPickR Data
-The initial setup is performed along the lines of the 2022 JobsPickR data. JPOD builds on 26 variables that are available from JobsPickR and are split across 3 different SQL tables. This initial architecture is defined in the file `create_jpod.sqlite` that also creates the database. 
+## Setting Up JPOD from scratch: 
+The initial setup is performed along the lines of the 2022 JobsPickR data. JPOD builds on 26 variables from this batch of data, which are distributed across 3 different SQL tables: `job_postings`, `position_characteristics` and `institutions`. The `job_postings` table contains all information around the postings as such (e.g., the date a posting was retrieved, the posting text, the webpage it was published on). The `position_characteristics` table features information about the job postion described by the posting (e.g., the location of the position, the employers' name etc.). Finally, the table `institutions` contains information about all employers that have postings in the database (e.g., the employer's webpage, the employer's phone number etc.). This initial architecture is defined in the file `scicore/create_jpod.sqlite`. 
 
-Next, the database is filled with the raw data from JobsPickR. This data can be found as zipped `.csv` files in the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jobspickr_raw`. The insertion of this data is performed using a Python API. A corresponding virtual environment for navigating JPOD using scicore is set up via the bash script `create_venv.sh`. The file `insert_base.py` then performs several cleaning steps to the raw data (e.g. lowercase selected columns, distinct rows only etc.) before inserting data to the mentioned 3 base-tables of JPOD. 
+### Inserting raw data to JPOD (2022 JobsPickR Data)
+JPOD is set up on scicore using the slurm scirpt `jpod_launch.sh`. This scirpt implements the initial architecture of JPOD and then inserts the 2022 raw data from JobsPickr (this data can be found as zipped `.csv` files in the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jobspickr_raw/`). Since the latter is performed using a Python script, we first need to install a Python virtual environment. Such a virtual environment can be setup via the bash script `scicore/create_venv.sh`. 
+**However**, *this step is not necessary since a virtaul environment has already been created on scicore. For setting up correpsonding virtual environment on your local machine, see the documentation of either [`conda`](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments) or [`virtualenv`](https://virtualenv.pypa.io/en/latest/user_guide.html)*.
 
-All of these steps (excluding the virtual environment) are bundled in the bash script `launch_jpod.sh`. To launch JPOD, this script was sent to the scicore cluster using the command `sbatch launch_jpod.sh`. 
+Assuming you are in the `jpod/` root directory, the file `jpod_launch.sh` can then be sent to the cluster for setting up JPOD from scratch using the commend `sbatch scicore/launch_jpod.sh`. Executing this file creates the JPOD database (using the `scicore/create_jpod.sqlite` script) and then calls the python script `insert_base.py`. The latter loads the 2022 JobsPickr raw data, performs several cleaning steps to it (e.g. lowercase selected columns, distinct rows only etc.) and then inserts the cleaned raw data to the above-mentioned 3 tables of JPOD.
 
 ## JPOD Architecture: Tables and Keys
-Since JPOD's architecture is very closely related to JobsPickR, its original setup depends on JobsPickR information. Most importantly, this concerns the column `uniq_id`, which is taken as is from the JobsPickR data. `uniq_id` is a identifier variable of length 32, consisting entirely of ASCII characters and digits. In JPOD, this column serves as a SQL primary key in the two tables `job_postings` and `position_characteristics`. These two tables contain information about the job posting (e.g. the text, the crawl date) and the job position (e.g. the location, the company, the region) respectively, and can be connected (i.e. joined) through the column `uniq_id` . For potential future updates from other data providers than JobsPickR, it might therefore be necessary to create `uniq_id`'s from scratch. The third and final initial table is the `institutions` table, where information about companies can be accessed. The `institutions` table is connected to the other tables through the column `company_name`, which is also features in the `position_characteristics table`. A graphical overview of the base JPOD architecture is presented below.
+Since JPOD's initial architecture is very closely related to JobsPickR, its original setup depends on JobsPickR information. Most importantly, this concerns the column `uniq_id`, which is taken as is from the JobsPickR raw data. `uniq_id` is a identifier variable oft type `str` and length 32, consisting entirely of ASCII characters and digits. In JPOD, this column serves as a SQL primary key in the two tables `job_postings` and `position_characteristics`. These two tables can thus be connected (i.e. joined) through the column `uniq_id`. Note: For potential future updates with data acquired from other providers than Jobspickr, it might therefore be necessary to create corresponding `uniq_id`'s from scratch. The third initial table is the `institutions` table, where information about companies can be accessed. The `institutions` table is connected to the other tables through the column `company_name`, which is also featured in the `position_characteristics` table. A graphical overview of the base JPOD architecture and how different tables can be joined is presented below.
 
 **Figure 1: ER Diagram of JPOD's base architecture**
 
-![](jpod_base_er.png)
+![](figures/jpod_base_er.png)
 
-## Enhancing JPOD: Inserting Regional and Industry
+## Enhancing JPOD
 
-### Regional Assignment:
-A key feature of JPOD is to enable analyses on the regional level. To be compatible with commonly used regional taxonomies, job postings are assigned to Eurostat's [NUTS regions](https://ec.europa.eu/eurostat/web/nuts/background/), as well as the [OECD territorial Grid Taxonomy](https://www.oecd.org/regional/regional-statistics/territorial-grid.pdf).
+### Assigning Postings to NUTS-Regions and OECD Territorial Levels.
+A key feature of JPOD is to enable analyses on the regional level. To be compatible with commonly used regional taxonomies, job postings are assigned to Eurostat's [NUTS regions](https://ec.europa.eu/eurostat/web/nuts/background/), as well as the [OECD territorial Grid Taxonomy](https://www.oecd.org/regional/regional-statistics/territorial-grid.pdf). To do this, the `/jpod/add_geogrid.py` script first reads data from the (manually created) file `data/regio_grid.csv` and creates an additional JPOD overview table `regio_grid`. This table consits of columns indicating a geographical entity's name in English, German and French, its abbrevation (if it exists) and all it's NUTS and OECD TL codes (if they exist). An example of rows from this table is given below:
 
-The assignment of job postings to these regions is performed via the script `insert_geo.py` (using slurm, this script can also be sent to the cluster via the `add_data.sh` script). 
-The following operations are performed:
+name_en|name_de|name_fr|regio_abbrev|nuts_level|oecd_level|iso_2|iso_3|nuts_0|nuts_1|nuts_2|nuts_3|oecd_tl1|oecd_tl2|oecd_tl3
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+switzerland|schweiz|suisse|CH|1|1|CH|CHE|CH|CH0|||CH|||
+espace mittelland|espace mittelland|espace mittelland||2|2|CH|CHE|CH|CH0|CH02||CH|CH02||
+basel-stadt|basel-stadt|bâle-ville|BS|3|3|CH|CHE|CH|CH0|CH03|CH031|CH|CH03|CH031
 
-1. **Geography Table Creation**: A new table `regio_grid` is created in JPOD. This table consits of columns indicating a geographical entity's name in English, German and French, its abbrevation (if it exists) and all it's NUTS and OECD TL codes (if they exist).
+**Currently, this table only contains the territorial grids for Switzerland. It will be updated as soon as JPOD features postings from other countries as well.**.
 
-2. **Data Insertion**: Data from the file `regio_grid.csv` on the cluster is inserted to the `regio_grid` table. This `.csv` file was created manually based on information from Eurostat and the OECD. It lists all the territorial entities of Switzerland (i.e. cantons, grossregionen) and contains their respective names, codes and abbrevations for the `regio_grid` table. An example of rows from this table is given below:
-
-name_en|name_de|name_fr|regio_abbrev|nuts_0|nuts_1|nuts_2|nuts_3|oecd_tl1|oecd_tl2|oecd_tl3
----|---|---|---|---|---|---|---|---|---|---
-Switzerland|Schweiz|Suisse|CH|CH|CH0|||CH||
-Espace Mittelland|Espace Mittelland|Espace Mittelland||CH|CH0|CH02||CH|CH02|
-Basel-Stadt|Basel-Stadt|Bâle-Ville|BS|CH|CH0|CH03|CH031|CH|CH03|CH031
-
-3. **Job Posting Assignment**: Job postings can be assigned to territorial codes based on JobsPickR information on `city`, `inferred_city`, `state`, `inferred_state`. The values in these columns can be matched to the `name_en`, `name_de`, `name_fr` and/or `regio_abbrev` columns from the `regio_grid` table. In principle, this could be performed everytime an regional analysis has to be performed. However, since it is planned to use geographical information relatively regularly, two new columns `nuts_2` and `nuts_3` are created in the `position_characteristics` table. If a match occurs for a given job posting in this table, the corresponding `nuts_2` and  `nuts_3` values from the `regio_grid` table are inserted into these two new columns. Hence, information on NUTS Levels 2 and 3 are directly present in the `position_characteristics` table. If other terrtorial information has to be retrieved (e.g. another aggregation level, the English, French or German name of the code), this can be retrieved from the `regio_grid` table.
-A graphical overview is given in Figure 2.
+The actual assignment of job postings to the stated regions in the `regio_grid` table is then performed via the script `jpod/insert_geo.py`. Using slurm, this script can also be sent to the cluster via the `scicore/jpod_augment.sh` script. Job postings are thereby assigned a territorial code based on the columns `city`, `inferred_city`, `state`, and `inferred_state` in the `position_characteristics` table. More specifically, the script first creates two new columns, `nuts_2` and `nuts_3`, in the `position_characteristics` table (indicating the location of every job posting) and fills them with NUTS codes if values in the columns `city`, `inferred_city`, `state`, and/or `inferred_state` can be (exactly) matched to one of the values in the columns `name_en`, `name_de`, `name_fr` and/or `regio_abbrev` in the `regio_grid` table. Hence, **geographical information for NUTS-levels 2 and 3 are directly observed in the `position_characteristics` table**. If other terrtorial information has to be retrieved (e.g. another aggregation level or the English, French or German name of the NUTS code), this can be retrieved by joining the `position_characteristics` with the `regio_grid` table. A graphical overview is given in Figure 2.
 
 **Figure 2: ER Diagram of JPOD's regional information**
 
-![](jpod_regio_er.png)
+**Notes on Refined Matching**: Some job postings state their geographical information in a special way (e.g. 'baselstadt' instead of 'basel-stadt' or 'bs'). To capture these false negatives to some extent, refined matching operations are additionally performed for the largest non-matched Swiss entities via the `jpod/insert_geo.py` script. After all of these operations 92.6\% of the 3'211'219 job postings in the baseline JPOD could be matched to NUTS 2 regions. 
 
-4. **Refined Matching**: Some job postings state their geographical information in a special way (e.g. 'baselstadt' instead of 'basel-stadt' or 'bs'). To capture these false negatives to some extent, refined matching operations are performed for the largest non-matched entities.
+![](figures/jpod_regio_er.png)
 
-After all of these operations 92.6\% of the 3'211'219 job postings in the baseline JPOD could be matched to NUTS 2 regions. 
 
-### Industry Assignment:
-tbd
+### Duplicate Cleaning
+JPOD features job postings that have distinct identifiers from Jobspickr. That means, *exact duplicates* should have been removed already before insertion to JPOD. However, there is still a substantial fraction of postings that has exactly duplicated counterparts. 
+
+There are several possible reason for this. First, it is possible that Jobspickr's duplicate cleaning process failed to clean the duplicates. Second, it is possible that an employer published the same posting at different times (e.g., a restaurant searches for a waiter in the beginning and the end of the year), implying that it should not be treated as a duplicate. Finally, it can also be that an employer publishes the same posting at different locations (e.g., a restaurant chain searches for waiters at different locations), again suggesting that such postings should not be treated as duplicates.
+
+JPOD takes these issues into account. The columns `unique_posting_text` and `unique_posting_textlocation` in the `job_postings` table provide the respective information. Both columns take on the value `no` if a certain posting has a counterpart with an exactly identical `job_description`. The difference between the two columns `unique_posting_text` and `unique_posting_textlocation` is that the former searches for exact duplicates in the overall database, and the latter only checks for duplicates in the same `city`. 
+
+Hence, JPOD can be easily subsetted to unique job postings using the values of these two columns in a `WHERE` statement. For example, the following statement will extract all non-duplicated postings' uniq_id, the corresponding employer, the city and the job_description.
+
+```sql
+SELECT jp.uniq_id, pc.compay_name, pc.city, jp.job_description
+FROM job_postings jp
+WHERE jp.unique_posting_text == 'yes'
+LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id;
+```
+
+**Notes on Duplicates**: Duplicated postings are substantial in JPOD. In fact, 1'446'838 of the 3’211’219 postings in the database have at least one exact duplicate in the overall database (i.e. 45%). Think carefully what kind of data your analyses requires and set the `unique_posting_text` filters in your queries accordingly.
 
 ## Updating JPOD: Inserting New Job Adds
 tbd
