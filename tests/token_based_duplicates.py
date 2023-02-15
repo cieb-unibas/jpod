@@ -61,7 +61,7 @@ employer_evaluation["token_based_duplicates"] = 0
 # [len(x) for x in emp_postings["job_description"]]
 
 emp_counter = 0
-for e in sample_employers[:100]:
+for e in sample_employers:
     
     # keep count of progress:
     emp_counter += 1

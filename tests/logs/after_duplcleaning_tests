@@ -8,39 +8,59 @@ Setting the following parameters
     Number of tokens per sequence: 10
     
 Retrieved 1000 employers from time period full_sample
-Retrieved 20802 postings from 1000 employers in time period full_sample
+Retrieved 44209 postings from 1000 employers in time period full_sample
 Proceeding search for 50th employer
 Proceeding search for 100th employer
+Proceeding search for 150th employer
+Proceeding search for 200th employer
+Proceeding search for 250th employer
+Proceeding search for 300th employer
+Proceeding search for 350th employer
+Proceeding search for 400th employer
+Proceeding search for 450th employer
+Proceeding search for 500th employer
+Proceeding search for 550th employer
+Proceeding search for 600th employer
+Proceeding search for 650th employer
+Proceeding search for 700th employer
+Proceeding search for 750th employer
+Proceeding search for 800th employer
+Proceeding search for 850th employer
+Proceeding search for 900th employer
+Proceeding search for 950th employer
+Proceeding search for 1000th employer
 
-    Total number of duplicated postings from employers with at least 2 published posting(s): 338 of 20802 (1.62%)
+    Total number of duplicated postings from employers with at least 2 published posting(s): 12612 of 44209 (28.53%)
     
 
-    Total number of exactly duplicated postings from employers with at least 2 published posting(s): 0 of 20802 (0.0%)
+    Total number of exactly duplicated postings from employers with at least 2 published posting(s): 0 of 44209 (0.0%)
     
 
-    Total number of token-based duplicated postings from employers with at least 2 published posting(s): 338 of 20802 (1.62%)
+    Total number of token-based duplicated postings from employers with at least 2 published posting(s): 12612 of 44209 (28.53%)
     
 
     Share of token-based methodology duplicates among all detected duplicates from employers with at least 2 published posting(s): 100.0%
     
 
-    Share of employers with at least 2 published posting(s) that have duplicates: 3.46%
+    Share of employers with at least 2 published posting(s) that have duplicates: 38.72%
     
 
-    Average number of duplicated postings from employers with at least 2 published posting(s): 0.3
+    Average number of duplicated postings from employers with at least 2 published posting(s): 12.8
     
 
-    Average share of unique postings from employers with at least 2 published posting(s): 99.04%
+    Average share of unique postings from employers with at least 2 published posting(s): 87.65%
     
-                          n_postings  unique_postings  unique_share
-company_name                                                       
-nomoko                           107               25      0.233645
-rtp gmbh                          17                5      0.294118
-crowne plaza zürich                3                1      0.333333
-magictomato                       25               13      0.520000
-edag                              24               13      0.541667
-kilcher transporte ag              7                4      0.571429
-ernst sutter ag                  173              100      0.578035
-yxterix ag                        17               10      0.588235
-cytel, inc (usa)                   5                3      0.600000
-ebenisterie savoretti sa           5                3      0.600000
+                                       n_postings  ...  unique_share
+company_name                                       ...              
+persona service ag & co. kg                   722  ...      0.033241
+park gstaad                                    49  ...      0.081633
+natolien grillhaus                             36  ...      0.138889
+bloom diagnostics ag                            7  ...      0.142857
+hornbach                                     1078  ...      0.164193
+meisterwerk haus gmbh                           6  ...      0.166667
+stucky                                        127  ...      0.188976
+fasys industrie-edv-systeme gmbh                5  ...      0.200000
+into city prep                                  5  ...      0.200000
+restaurant seerose, zürichwollishofen           5  ...      0.200000
+
+[10 rows x 3 columns]
