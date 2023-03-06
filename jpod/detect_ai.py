@@ -1,5 +1,7 @@
 import sys
+import os
 import sqlite3
+
 import navigate as nav
 import datagen as dg
 import pandas as pd
@@ -10,6 +12,8 @@ DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 #### load AI keywords and translations used by Acemoglu et al. (2019)
+HOME = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
+os.chdir(HOME)
 df = pd.read_csv("data/acemoglu_ai_keywords.csv")
 for v in ["en", "de", "fr", "it"]:
    df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]

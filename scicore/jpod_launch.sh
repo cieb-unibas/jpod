@@ -7,8 +7,8 @@
 #SBATCH --time=04:30:00
 #SBATCH --qos=6hours
 
-#SBATCH --output=launch_jpod_logs
-#SBATCH --error=launch_jpod_errors
+#SBATCH --output=cluster_logs/launch_jpod1_1
+#SBATCH --error=cluster_logs/launch_jpod1_1_errors
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
@@ -18,7 +18,7 @@ cd $jpod_path
 
 ## create sqlite database
 ml load SQLite/3.35.4-GCCcore-10.3.0
-sqlite3 jpod.db ".read ${jpod_path}jpod/create_jpod.sqlite"
+sqlite3 jpod.db ".read ${jpod_path}jpod/scicore/jpod_create.sqlite"
 ml purge
 
 ## insert base data from JobsPickR using Python

@@ -1,5 +1,6 @@
 import sys
 import sqlite3
+
 try:
     from jpod.datagen import DuplicateCleaner
 except:

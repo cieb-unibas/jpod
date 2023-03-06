@@ -1,8 +1,14 @@
+import os
+
 import pandas as pd
 from googletrans import Translator
-translator = Translator()
+
+HOME = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
+os.chdir(HOME)
+
 
 ### Technology-Field Keywords from Bloom et al. (2021) --------------------------------------
+translator = Translator()
 df = pd.read_csv("data/raw_data/bloom_fields.csv")
 df = pd.merge(df, pd.read_csv("data/raw_data/key_words_tech.csv"), on = "bloom_code")
 df["keyword_en"] = [w.replace(u'\xa0', u' ') for w in df["keyword_en"]]
