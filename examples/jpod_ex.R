@@ -17,7 +17,7 @@ package_setup(packages = pkgs)
 
 #### Access JPOD ---------------------------------------------------------
 DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod.db"
-#DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod_test.db"
+DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod_test.db"
 JPOD_CONN <- dbConnect(RSQLite::SQLite(), DB_DIR)
 if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 
@@ -44,12 +44,19 @@ tbl(src = JPOD_CONN, "job_postings") %>%
   arrange(-n_postings)
 
 # EXAMPLE 2: Biggest 10 cities with their total number of postings
+start_time <- Sys.time()
 tbl(src = JPOD_CONN, "position_characteristics") %>%
   filter(is.na(city) == FALSE) %>%
   group_by(city) %>%
   summarize(n_postings = n()) %>%
   arrange(-n_postings) %>%
   head(10)
+end_time <- Sys.time()
+end_time - start_time
+# full db: Time difference of 13.49373 secs
+# test db: Time difference of 0.2387547 secs
+# => test db is 0.5% of full db.
+# => but full db is much slower than this would imply... especially when job_postings is involved and much has to be counted
 
 # EXAMPLE 3: Job positions from a specific company (Migros) in a given city (Bern)
 res <- tbl(src = JPOD_CONN, "position_characteristics") %>%
@@ -62,13 +69,19 @@ res # => produces an error since grepl() is not supported by 'dbplyr'
 # check the SQL-transformed query:
 show_query(res) # Pronlem is that grepl() is not transformed into a LIKE statement.
 # Solution: use sql() directly instead
+start_time <- Sys.time()
 tbl(src = JPOD_CONN, "position_characteristics") %>%
   filter(
     sql("city LIKE 'bern' AND company_name LIKE '%migros%'")
     ) %>%
   select(company_name, city, inferred_job_title)
+end_time <- Sys.time()
+end_time - start_time
+# full db: Time difference of 0.2921338 secs
+# test db: Time difference of 0.214977 secs
 
 # EXAMPLE 4: Top 20 companies in terms of the number of postings using the term "machine learning"
+start_time <- Sys.time()
 tbl(src = JPOD_CONN, "job_postings") %>%
   filter(
     sql("job_description LIKE '%machine learning%'")
@@ -81,6 +94,10 @@ tbl(src = JPOD_CONN, "job_postings") %>%
   summarize(n_postings = n()) %>%
   arrange(-n_postings) %>%
   head(20)
+end_time <- Sys.time()
+end_time - start_time
+# full db: Time difference of 22.36163 mins
+# test db: Time difference of 0.6104689 secs
 
 
 #### Querying JPOD  with the "DBI" package --------------------------------------
