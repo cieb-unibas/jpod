@@ -23,12 +23,12 @@ existing_cols = [x[1] for x in JPOD_CONN.execute("PRAGMA table_info(job_postings
 
 for c in new_cols:
     if c in existing_cols:
-        JPOD_CONN.execute("ALTER TABLE job_postings DROP COLUMN %s" % c)
-        print("Dropped column %s" % c)
+        JPOD_CONN.execute("UPDATE job_postings SET %s = 'yes'" % c)
+        print("Set column %s to defailt value 'yes'." % c)
         JPOD_CONN.commit()
     else:
         JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN %s VARCHAR(3) DEFAULT 'yes'" % c)
-        print("Added column %s" % c)
+        print("Initialized column %s" % c)
         JPOD_CONN.commit()
 
 #### Identify duplicates: ------------------------------
