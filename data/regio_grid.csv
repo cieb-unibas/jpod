@@ -1,35 +1,158 @@
-ï»¿name_en;name_de;name_fr;regio_abbrev;nuts_level;oecd_level;iso_2;iso_3;nuts_0;nuts_1;nuts_2;nuts_3;oecd_tl1;oecd_tl2;oecd_tl3
-Switzerland;Schweiz;Suisse;CH;1;1;CH;CHE;CH;CH0;;;CH;;
-RÃ©gion lemanique;RÃ©gion lemanique;RÃ©gion lemanique;;2;2;CH;CHE;CH;CH0;CH01;;CH;CH01;
-Vaud;Waadt;Vaud;VD;3;3;CH;CHE;CH;CH0;CH01;CH011;CH;CH01;CH011
-Valais;Wallis;Valais;VS;3;3;CH;CHE;CH;CH0;CH01;CH012;CH;CH01;CH012
-Geneva;Genf;GenÃ¨ve;GE;3;3;CH;CHE;CH;CH0;CH01;CH013;CH;CH01;CH013
-Espace Mittelland;Espace Mittelland;Espace Mittelland;;2;2;CH;CHE;CH;CH0;CH02;;CH;CH02;
-Bern;Bern;Berne;BE;3;3;CH;CHE;CH;CH0;CH02;CH021;CH;CH02;CH021
-Fribourg;Freiburg;Fribourg;FR;3;3;CH;CHE;CH;CH0;CH02;CH022;CH;CH02;CH022
-Solothurn;Solothurn;Soleure;SO;3;3;CH;CHE;CH;CH0;CH02;CH023;CH;CH02;CH023
-Neuchatel;Neuenburg;NeuchÃ¢tel;NE;3;3;CH;CHE;CH;CH0;CH02;CH024;CH;CH02;CH024
-Jura;Jura;Jura;JU;3;3;CH;CHE;CH;CH0;CH02;CH025;CH;CH02;CH025
-Northwestern Switzerland;Nordwestschweiz;Suisse du Nord-Ouest;;2;2;CH;CHE;CH;CH0;CH03;;CH;CH03;
-Basel-Stadt;Basel-Stadt;BÃ¢le-Ville;BS;3;3;CH;CHE;CH;CH0;CH03;CH031;CH;CH03;CH031
-Basel-Landschaft;Basel-Landschaft;BÃ¢le-Campagne;BL;3;3;CH;CHE;CH;CH0;CH03;CH032;CH;CH03;CH032
-Aargau;Aargau;Argovie;AG;3;3;CH;CHE;CH;CH0;CH03;CH033;CH;CH03;CH033
-Zurich;ZÃ¼rich;Zurich;;2;2;CH;CHE;CH;CH0;CH04;;CH;CH04;
-Zurich;ZÃ¼rich;Zurich;ZH;3;3;CH;CHE;CH;CH0;CH04;CH040;CH;CH04;CH040
-Eastern Switzerland;Ostschweiz;Suisse orientale;;2;2;CH;CHE;CH;CH0;CH05;;CH;CH05;
-Glarus;Glarus;Glaris;GL;3;3;CH;CHE;CH;CH0;CH05;CH051;CH;CH05;CH051
-Schaffhausen;Schaffhausen;Schaffhouse;SH;3;3;CH;CHE;CH;CH0;CH05;CH052;CH;CH05;CH052
-Appenzell Ausserrhoden;Appenzell Ausserrhoden;Appenzell Rhodes-ExtÃ©rieures;AR;3;3;CH;CHE;CH;CH0;CH05;CH053;CH;CH05;CH053
-Appenzell Innerrhoden;Appenzell Innerrhoden;Appenzell Rhodes-IntÃ©rieures;AI;3;3;CH;CHE;CH;CH0;CH05;CH054;CH;CH05;CH054
-St. Gallen;St. Gallen;Saint-Gall;SG;3;3;CH;CHE;CH;CH0;CH05;CH055;CH;CH05;CH055
-Grisons;GraubÃ¼nden;Grisons;GR;3;3;CH;CHE;CH;CH0;CH05;CH056;CH;CH05;CH056
-Thurgau;Thurgau;Thurgovie;TG;3;3;CH;CHE;CH;CH0;CH05;CH057;CH;CH05;CH057
-Central Switzerland;Zentralschweiz;Suisse centrale;;2;2;CH;CHE;CH;CH0;CH06;;CH;CH06;
-Luzern;Luzern;Lucerne;LU;3;3;CH;CHE;CH;CH0;CH06;CH061;CH;CH06;CH061
-Uri;Uri;Uri;UR;3;3;CH;CHE;CH;CH0;CH06;CH062;CH;CH06;CH062
-Schwyz;Schwyz;Schwyz;SZ;3;3;CH;CHE;CH;CH0;CH06;CH063;CH;CH06;CH063
-Obwalden;Obwalden;Obwald;OW;3;3;CH;CHE;CH;CH0;CH06;CH064;CH;CH06;CH064
-Nidwalden;Nidwalden;Nidwald;NW;3;3;CH;CHE;CH;CH0;CH06;CH065;CH;CH06;CH065
-Zug;Zug;Zoug;ZG;3;3;CH;CHE;CH;CH0;CH06;CH066;CH;CH06;CH066
-Ticino;Tessin;Tessin;;2;2;CH;CHE;CH;CH0;CH07;;CH;CH07;
-Ticino;Tessin;Tessin;TI;3;3;CH;CHE;CH;CH0;CH07;CH070;CH;CH07;CH070
+name_en;name_de;name_fr;regio_abbrev;nuts_level;oecd_level;iso_2;iso_3;nuts_0;nuts_1;nuts_2;nuts_3;oecd_tl1;oecd_tl2;oecd_tl3;self_classified
+Switzerland;Schweiz;Suisse;CH;1;1;CH;CHE;CH;CH0;;;CH;;;no
+Région lemanique;Région lemanique;Région lemanique;;2;2;CH;CHE;CH;CH0;CH01;;CH;CH01;;no
+Vaud;Waadt;Vaud;VD;3;3;CH;CHE;CH;CH0;CH01;CH011;CH;CH01;CH011;no
+Valais;Wallis;Valais;VS;3;3;CH;CHE;CH;CH0;CH01;CH012;CH;CH01;CH012;no
+Geneva;Genf;Genève;GE;3;3;CH;CHE;CH;CH0;CH01;CH013;CH;CH01;CH013;no
+Espace Mittelland;Espace Mittelland;Espace Mittelland;;2;2;CH;CHE;CH;CH0;CH02;;CH;CH02;;no
+Bern;Bern;Berne;BE;3;3;CH;CHE;CH;CH0;CH02;CH021;CH;CH02;CH021;no
+Fribourg;Freiburg;Fribourg;FR;3;3;CH;CHE;CH;CH0;CH02;CH022;CH;CH02;CH022;no
+Solothurn;Solothurn;Soleure;SO;3;3;CH;CHE;CH;CH0;CH02;CH023;CH;CH02;CH023;no
+Neuchatel;Neuenburg;Neuchâtel;NE;3;3;CH;CHE;CH;CH0;CH02;CH024;CH;CH02;CH024;no
+Jura;Jura;Jura;JU;3;3;CH;CHE;CH;CH0;CH02;CH025;CH;CH02;CH025;no
+Northwestern Switzerland;Nordwestschweiz;Suisse du Nord-Ouest;;2;2;CH;CHE;CH;CH0;CH03;;CH;CH03;;no
+Basel-Stadt;Basel-Stadt;Bâle-Ville;BS;3;3;CH;CHE;CH;CH0;CH03;CH031;CH;CH03;CH031;no
+Basel-Landschaft;Basel-Landschaft;Bâle-Campagne;BL;3;3;CH;CHE;CH;CH0;CH03;CH032;CH;CH03;CH032;no
+Aargau;Aargau;Argovie;AG;3;3;CH;CHE;CH;CH0;CH03;CH033;CH;CH03;CH033;no
+Zurich;Zürich;Zurich;;2;2;CH;CHE;CH;CH0;CH04;;CH;CH04;;no
+Zurich;Zürich;Zurich;ZH;3;3;CH;CHE;CH;CH0;CH04;CH040;CH;CH04;CH040;no
+Eastern Switzerland;Ostschweiz;Suisse orientale;;2;2;CH;CHE;CH;CH0;CH05;;CH;CH05;;no
+Glarus;Glarus;Glaris;GL;3;3;CH;CHE;CH;CH0;CH05;CH051;CH;CH05;CH051;no
+Schaffhausen;Schaffhausen;Schaffhouse;SH;3;3;CH;CHE;CH;CH0;CH05;CH052;CH;CH05;CH052;no
+Appenzell Ausserrhoden;Appenzell Ausserrhoden;Appenzell Rhodes-Extérieures;AR;3;3;CH;CHE;CH;CH0;CH05;CH053;CH;CH05;CH053;no
+Appenzell Innerrhoden;Appenzell Innerrhoden;Appenzell Rhodes-Intérieures;AI;3;3;CH;CHE;CH;CH0;CH05;CH054;CH;CH05;CH054;no
+St. Gallen;St. Gallen;Saint-Gall;SG;3;3;CH;CHE;CH;CH0;CH05;CH055;CH;CH05;CH055;no
+Grisons;Graubünden;Grisons;GR;3;3;CH;CHE;CH;CH0;CH05;CH056;CH;CH05;CH056;no
+Thurgau;Thurgau;Thurgovie;TG;3;3;CH;CHE;CH;CH0;CH05;CH057;CH;CH05;CH057;no
+Central Switzerland;Zentralschweiz;Suisse centrale;;2;2;CH;CHE;CH;CH0;CH06;;CH;CH06;;no
+Luzern;Luzern;Lucerne;LU;3;3;CH;CHE;CH;CH0;CH06;CH061;CH;CH06;CH061;no
+Uri;Uri;Uri;UR;3;3;CH;CHE;CH;CH0;CH06;CH062;CH;CH06;CH062;no
+Schwyz;Schwyz;Schwyz;SZ;3;3;CH;CHE;CH;CH0;CH06;CH063;CH;CH06;CH063;no
+Obwalden;Obwalden;Obwald;OW;3;3;CH;CHE;CH;CH0;CH06;CH064;CH;CH06;CH064;no
+Nidwalden;Nidwalden;Nidwald;NW;3;3;CH;CHE;CH;CH0;CH06;CH065;CH;CH06;CH065;no
+Zug;Zug;Zoug;ZG;3;3;CH;CHE;CH;CH0;CH06;CH066;CH;CH06;CH066;no
+Ticino;Tessin;Tessin;;2;2;CH;CHE;CH;CH0;CH07;;CH;CH07;;no
+Ticino;Tessin;Tessin;TI;3;3;CH;CHE;CH;CH0;CH07;CH070;CH;CH07;CH070;no
+France;Frankreich;France;FR;0;1;FR;FRA;FR;;;;FR;;;no
+Ile-de-france; Ile-de-France ;Iledefrance;;1;2;FR;FRA;FR;FR1;FR10;;FR;FR1;;no
+Auvergne-rhone-alpes; Auvergne-Rhône-Alpes ;Auvergne-rhone-alpes;;1;2;FR;FRA;FR;FRK;;;FR;FRK;;no
+Provence-alpes-cotedazur;Provence-Alpes-Côte d’Azur;Provence-alpes-cotedazur;;2;2;FR;FRA;FR;FRL;FRL0;;FR;FRL;FRL0;no
+Germany;Deutschland;Allemagne;DE;0;1;DE;DEU;DE;;;;DE;;;no
+Lower Saxony;Niedersachsen;;;1;2;DE;DEU;DE;DE9;;;DE;DE9;;no
+Bavaria;Bayern;;;1;2;DE;DEU;DE;DE2;;;DE;DE2;;no
+Berlin;Berlin;;;2;2;DE;DEU;DE;DE3;DE30;;DE;DE3;DE300;no
+Baden Wurttemberg;Baden Württemberg;;;1;2;DE;DEU;DE;DE1;;;DE;DE1;;no
+United Kingdom;;;;0;1;GB;GBR;UK;;;;UK;;;no
+England;;;;1;1;GB;GBR;UK;UKI;;;UK;;;no
+Hampshire;;;;3;3;GB;GBR;UK;UKJ;UKJ3;UKJ36;UK;UKJ;UKJ36;no
+Cambridgeshire;;;;3;3;GB;GBR;UK;UKH;UKH1;UKH12;UK;UKH;UKH12;no
+Essex;;;;2;;GB;GBR;UK;UKH;UKH3;;UK;UKH;;no
+Kent;;;;2;;GB;GBR;UK;UKJ;UKJ4;;UK;;;no
+Surrey;;;;3;3;GB;GBR;UK;UKJ;UKJ2;UKJ25;UK;UKJ;UKJ25;no
+Oxfordshire;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ14;UK;UKJ;UKJ14;no
+Hertfordshire;;;;3;3;GB;GBR;UK;UKH;UKH2;UKH23;UK;UKH;UKH23;no
+Buckinghamshire;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ13;UK;UKJ;UKJ13;no
+Norfolk;;;;3;3;GB;GBR;UK;UKH;UKH1;UKH16;UK;UKH;UKH16;no
+Northamptonshire;;;;3;3;GB;GBR;UK;UKF;UKF2;UKF25;UK;UKF;UK25;no
+Bradford;;;;3;3;GB;GBR;UK;UKE;UKE4;UKE41;UK;UKE;UKE41;no
+Milton keynes;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ12;UK;UKJ;UKJ12;no
+West sussex;;;;3;3;GB;GBR;UK;UKJ;UKJ2;UKJ27;UK;UKJ;UKJ27;no
+Brighton and hove;;;;3;3;GB;GBR;UK;UKJ;UKJ2;UKJ21;UK;UKJ;UKJ21;no
+Portsmouth;;;;3;3;GB;GBR;UK;UKJ;UKJ3;UKJ31;UK;UKJ;UKJ31;no
+Isle of wight;;;;3;3;GB;GBR;UK;UKJ;UKJ3;UKJ34;UK;UKJ;UKJ34;no
+Suffolk;;;;3;3;GB;GBR;UK;UKH;UKH1;UKH14;UK;UKH;UKH14;no
+Bedford;;;;3;3;GB;GBR;UK;UKH;UKH2;UKH24;UK;UKH;UKH24;no
+Luton;;;;3;3;GB;GBR;UK;UKH;UKH2;UKH21;UK;UKH;UKH21;no
+Central bedfordshire;;;;3;3;GB;GBR;UK;UKH;UKH2;UKH25;UK;UKH;UKH25;no
+Canada;Kanada;Canada;CA;;1;CA;CAN;;;;;CA;;;no
+Ontario;;;;;2;CA;CAN;;;;;CA;CA35;;no
+Quebec;;;;;2;CA;CAN;;;;;CA;CA24;;no
+India;Indien;Indie;;0;1;IN;IND;;;;;IN;;;yes
+Maharashtra;;;;;2;IN;IND;;;;;IN;INMH;;yes
+Karnataka;;;;;2;IN;IND;;;;;IN;INKA;;yes
+Delhi;;;;;2;IN;IND;;;;;IN;INDL;;yes
+Netherlands;Niederlande;Payes-Bas;NL;0;1;NL;NLD;NL;;;;NL;;;no
+Zuidholland;;;;1;2;NL;NLD;NL;NL4;;;NL;NL33;;no
+Noordholland;;;;1;2;NL;NLD;NL;NL1;;;NL;NL32;;no
+Noordbrabant;;;;2;2;NL;NLD;NL;NL4;NL41;;NL;NL41;;no
+Russia;;;;;1;RU;RUS;;;;;RU;;;yes
+Moskva;Moskau;Moscow;;;2;RU;RUS;;;;;RU;RUMOW;;yes
+Italy;Italien;Italie;;0;1;IT;ITA;IT;;;;IT;;;no
+Lombardy;;;;2;2;IT;ITA;IT;ITC;ITC4;;IT;ITC4;;no
+Veneto;;;;2;2;IT;ITA;IT;ITH;ITH3;;IT;ITH3;;no
+Emiliaromagna;;;;2;2;IT;ITA;IT;ITH;ITH5;;IT;ITH5;;no
+Piedmont;;;;2;2;IT;ITA;IT;ITC;ITC1;;IT;ITC1;;no
+Lazio;;;;2;2;IT;ITA;IT;ITI;ITI4;;IT;ITI4;;no
+Tuscany;;;;2;2;IT;ITA;IT;ITI;ITI1;;IT;ITI1;;no
+Friulivenezia giulia;;;;2;2;IT;ITA;IT;ITH;ITH4;;IT;ITH4;;no
+Sweden;Schweden;Suede;SE;0;1;SE;SWE;SE;;;;SE;;;no
+Vastra gotaland;;;;3;3;SE;SWE;SE;SE2;SE23;SE232;SE;SE23;SE232;no
+Stockholm;;;;2;2;SE;SWE;SE;SE1;SE11;;SE;SE11;;no
+Stockholm;;;;3;3;SE;SWE;SE;SE1;SE11;SE110;SE;SE11;SE110;no
+Skane;;;;3;3;SE;SWE;SE;SE2;SE22;SE224;SE;SE22;SE224;no
+China;China;Chine;;;1;CN;CHN;;;;;CN;;;yes
+Shanghai;;;;;2;CN;CHN;;;;;CN;CNSH;;yes
+Guangdong;;;;;2;CN;CHN;;;;;CN;CNGD;;yes
+Beijing;;;;;2;CN;CHN;;;;;CN;CNBJ;;yes
+Zhejiang;;;;;2;CN;CHN;;;;;CN;CNZJ;;yes
+Jiangsu;;;;;2;CN;CHN;;;;;CN;CNJS;;yes
+Austria;;;AT;0;1;AT;AUT;AT;;;;AT;;;no
+Vienna;Wien;Vienne;;3;3;AT;AUT;AT;AT1;AT13;AT130;AT;AT13;AT130;no
+Vienna;Wien;Vienne;;2;2;AT;AUT;AT;AT1;AT13;;AT;AT13;;no
+Spain;Spanien;Espagne;ES;0;1;ES;ESP;ES;;;;ES;;;no
+Madrid;;;;2;2;ES;ESP;ES;ES3;ES30;;ES;ES30;;no
+Madrid;;;;3;3;ES;ESP;ES;ES3;ES30;ES300;ES;ES30;ES300;no
+Catalonia;;;;2;2;ES;ESP;ES;ES5;ES51;;ES;ES51;;no
+Taiwan;Taiwan;Taiwan;TW;;1;TW;TWN;;;;;TW;;;yes
+Taipei;;;;;2;TW;TWN;;;;;TW;TWTPE;;yes
+New taipei;;;;;2;TW;TWN;;;;;TW;TWNWT;;yes
+Taichung;;;;;2;TW;TWN;;;;;TW;TWTXG;;yes
+Hsinchu;;;;;2;TW;TWN;;;;;TW;TWHSQ;;yes
+Turkey;Türkei;Turkie;TR;0;1;TR;TUR;TR;;;;TR;;;no
+Istanbul;Istanbul;Istanbul;;2;2;TR;TUR;TR;TR1;TR10;;TR;TR10;;no
+Istanbul;Istanbul;Istanbul;;3;3;TR;TUR;TR;TR1;TR10;TR100;TR;TR10;TR100;no
+Denmark;Dänemark;Denmark;;0;1;DK;DNK;DK;;;;DK;;;no
+Hovedstaden;;;;2;2;DK;DNK;DK;DK0;DK01;;DK;DK01;;no
+Istael;Israel;Israel;IL;;1;IL;ISR;;;;;IL;;;no
+Tel aviv;;;;;2;IL;ISR;;;;;IL;IL05;;no
+Jerusalem;;;;;2;IL;ISR;;;;;IL;IL01;;no
+Tel aviv;;;;;3;IL;ISR;;;;;IL;IL05;IL050;no
+Jerusalem;;;;;3;IL;ISR;;;;;IL;IL01;IL010;no
+Japan;;;JP;;1;JP;JPN;;;;;JP;;;no
+Tokyo;;;;;3;JP;JPN;;;;;JP;JPD;JPD13;no
+Kanagawa;;;;;3;JP;JPN;;;;;JP;JPD;JPD14;no
+Chiba;;;;;3;JP;JPN;;;;;JP;JPD;JPD12;no
+Saitama;;;;;3;JP;JPN;;;;;JP;JPD;JPD11;no
+Osaka;;;;;3;JP;JPN;;;;;JP;JPG;JPG27;no
+Kyoto;;;;;3;JP;JPN;;;;;JP;JPG;JPG26;no
+Mie;;;;;3;JP;JPN;;;;;JP;JPF;JPF24;no
+Nara;;;;;3;JP;JPN;;;;;JP;JPG;JPG29;no
+Aichi;;;;;3;JP;JPN;;;;;JP;JPF;JPF23;no
+Hyogo;;;;;3;JP;JPN;;;;;JP;JPG;JPG28;no
+Gifu;;;;;3;JP;JPN;;;;;JP;JPF;JPF21;no
+Iran;Iran;Iran;;;1;IR;IRN;;;;;IR;;;yes
+Mazandaran;;;;;2;IR;IRN;;;;;IR;IR02;;yes
+Thehran;;;;;2;IR;IRN;;;;;IR;IR23;;yes
+South Korea;Südkorea;Korea South;KR;;1;KR;KOR;;;;;KR;;;no
+Capital Region;;;;;2;KR;KOR;;;;;KR;KR01;;no
+Seoul;;;;;3;KR;KOR;;;;;KR;KR01;KR011;no
+Gyeonggi;;;;;3;KR;KOR;;;;;KR;KR01;KR013;no
+Incheon;;;;;3;KR;KOR;;;;;KR;KR01;KR012;no
+Daejeon;;;;;3;KR;KOR;;;;;KR;KR05;KR051;no
+Chungbuk;;;;;3;KR;KOR;;;;;KR;KR05;KR052;no
+Sejong;;;;;3;KR;KOR;;;;;KR;KR05;KR054;no
+Hong kong;;;;;2;CN;CHN;;;;;CN;CNHK;;yes
+Kowloon;;;;;2;CN;CHN;;;;;CN;CNHK;;yes
+United States;Vereinigte Staaten;Etats-Unis;;;1;US;USA;;;;;US;;;no
+Texas;;;;;2;US;USA;;;;;US;US48;;no
+California;;;;;2;US;USA;;;;;US;US06;;no
+New york;;;;;2;US;USA;;;;;US;US36;;no
+Pennsylvania;;;;;2;US;USA;;;;;US;US42;;no
+Illinois;;;;;2;US;USA;;;;;US;US17;;no
+Massachusetts;;;;;2;US;USA;;;;;US;US25;;no
+Michigan;;;;;2;US;USA;;;;;US;US26;;no
+Washington;;;;;2;US;USA;;;;;US;US53;;no
+New jersey;;;;;2;US;USA;;;;;US;US34;;no
+Maryland;;;;;2;US;USA;;;;;US;US24;;no
+Connecticut;;;;;2;US;USA;;;;;US;US09;;no
+District of columbia;;;;;2;US;USA;;;;;US;US11;;no

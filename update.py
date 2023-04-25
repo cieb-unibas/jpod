@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 import jpod
 
@@ -21,7 +22,24 @@ def load_and_structure(file = DAT_DIR + FILES[0], conn = JPOD_CONN):
     df = df[[c for c in df.columns if c in cols]]
     return df
 
-# assign geo
+df = load_and_structure()
+
+#### REGIO ASSIGNMENT
+
+# assign nuts-3 & oecd-3
+regio_grid = pd.read_sql(con=JPOD_CONN, sql="SELECT * FROM regio_grid;")
+countries = list(set(df["inferred_country"]))
+
+regions = list(set(df["inferred_state"]))
+regions = [r.lower() for r in regions]
+region_to_nuts = {r: nuts3 for r in regio_grid.loc[regio_grid.nuts_level == 3, "name_en"]}
+
+
+# assign nuts-3 & oecd-3
+
+df.columns
+tmp = df.loc[df.inferred_country == "United kingdom"]
+tmp[['city', 'state', 'country', 'inferred_city', 'inferred_state','inferred_country']]
 
 # clean duplicates
 
