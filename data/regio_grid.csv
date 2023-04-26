@@ -34,14 +34,14 @@ Zug;Zug;Zoug;ZG;3;3;CH;CHE;CH;CH0;CH06;CH066;CH;CH06;CH066;no
 Ticino;Tessin;Tessin;;2;2;CH;CHE;CH;CH0;CH07;;CH;CH07;;no
 Ticino;Tessin;Tessin;TI;3;3;CH;CHE;CH;CH0;CH07;CH070;CH;CH07;CH070;no
 France;Frankreich;France;FR;0;1;FR;FRA;FR;;;;FR;;;no
-Ile-de-france; Ile-de-France ;Iledefrance;;1;2;FR;FRA;FR;FR1;FR10;;FR;FR1;;no
+Ile-de-france; Ile-de-France ;Iledefrance;;2;2;FR;FRA;FR;FR1;FR10;;FR;FR1;;no
 Auvergne-rhone-alpes; Auvergne-Rhône-Alpes ;Auvergne-rhone-alpes;;1;2;FR;FRA;FR;FRK;;;FR;FRK;;no
 Provence-alpes-cotedazur;Provence-Alpes-Côte d’Azur;Provence-alpes-cotedazur;;2;2;FR;FRA;FR;FRL;FRL0;;FR;FRL;FRL0;no
 Germany;Deutschland;Allemagne;DE;0;1;DE;DEU;DE;;;;DE;;;no
 Lower Saxony;Niedersachsen;;;1;2;DE;DEU;DE;DE9;;;DE;DE9;;no
 Bavaria;Bayern;;;1;2;DE;DEU;DE;DE2;;;DE;DE2;;no
 Berlin;Berlin;;;2;2;DE;DEU;DE;DE3;DE30;;DE;DE3;DE300;no
-Baden Wurttemberg;Baden Württemberg;;;1;2;DE;DEU;DE;DE1;;;DE;DE1;;no
+Baden-Wurttemberg;Baden Württemberg;;;1;2;DE;DEU;DE;DE1;;;DE;DE1;;no
 United Kingdom;;;;0;1;GB;GBR;UK;;;;UK;;;no
 England;;;;1;1;GB;GBR;UK;UKI;;;UK;;;no
 Hampshire;;;;3;3;GB;GBR;UK;UKJ;UKJ3;UKJ36;UK;UKJ;UKJ36;no
@@ -72,9 +72,9 @@ Maharashtra;;;;;2;IN;IND;;;;;IN;INMH;;yes
 Karnataka;;;;;2;IN;IND;;;;;IN;INKA;;yes
 Delhi;;;;;2;IN;IND;;;;;IN;INDL;;yes
 Netherlands;Niederlande;Payes-Bas;NL;0;1;NL;NLD;NL;;;;NL;;;no
-Zuidholland;;;;1;2;NL;NLD;NL;NL4;;;NL;NL33;;no
+Zuid-holland;;;;1;2;NL;NLD;NL;NL4;;;NL;NL33;;no
 Noordholland;;;;1;2;NL;NLD;NL;NL1;;;NL;NL32;;no
-Noordbrabant;;;;2;2;NL;NLD;NL;NL4;NL41;;NL;NL41;;no
+Noord-brabant;;;;2;2;NL;NLD;NL;NL4;NL41;;NL;NL41;;no
 Russia;;;;;1;RU;RUS;;;;;RU;;;yes
 Moskva;Moskau;Moscow;;;2;RU;RUS;;;;;RU;RUMOW;;yes
 Italy;Italien;Italie;;0;1;IT;ITA;IT;;;;IT;;;no
