@@ -48,7 +48,12 @@ def load_jpod_nuts(conn):
     regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
     return regions
 
-
+def get_uniq_ids(df : pd.DataFrame, out_var : str, levels : list = ["inferred_country", "job_description"]):
+    uniq = df.groupby(levels).first()["uniq_id"].reset_index(drop = True)
+    uniq = pd.DataFrame(uniq)
+    uniq[out_var] = "yes"
+    print(f"Identified {len(df) - len(uniq)} duplicated postings on indicated level")
+    return uniq
 
 #### load data
 df = load_and_structure()
@@ -56,8 +61,13 @@ df = lowercase_columns(df, columns = JPOD_STRUCTURE.lowercase_vars)
 
 #### assign regional codes
 df = df.merge(load_jpod_nuts(conn=JPOD_CONN), how="left", on = "inferred_state")
+df.groupby(["nuts_2", "inferred_state"])[["nuts_2"]].count()
 
 # indicate duplicate status
+uniq_country = get_uniq_ids(df = df, out_var = "unique_posting_text", levels=["inferred_country", "job_description"])
+uniq_regio = get_uniq_ids(df = df, out_var = "unique_posting_textlocation", levels=["inferred_country", "inferred_state","job_description"])
+df = df.merge(uniq_country, how="left", on = "uniq_id").merge(uniq_regio, how="left", on = "uniq_id")
+df[["unique_posting_textlocation", "unique_posting_text"]] = df[["unique_posting_textlocation", "unique_posting_text"]].fillna("no")
 
 # identify bloom
 
@@ -77,6 +87,10 @@ if __name__ == "__main__":
         # assign regional codes to samples
         df = df.merge(load_jpod_nuts(conn=JPOD_CONN), how="left", on = "inferred_state")
         # indicate duplicate status
+        uniq_country = get_uniq_ids(df = df, out_var = "unique_posting_text", levels=["inferred_country", "job_description"])
+        uniq_regio = get_uniq_ids(df = df, out_var = "unique_posting_textlocation", levels=["inferred_country", "inferred_state","job_description"])
+        df = df.merge(uniq_country, how="left", on = "uniq_id").merge(uniq_regio, how="left", on = "uniq_id")
+        df[["unique_posting_textlocation", "unique_posting_text"]] = df[["unique_posting_textlocation", "unique_posting_text"]].fillna("no")
 
         # logs
         if i % log_n == 0:
