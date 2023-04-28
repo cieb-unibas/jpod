@@ -55,6 +55,29 @@ def get_uniq_ids(df : pd.DataFrame, out_var : str, levels : list = ["inferred_co
     print(f"Identified {len(df) - len(uniq)} duplicated postings on indicated level")
     return uniq
 
+def get_bloom_keywords(path: str = "data/bloom_tech.csv"):
+    bloom = pd.read_csv(path)
+    for v in ["en", "de", "fr", "it"]:
+        bloom["keyword_" + v] = [w.replace(r"%", r"@%") for w in bloom["keyword_" + v]]
+        bloom["keyword_" + v] = [w.replace(r"_", r"@_") for w in bloom["keyword_" + v]]
+        bloom["keyword_" + v] = [w.replace(r"'", r"''") for w in bloom["keyword_" + v]]
+    fields_keywords = {}
+    for field in set(bloom["bloom_field"]):
+        for v in ["en", "de", "fr", "it"]:
+            keywords = list(bloom[(bloom.bloom_field) == field]["keyword_" + v])
+            keywords = list(set(keywords))
+        fields_keywords[field] = keywords
+    return fields_keywords
+
+  
+def _add_bloom_codes(df, path = "data/raw_data/bloom_fields.csv"):
+    bloom_codes = pd.read_csv("data/raw_data/bloom_fields.csv")
+    df = df.merge(bloom_codes, how = "left", on = "bloom_field")
+    return df
+
+
+
+
 #### load data
 df = load_and_structure()
 df = lowercase_columns(df, columns = JPOD_STRUCTURE.lowercase_vars)
@@ -63,34 +86,68 @@ df = lowercase_columns(df, columns = JPOD_STRUCTURE.lowercase_vars)
 df = df.merge(load_jpod_nuts(conn=JPOD_CONN), how="left", on = "inferred_state")
 df.groupby(["nuts_2", "inferred_state"])[["nuts_2"]].count()
 
-# indicate duplicate status
+#### indicate duplicate status
 uniq_country = get_uniq_ids(df = df, out_var = "unique_posting_text", levels=["inferred_country", "job_description"])
 uniq_regio = get_uniq_ids(df = df, out_var = "unique_posting_textlocation", levels=["inferred_country", "inferred_state","job_description"])
 df = df.merge(uniq_country, how="left", on = "uniq_id").merge(uniq_regio, how="left", on = "uniq_id")
 df[["unique_posting_textlocation", "unique_posting_text"]] = df[["unique_posting_textlocation", "unique_posting_text"]].fillna("no")
 
 # identify bloom
+keyword_dict = get_bloom_keywords()
+bloom = pd.DataFrame()
+for field in keyword_dict.keys():
+    contains_keywords = df["job_description"].map(lambda x: any(keyword in str(x).lower() for keyword in keyword_dict[field]))
+    uniq_ids_bloom_field = pd.DataFrame(df[contains_keywords]["uniq_id"])
+    if len(uniq_ids_bloom_field) > 0:
+        uniq_ids_bloom_field["bloom_field"] = field
+        print("Searching for job postings in the field {0} completed. Number of postings retrieved: {1}".format(field, len(uniq_ids_bloom_field)))
+    else:
+        print("Searching for job postings in the field %s completed. Number of postings retrieved: 0" %field)    
+    bloom = pd.concat([bloom, uniq_ids_bloom_field], axis=0)
+bloom = _add_bloom_codes(df=bloom)
+bloom.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
 
 # identify ai
+
 
 # insert to jpod
 
 if __name__ == "__main__":
+    
     print("---------------Updating JPOD---------------")
     DAT_DIR = "C:/Users/matth/Documents/github_repos/"
     FILES = jpod.select_raw_files(DAT_DIR)
     log_n = 20
+    
     for file, i in enumerate(FILES):
+
         # load and structure data
         df = load_and_structure(file = DAT_DIR + file, conn=JPOD_CONN)
         df = lowercase_columns(df, columns = JPOD_STRUCTURE.lowercase_vars)
+
         # assign regional codes to samples
         df = df.merge(load_jpod_nuts(conn=JPOD_CONN), how="left", on = "inferred_state")
+
         # indicate duplicate status
         uniq_country = get_uniq_ids(df = df, out_var = "unique_posting_text", levels=["inferred_country", "job_description"])
         uniq_regio = get_uniq_ids(df = df, out_var = "unique_posting_textlocation", levels=["inferred_country", "inferred_state","job_description"])
         df = df.merge(uniq_country, how="left", on = "uniq_id").merge(uniq_regio, how="left", on = "uniq_id")
         df[["unique_posting_textlocation", "unique_posting_text"]] = df[["unique_posting_textlocation", "unique_posting_text"]].fillna("no")
+
+        # identify bloom:
+        keyword_dict = get_bloom_keywords()
+        bloom = pd.DataFrame()
+        for field in keyword_dict.keys():
+            contains_keywords = df["job_description"].map(lambda x: any(keyword in str(x).lower() for keyword in keyword_dict[field]))
+            uniq_ids_bloom_field = pd.DataFrame(df[contains_keywords]["uniq_id"])
+            if len(uniq_ids_bloom_field) > 0:
+                uniq_ids_bloom_field["bloom_field"] = field
+                print("Searching for job postings in the field {0} completed. Number of postings retrieved: {1}".format(field, len(uniq_ids_bloom_field)))
+            else:
+                print("Searching for job postings in the field %s completed. Number of postings retrieved: 0" %field)    
+            bloom = pd.concat([bloom, uniq_ids_bloom_field], axis=0)
+        bloom = _add_bloom_codes(df=bloom)
+        bloom.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
 
         # logs
         if i % log_n == 0:
