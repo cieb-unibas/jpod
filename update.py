@@ -76,6 +76,7 @@ def _add_bloom_codes(df, path = "data/raw_data/bloom_fields.csv"):
     return df
 
 
+#----------------------------------------------------------------
 
 
 #### load data
@@ -105,7 +106,6 @@ for field in keyword_dict.keys():
         print("Searching for job postings in the field %s completed. Number of postings retrieved: 0" %field)    
     bloom = pd.concat([bloom, uniq_ids_bloom_field], axis=0)
 bloom = _add_bloom_codes(df=bloom)
-bloom.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
 
 # identify ai
 
@@ -134,7 +134,9 @@ if __name__ == "__main__":
         df = df.merge(uniq_country, how="left", on = "uniq_id").merge(uniq_regio, how="left", on = "uniq_id")
         df[["unique_posting_textlocation", "unique_posting_text"]] = df[["unique_posting_textlocation", "unique_posting_text"]].fillna("no")
 
-        # identify bloom:
+        # insert everything to jpod
+        
+        # identify bloom and insert to jpod:
         keyword_dict = get_bloom_keywords()
         bloom = pd.DataFrame()
         for field in keyword_dict.keys():
@@ -149,6 +151,8 @@ if __name__ == "__main__":
         bloom = _add_bloom_codes(df=bloom)
         bloom.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
 
+        # identify ai and insert to jpod
+        
         # logs
         if i % log_n == 0:
             print("Inserted data from %d file into JPOD" % i)
