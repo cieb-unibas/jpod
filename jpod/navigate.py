@@ -1,4 +1,9 @@
 import sqlite3
+import os
+
+def get_path(potential_paths):
+    dir_out = [p for p in potential_paths if os.path.exists(p)][0]
+    return dir_out
 
 def get_tables(conn):
     """

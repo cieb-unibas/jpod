@@ -240,9 +240,9 @@ def sql_like_statement(keywords, matching_column, escape_expression):
         like_statement = str(matching_column) + " LIKE " + keywords[0] + " ESCAPE '%s'" %escape_expression
     return like_statement
 
-def keyword_query(keywords, matching_column, output_variables, escape_expression = "@"):
+def keyword_query(keywords, matching_column, data_batch = "all", escape_expression = "@"):
     """
-    Create a SQL query for a keyword search in a matching variable and define output variables from the position characteristics table. 
+    Create a SQL query for a keyword search in a matching column and retrieve all uniq. 
 
     Parameters:
     ----------
@@ -250,6 +250,8 @@ def keyword_query(keywords, matching_column, output_variables, escape_expression
         A list of keywords to search in the matching variable.
     matching_variable: str
         A string specifiying the JPOD column to be searched for the keywords.
+    data_batch: str, list[str]
+        A string or list of strings indicating the data batches where the keyword query search should be performed. Default is "all".
     escape_expression: str
         A string indicating an expression that is placed in front of SQLITE wildcard characters ('%', '_') 
         to evaluate them based on their literal values. The default is '@'.
@@ -261,28 +263,29 @@ def keyword_query(keywords, matching_column, output_variables, escape_expression
     """
     if isinstance(keywords, str):
         keywords = [keywords]
-    if isinstance(output_variables, str):
-        output_variables = [output_variables]
-    
-    output_variables = ", ".join(["pc." + var for var in output_variables])
+
     like_statement = sql_like_statement(
         keywords = keywords, 
         matching_column = matching_column, 
         escape_expression = escape_expression
         )
+    
+    if data_batch == "all":
+        data_batch_statement = ""
+    elif isinstance(data_batch, list):
+        data_batch_statement = "WHERE " + " OR ".join(["data_batch == '" + batch +"'" for batch in data_batch])
+    elif isinstance(data_batch, str):
+        data_batch_statement = "WHERE data_batch == '" + data_batch + "'"
 
     JPOD_QUERY = """
-    SELECT {0}
+    SELECT uniq_id
     FROM (
-        SELECT *
-        FROM (
-            SELECT uniq_id, lower({1}) as {1}
-            FROM job_postings
-            ) jp
-        WHERE ({2})
-        ) jp
-    LEFT JOIN position_characteristics pc ON pc.uniq_id = jp.uniq_id
-    """.format(output_variables, matching_column,like_statement)
+        SELECT uniq_id, lower({0}) as {0}
+        FROM job_postings
+        {2}
+        )
+    WHERE ({1})
+    """.format(matching_column, like_statement, data_batch_statement)
 
     return JPOD_QUERY
 
@@ -329,5 +332,21 @@ class DuplicateCleaner():
         self.con.execute(query)
         print("Duplicate cleaning successful for column '%s'" % self.assign_to)
 
-
-
+def load_jpod_nuts(conn):
+    # nuts regions and codes
+    nuts_query = """
+    SELECT name_en AS inferred_state, nuts_2, nuts_3
+    FROM regio_grid
+    WHERE nuts_level = 2 OR nuts_level = 3;
+    """
+    regio_nuts = pd.read_sql(con = conn, sql = nuts_query)
+    # oecd regions and codes
+    oecd_query = """
+    SELECT name_en AS inferred_state, oecd_tl2 AS nuts_2, oecd_tl3 AS nuts_3
+    FROM regio_grid
+    WHERE nuts_2 IS NULL AND nuts_3 IS NULL  AND (oecd_level = 2 OR oecd_level = 3);
+    """
+    regio_oecd = pd.read_sql(con = conn, sql = oecd_query)
+    # combine and return
+    regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
+    return regions
