@@ -38,7 +38,7 @@ for file in FILES:
             dg.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
         if len(table_dat[p_key]) > 0:
             pkey_exist[table] |= set(table_dat[p_key])
-        print("All data from file '{}' successfully processed.".format(file))
+    print("All data from file '{}' successfully processed.".format(file))
 
 # add batch information:
 JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN data_batch VARCHAR DEFAULT 'jobspickr_2022_01'")
