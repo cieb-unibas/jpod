@@ -3,9 +3,14 @@ import os
 
 import pandas as pd
 
-import datagen as dg
-import navigate as nav
-import config
+try:
+    import datagen as dg
+    import navigate as nav
+    import config
+except:
+    import jpod.datagen as dg
+    import jpod.navigate as nav
+    import jpod.config as config
 
 if __name__ == "__main__":
 
@@ -33,7 +38,7 @@ if __name__ == "__main__":
 
     # loop over techfields and extract postings that contain their keywords
     for field in list(set(df["bloom_field"])):
-        print("Searching job postings in the field of: %s" %field)
+        print("Searching job postings in the field of: %s" % field)
         # define keywords and SQL query for the techfield:
         keywords = []
         for v in ["en", "de", "fr", "it"]:
@@ -56,6 +61,7 @@ if __name__ == "__main__":
         
         # add to the final dataset
         res = pd.concat([res, tmp], axis=0)
+    
     assert len(res.columns) == 2, "Resulting dataset %d columns - %d more than expected." % (len(res.columns), 2)
     print("Keyword search completet for all disruptive technology fields by Bloom et al. (2020).")
     
@@ -77,9 +83,10 @@ if __name__ == "__main__":
         res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
     except:
         exiting_pkeys = dg.retrieve_pkeys(table = "bloom_tech", p_key = ["uniq_id", "bloom_code"], conn = JPOD_CONN)
-        res = pd.concat([exiting_pkeys, res], axis = 0).drop_duplicates(keep = "last").dropna(subset = ["bloom_field"])
+        res = pd.concat([exiting_pkeys, res], axis = 0).\
+            drop_duplicates(subset = ["uniq_id", "bloom_code"], keep = "last").\
+                dropna(subset = ["bloom_field"])
         res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists = "append", index = False)
-        
     JPOD_CONN.commit()
     JPOD_CONN.close()
     print("Successfully inserted information regarding disruptive technology fields by Bloom et al. (2020).")

@@ -1,5 +1,6 @@
 import sys
 import sqlite3
+
 import datagen as dg
 import navigate as nav
 

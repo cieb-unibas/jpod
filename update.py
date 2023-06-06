@@ -20,6 +20,7 @@ if __name__ == "__main__":
     # database
     JPOD_VERSION = "jpod_test.db"
     DATA_BATCH = "jobspickr_2023_01"
+    
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
     JPOD_STRUCTURE = jpod.base_properties()
