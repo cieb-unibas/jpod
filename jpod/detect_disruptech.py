@@ -6,10 +6,6 @@ import pandas as pd
 import datagen as dg
 import navigate as nav
 import config
-# import jpod.datagen as dg
-# import jpod.navigate as nav
-# import jpod.config as config
-
 
 if __name__ == "__main__":
 
@@ -31,10 +27,12 @@ if __name__ == "__main__":
         df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
         df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
 
-    # loop over techfields and extract postings that contain their keywords
     res = pd.DataFrame()
+    n_searchable = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch = '%s'" % DATA_BATCH).fetchone()[0]
+    print("Searching for keywords in job descriptions of data batch '%s' consisting of %d postings" % (DATA_BATCH, n_searchable))
 
-    for field in set(df["bloom_field"]):
+    # loop over techfields and extract postings that contain their keywords
+    for field in list(set(df["bloom_field"])):
         print("Searching job postings in the field of: %s" %field)
         # define keywords and SQL query for the techfield:
         keywords = []
@@ -58,11 +56,12 @@ if __name__ == "__main__":
         
         # add to the final dataset
         res = pd.concat([res, tmp], axis=0)
+    assert len(res.columns) == 2, "Resulting dataset %d columns - %d more than expected." % (len(res.columns), 2)
     print("Keyword search completet for all disruptive technology fields by Bloom et al. (2020).")
     
     # prepare the final data and if it does not exist, create new JPOD table "bloom_tech"
     res = pd.merge(res, pd.read_csv("data/raw_data/bloom_fields.csv"), on = "bloom_field")
-    if "bloom_tech" not in nav.get_tables(conn=JPOD_CONN):
+    if "bloom_tech" not in nav.get_tables(conn = JPOD_CONN):
         JPOD_QUERY = """
         CREATE TABLE bloom_tech(
         uniq_id VARCHAR(32) NOT NULL,
@@ -74,9 +73,13 @@ if __name__ == "__main__":
         JPOD_CONN.executescript(JPOD_QUERY)
 
     # insert data into the table, commit and close connection to JPOD
-    ### => here needs to be a saftey need with a try-catch clause similar to insert_base.py (-> need to check if uniq_id-bloom_field identifier is uniq) 
-    
-    res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
+    try:
+        res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists="append", index=False)
+    except:
+        exiting_pkeys = dg.retrieve_pkeys(table = "bloom_tech", p_key = ["uniq_id", "bloom_code"], conn = JPOD_CONN)
+        res = pd.concat([exiting_pkeys, res], axis = 0).drop_duplicates(keep = "last").dropna(subset = ["bloom_field"])
+        res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists = "append", index = False)
+        
     JPOD_CONN.commit()
     JPOD_CONN.close()
     print("Successfully inserted information regarding disruptive technology fields by Bloom et al. (2020).")

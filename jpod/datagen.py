@@ -95,6 +95,8 @@ def retrieve_pkeys(table, p_key, conn):
     -----------
     table : str
         A string indicating the JPOD table.
+    p_key: str, list[str]
+        A string or a list of strings indicating the p_keys.
     conn : sqlite3.Connection
         A sqlite Connection to JPOD.
     
@@ -108,9 +110,14 @@ def retrieve_pkeys(table, p_key, conn):
     set :
         A set of all the primary key values of this table.
     """
-    sql_statement = """SELECT %s FROM %s;""" % (p_key, table)
-    existing_keys = conn.execute(sql_statement).fetchall()
-    existing_keys = set([x[0] for x in existing_keys])
+    if isinstance(p_key, list):
+        p_key_statement = ", ".join(p_key)
+        sql_statement = """SELECT %s FROM %s;""" % (p_key_statement, table)
+        existing_keys = pd.read_sql(sql_statement, con=conn)
+    else:
+        sql_statement = """SELECT %s FROM %s;""" % (p_key, table)
+        existing_keys = conn.execute(sql_statement).fetchall()
+        existing_keys = set([x[0] for x in existing_keys])
     return existing_keys
 
 def unique_records(df, df_identifier, existing_pkeys):
