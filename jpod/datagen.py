@@ -332,12 +332,15 @@ class DuplicateCleaner():
 
         return(jpod_query)
 
-    def find_duplicates(self, query):
+    def find_duplicates(self, query, commit: bool = True):
         """
         Run SQL-Query to identify and mark duplicated job postings in JPOD
         """
         self.con.execute(query)
         print("Duplicate cleaning successful for column '%s'" % self.assign_to)
+        if commit:
+            self.con.commit()
+            print("JPOD changes commited.")
 
 def load_jpod_nuts(conn):
     # nuts regions and codes
