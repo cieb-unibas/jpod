@@ -2,9 +2,9 @@ import sys
 import pandas as pd
 import sqlite3
 try:
-  from tests import jpod_tests
+  from eval import jpod_eval
 except:
-  import jpod_tests
+  import jpod_eval
 from matplotlib import pyplot as plt
 
 # connect to the databse
@@ -71,5 +71,5 @@ for x in ["postings", "employed", "vacancy"]:
     tmp = dist.loc[:, ["nuts_2", "Grossregion", x+"_share"]].rename(columns={x+"_share": "share"})
     tmp["measure"] = x
     plot_df = pd.concat([plot_df, tmp])
-jpod_tests.plot_dist(df = plot_df, timewindow = "measure", group = "Grossregion", outcome="share")
+jpod_eval.plot_dist(df = plot_df, timewindow = "measure", group = "Grossregion", outcome="share")
 plt.savefig("tests/img/representativeness.png")

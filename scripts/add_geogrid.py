@@ -4,7 +4,9 @@ import sqlite3
 
 import pandas as pd
 
-import navigate as nav
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.navigate as nav
 
 #### connect to JPOD
 DB_DIR = sys.argv[1]

@@ -2,9 +2,9 @@ import sys
 import pandas as pd
 import sqlite3
 try:
-    import jpod_tests
+    import jpod_eval
 except:
-    from tests import jpod_tests
+    from eval import jpod_eval
 
 # connect to the databse
 DB_DIR = sys.argv[1]
@@ -23,7 +23,7 @@ if FULL_SAMPLE:
     PERIODS["full_sample"] = "full_sample"
 else:
     for m in ["2020-12", "2021-05", "2021-10"]:
-        PERIODS[m] = jpod_tests.get_timewindow(month = m, month_window = 1)
+        PERIODS[m] = jpod_eval.get_timewindow(month = m, month_window = 1)
 
 for p in PERIODS:
     if FULL_SAMPLE:
@@ -33,14 +33,14 @@ for p in PERIODS:
     for min_postings in [1, 3, 7]:
         print("Evaluating within employer duplicates for employers with at least %d postings" % min_postings)
         
-        sample_employers = jpod_tests.get_employer_sample(
+        sample_employers = jpod_eval.get_employer_sample(
             con = JPOD_CONN, n=N, 
             min_postings=min_postings, months = PERIODS[p]
             )
         n_employers = len(sample_employers)
         print("Retrieved %d employers from time period %s" % (n_employers, PERIODS[p]))
         sample_employers = [e for e in sample_employers if e != None]
-        sample_employers = jpod_tests.get_employer_postings(
+        sample_employers = jpod_eval.get_employer_postings(
             con = JPOD_CONN, employers = sample_employers, 
             months = PERIODS[p], cleaned_duplicates=True)
         print("Retrieved %d postings from %d employers in time period %s" % (len(sample_employers), n_employers, PERIODS[p]))

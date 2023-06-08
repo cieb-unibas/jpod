@@ -1,8 +1,11 @@
 import sys
+import os
 import sqlite3
 
-import datagen as dg
-import navigate as nav
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.datagen as dg
+import jpod.navigate as nav
 
 #### connect to the database and get its base structure -----------------------
 DB_DIR = sys.argv[1]

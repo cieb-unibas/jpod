@@ -1,6 +1,9 @@
 import os
 import sqlite3
+import sys
 
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
 import jpod
 
 def _test_drop_cols(df, con):

@@ -1,11 +1,14 @@
 import sys
 import sqlite3 
+import os
 assert float(sqlite3.sqlite_version[:4]) >= 3.33, "SQLITE version must be 3.33.0 or higher. Please upgrade."
 
 import pandas as pd
 
-import navigate as nav
-import datagen as dg
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.datagen as dg
+import jpod.navigate as nav
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]

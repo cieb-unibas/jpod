@@ -1,16 +1,14 @@
 import sqlite3
 import os
+import sys
 
 import pandas as pd
 
-try:
-    import datagen as dg
-    import navigate as nav
-    import config
-except:
-    import jpod.datagen as dg
-    import jpod.navigate as nav
-    import jpod.config as config
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.datagen as dg
+import jpod.config as config
+import jpod.navigate as nav
 
 if __name__ == "__main__":
 

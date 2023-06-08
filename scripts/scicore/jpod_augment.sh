@@ -23,8 +23,8 @@ source ./jpod_venv/bin/activate
 ## full augmentation
 ##for f in add_geogrid.py assign_geo.py detect_ai.py detect_disruptech.py clean_duplicates.py
 ##do
-##  python ./jpod/jpod/$f $jpod_path $jpod_version
+##  python ./jpod/scripts/$f $jpod_path $jpod_version
 ##done
 
 ## specific augmentation
-python ./jpod/jpod/clean_duplicates.py $jpod_path $jpod_version
+python ./jpod/scripts/clean_duplicates.py $jpod_path $jpod_version
