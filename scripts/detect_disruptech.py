@@ -60,7 +60,7 @@ if __name__ == "__main__":
         # add to the final dataset
         res = pd.concat([res, tmp], axis=0)
     
-    assert len(res.columns) == 2, "Resulting dataset %d columns - %d more than expected." % (len(res.columns), 2)
+    assert len(res.columns) == 2, "Resulting dataset has %d columns - %d are expected." % (len(res.columns), 2)
     print("Keyword search completet for all disruptive technology fields by Bloom et al. (2020).")
     
     # prepare the final data and if it does not exist, create new JPOD table "bloom_tech"

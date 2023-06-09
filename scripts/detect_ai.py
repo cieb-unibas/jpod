@@ -53,7 +53,6 @@ if __name__ == "__main__":
     # if necessary, create new table "acemoglu_ai" and insert data into the table
     if "acemoglu_ai" not in nav.get_tables(conn = JPOD_CONN):
         JPOD_QUERY = """
-        DROP TABLE IF EXISTS acemoglu_ai;
         CREATE TABLE acemoglu_ai(
             uniq_id VARCHAR(32) NOT NULL,
             PRIMARY KEY (uniq_id)

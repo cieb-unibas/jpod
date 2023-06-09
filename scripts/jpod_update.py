@@ -29,7 +29,7 @@ if __name__ == "__main__":
     JPOD_STRUCTURE = jpod.base_properties()
 
     # data & parameters
-    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))  
+    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))[:3]  
     log_n = 20
 
     # get existing p_keys for unique_records
