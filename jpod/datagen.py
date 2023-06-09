@@ -277,12 +277,16 @@ def keyword_query(keywords, matching_column, data_batch = "all", escape_expressi
         escape_expression = escape_expression
         )
     
+    ### => create a function generate_batch_condition()
     if data_batch == "all":
         data_batch_statement = ""
     elif isinstance(data_batch, list):
         data_batch_statement = "WHERE " + " OR ".join(["data_batch == '" + batch +"'" for batch in data_batch])
     elif isinstance(data_batch, str):
         data_batch_statement = "WHERE data_batch == '" + data_batch + "'"
+        
+    ### => generate an additional function generate_country_condition() that provides a 'inferred_country IN (x, y, z)' string.
+    ### => finally define a function combine_conditions() that adds 'AND' and brackets to the strings to connect.
 
     JPOD_QUERY = """
     SELECT uniq_id
@@ -343,20 +347,19 @@ class DuplicateCleaner():
             print("JPOD changes commited.")
 
 def load_jpod_nuts(conn):
-    # nuts regions and codes
     nuts_query = """
     SELECT name_en AS inferred_state, nuts_2, nuts_3
     FROM regio_grid
     WHERE nuts_level = 2 OR nuts_level = 3;
     """
     regio_nuts = pd.read_sql(con = conn, sql = nuts_query)
-    # oecd regions and codes
+
     oecd_query = """
     SELECT name_en AS inferred_state, oecd_tl2 AS nuts_2, oecd_tl3 AS nuts_3
     FROM regio_grid
     WHERE nuts_2 IS NULL AND nuts_3 IS NULL  AND (oecd_level = 2 OR oecd_level = 3);
     """
     regio_oecd = pd.read_sql(con = conn, sql = oecd_query)
-    # combine and return
+
     regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
     return regions
