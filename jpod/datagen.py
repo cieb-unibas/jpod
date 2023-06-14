@@ -247,7 +247,73 @@ def sql_like_statement(keywords, matching_column, escape_expression):
         like_statement = str(matching_column) + " LIKE " + keywords[0] + " ESCAPE '%s'" %escape_expression
     return like_statement
 
-def keyword_query(keywords, matching_column, data_batch = "all", escape_expression = "@"):
+def _generate_sql_batch_condition(data_batch: str = "all"):
+    """
+    Create a SQL IN statement for applying a sql query to a batched subsample of data. 
+
+    Parameters:
+    ----------
+    data_batch : str, list[str]
+        A list of batches to subset the data. Will be matched to the `data_batch` column in JPOD job_postings table.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    if data_batch == "all":
+        data_batch_statement = ""
+    elif isinstance(data_batch, list):
+        data_batch_statement = " OR ".join(["data_batch == '" + batch +"'" for batch in data_batch])
+    elif isinstance(data_batch, str):
+        data_batch_statement = "data_batch == '" + data_batch + "'"
+    return data_batch_statement    
+
+def _generate_sql_country_condition(countries):
+    """
+    Create a SQL IN statement for applying a sql query to a country subsample of data. 
+
+    Parameters:
+    ----------
+    countries : str, list[str]
+        A list of countries to subset the data. Will be matched to the `inferred_country` column in JPOD job_postings table.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    if countries == "all":
+        country_condition = ""
+    elif isinstance(countries, str):
+        countries = [countries]
+        country_condition = "inferred_country IN ('" + "', '".join(countries) + "')"
+    elif isinstance(countries, list):
+        country_condition = "inferred_country IN ('" + "', '".join(countries) + "')"
+    return country_condition
+
+def _combine_sql_conditions(condition_statements: list):
+    """
+    Combines different sql conditions into one WHERE clause.
+
+    Parameters:
+    ----------
+    condition_statements: list
+        A list of sql conditions.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL WHERE statement format.
+    """
+    condition_statements = [statement for statement in condition_statements if len(statement) > 0]
+    if len(condition_statements) > 1:
+        condition_statement = "WHERE " + " AND ".join(["(" + c + ")" for c in condition_statements])
+    else:
+        condition_statement = "WHERE " + condition_statements[0]
+    return condition_statement
+    
+def keyword_query(keywords, matching_column, data_batch = "all", countries = "all", escape_expression = "@"):
     """
     Create a SQL query for a keyword search in a matching column and retrieve all uniq. 
 
@@ -270,33 +336,29 @@ def keyword_query(keywords, matching_column, data_batch = "all", escape_expressi
     """
     if isinstance(keywords, str):
         keywords = [keywords]
+   
+    # subset the data to consider
+    batch_condition = _generate_sql_batch_condition(data_batch = data_batch)
+    country_condition = _generate_sql_country_condition(countries = countries)
+    where_clause = _combine_sql_conditions(condition_statements = [batch_condition, country_condition])
 
+    # define the keyword search
     like_statement = sql_like_statement(
         keywords = keywords, 
         matching_column = matching_column, 
         escape_expression = escape_expression
         )
-    
-    ### => create a function generate_batch_condition()
-    if data_batch == "all":
-        data_batch_statement = ""
-    elif isinstance(data_batch, list):
-        data_batch_statement = "WHERE " + " OR ".join(["data_batch == '" + batch +"'" for batch in data_batch])
-    elif isinstance(data_batch, str):
-        data_batch_statement = "WHERE data_batch == '" + data_batch + "'"
-        
-    ### => generate an additional function generate_country_condition() that provides a 'inferred_country IN (x, y, z)' string.
-    ### => finally define a function combine_conditions() that adds 'AND' and brackets to the strings to connect.
 
+    # define the sql query
     JPOD_QUERY = """
     SELECT uniq_id
     FROM (
         SELECT uniq_id, lower({0}) as {0}
         FROM job_postings
-        {2}
+        {1}
         )
-    WHERE ({1})
-    """.format(matching_column, like_statement, data_batch_statement)
+    WHERE ({2})
+    """.format(matching_column, where_clause, like_statement)
 
     return JPOD_QUERY
 
