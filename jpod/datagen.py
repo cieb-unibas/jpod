@@ -386,7 +386,7 @@ class DuplicateCleaner():
                 SELECT uniq_id,
                 ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) as rnr
                 FROM(
-                    SELECT jp.uniq_id, jp.job_description, pc.city
+                    SELECT jp.uniq_id, jp.job_description, pc.city, pc.inferred_country
                     FROM job_postings jp
                     LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id
                     WHERE jp.data_batch = '%s' 
@@ -425,3 +425,19 @@ def load_jpod_nuts(conn):
 
     regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
     return regions
+
+def load_and_clean_keywords(keyword_file, multilingual = False):
+    df = pd.read_csv(keyword_file)
+    if not multilingual:
+        keywords = list(set([w.replace(r"%", r"@%") for w in df["keyword_en"]]))
+    else:
+        for v in ["en", "de", "fr", "it"]:
+            df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
+            df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
+            df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
+        keywords = []
+        for v in ["en", "de", "fr", "it"]:
+            keywords += list(df.loc[:, "keyword_" + v])
+            keywords = list(set(keywords))
+    return keywords
+

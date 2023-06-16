@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     # Identify duplicates:
     cleaner = DuplicateCleaner(con = JPOD_CONN, data_batch = 'jobspickr_2023_01')
-    JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_text", levels=["job_description"])
+    JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_text", levels=["job_description", "inferred_country"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_textlocation", levels=["job_description", "city"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)

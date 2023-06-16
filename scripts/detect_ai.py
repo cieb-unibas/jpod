@@ -10,6 +10,7 @@ import jpod.datagen as dg
 import jpod.config as config
 import jpod.navigate as nav
 
+
 if __name__ == "__main__":
 
     # parameters for connecting to JPOD
@@ -23,18 +24,10 @@ if __name__ == "__main__":
 
     print("---------------Updating AI related postings---------------")
 
-    df = pd.read_csv("data/acemoglu_ai_keywords.csv")
-    for v in ["en", "de", "fr", "it"]:
-        df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
-        df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
-        df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
+    # define keywords
+    keywords = dg.load_and_clean_keywords(keyword_file = "data/acemoglu_ai_keywords.csv", multilingual=False)
 
-    # define keywords and SQL query for the techfield:
-    keywords = []
-    for v in ["en", "de", "fr", "it"]:
-        keywords += list(df.loc[:, "keyword_" + v])
-        keywords = list(set(keywords))
-
+    # define sql query
     JPOD_QUERY = dg.keyword_query(
         keywords = keywords, 
         matching_column = "job_description",

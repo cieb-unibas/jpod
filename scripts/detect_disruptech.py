@@ -25,10 +25,11 @@ if __name__ == "__main__":
     
     # load keywords
     df = pd.read_csv("data/bloom_tech.csv")
-    for v in ["en", "de", "fr", "it"]:
-        df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
-        df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
-        df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
+    df["keyword_en"] = [w.replace(r"%", r"@%") for w in df["keyword_en"]]
+    # for v in ["en", "de", "fr", "it"]:
+    #     df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
+    #     df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
+    #     df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
 
     res = pd.DataFrame()
     n_searchable = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch = '%s'" % DATA_BATCH).fetchone()[0]
@@ -38,10 +39,12 @@ if __name__ == "__main__":
     for field in list(set(df["bloom_field"])):
         print("Searching job postings in the field of: %s" % field)
         # define keywords and SQL query for the techfield:
-        keywords = []
-        for v in ["en", "de", "fr", "it"]:
-            keywords += list(df[(df.bloom_field) == field]["keyword_" + v])
-            keywords = list(set(keywords))
+        
+        # keywords = []
+        # for v in ["en", "de", "fr", "it"]:
+        #     keywords += list(df[(df.bloom_field) == field]["keyword_" + v])
+        #     keywords = list(set(keywords))
+        keywords = list(df[(df.bloom_field) == field]["keyword_en"])
 
         JPOD_QUERY = dg.keyword_query(
             keywords = keywords,
