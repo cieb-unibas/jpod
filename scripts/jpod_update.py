@@ -23,6 +23,10 @@ if __name__ == "__main__":
     # database
     JPOD_VERSION = "jpod_test.db"
     DATA_BATCH = "jobspickr_2023_01"
+
+    # => splitting up data into rounds.. but this does not make really much sense.
+    # UPDATE_ROUND = 0
+    # N_ROUNDS = len(jpod.config.UPDATE_BATCH_ROUNDS.keys())
     
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
@@ -30,6 +34,7 @@ if __name__ == "__main__":
 
     # data & parameters
     FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))[:3]  
+    # FILES = jpod.config.UPDATE_BATCH_ROUNDS[UPDATE_ROUND]
     log_n = 20
 
     # get existing p_keys for unique_records
@@ -37,7 +42,7 @@ if __name__ == "__main__":
     for table in JPOD_STRUCTURE.tables:
         pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
 
-    print("---------------Updating JPOD---------------")
+    print("---------------Updating JPOD with Data Batch '%s': Update Round %d/%d---------------" % (DATA_BATCH, UPDATE_ROUND + 1, N_ROUNDS))
     for i, file in enumerate(FILES):
 
         df = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))\
