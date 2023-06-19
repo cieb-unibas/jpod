@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import sys
+import time
 
 import pandas as pd
 
@@ -22,7 +23,8 @@ if __name__ == "__main__":
     os.chdir(HOME)
 
     print("---------------Updating Bloom technologies---------------")
-    
+    start = time.perf_counter()
+
     # load keywords
     df = pd.read_csv("data/bloom_tech.csv")
     df["keyword_en"] = [w.replace(r"%", r"@%") for w in df["keyword_en"]]
@@ -91,3 +93,5 @@ if __name__ == "__main__":
     JPOD_CONN.commit()
     JPOD_CONN.close()
     print("Successfully inserted information regarding disruptive technology fields by Bloom et al. (2020).")
+    end = time.perf_counter()
+    print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))

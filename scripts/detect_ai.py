@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import sys
+import time
 
 import pandas as pd
 
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     os.chdir(HOME)
 
     print("---------------Updating AI related postings---------------")
-
+    start = time.perf_counter()
     # define keywords
     keywords = dg.load_and_clean_keywords(keyword_file = "data/acemoglu_ai_keywords.csv", multilingual=False)
 
@@ -64,3 +65,5 @@ if __name__ == "__main__":
     # Save and close connection to .db 
     JPOD_CONN.commit()
     JPOD_CONN.close()
+    end = time.perf_counter()
+    print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))

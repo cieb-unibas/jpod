@@ -1,10 +1,14 @@
 import sqlite3
 import sys
 import os
+import time
+start = time.perf_counter()
+
 print(os.getcwd())
 sys.path.append(os.getcwd()+"/jpod/")
 import navigate as nav
 import datagen as dg
+
 
 #### connect to JPOD -----------------------
 DB_DIR = sys.argv[1]
@@ -56,9 +60,13 @@ for file in FILES:
         if len(table_dat[p_key]) > 0:
             pkey_exist[table] |= set(table_dat[p_key])
         print("All data from file '{}' successfully processed.".format(file))
+end = time.perf_counter()
+print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))
+
 
 # summarize
 for table in JPOD_STRUCTURE.tables:
     N_obs = TEST_DB.execute("SELECT COUNT(*) FROM {}".format(table)).fetchone()[0]
     assert N_obs == len(pkey_exist[table]), "Stored number of uniqe pkey values does not correspond to number of rows in the JPOD table '%s'" % table
     print("Number of observations in table '{}':".format(table), N_obs)
+

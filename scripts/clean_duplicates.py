@@ -1,6 +1,7 @@
 import os
 import sys
 import sqlite3
+import time
 
 print("Current directory is: " + os.getcwd())
 sys.path.append(os.getcwd())
@@ -15,8 +16,9 @@ if __name__ == "__main__":
     DATA_BATCH = "jobspickr_2023_01"
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
-    print("---------------Starting to identify duplicated postings---------------")
     
+    print("---------------Starting to identify duplicated postings---------------")
+    start = time.perf_counter()
     # check if the columns already exist and set them to their default values:
     new_cols = [
         "unique_posting_text", # no exactly identical text
@@ -50,3 +52,5 @@ if __name__ == "__main__":
     #### Save and close connection to .db
     JPOD_CONN.commit()
     JPOD_CONN.close()
+    end = time.perf_counter()
+    print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))

@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import sys
+import time
 
 print("Current directory is: " + os.getcwd())
 sys.path.append(os.getcwd())
@@ -18,8 +19,9 @@ def _test_drop_cols(df, con):
 
 if __name__ == "__main__":
     
-    print("---------------Setting directories---------------")
+    start = time.perf_counter()
     
+    print("---------------Setting directories---------------")
     # database
     JPOD_VERSION = "jpod_test.db"
     DATA_BATCH = "jobspickr_2023_01"
@@ -43,6 +45,7 @@ if __name__ == "__main__":
         pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
 
     print("---------------Updating JPOD with Data Batch '%s'---------------" % DATA_BATCH)
+
     #print("---------------Updating JPOD with Data Batch '%s': Update Round %d/%d---------------" % (DATA_BATCH, UPDATE_ROUND + 1, N_ROUNDS))
     for i, file in enumerate(FILES):
 
@@ -86,3 +89,5 @@ if __name__ == "__main__":
         JPOD_CONN.commit()
     
     print("Data from all files successfully inserted.")
+    end = time.perf_counter()
+    print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))
