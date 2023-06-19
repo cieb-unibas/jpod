@@ -76,6 +76,28 @@ class base_properties():
             "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
             "job_type", "inferred_job_title", "inferred_company_type"]
 
+
+def _jpod_delete_batch_from_table(table: str, data_batch: str = None):
+    if not data_batch:
+        batch_statement = ""
+    else:
+        batch_statement = """
+        WHERE uniq_id IN (
+            SELECT uniq_id
+            FROM job_postings
+            WHERE data_batch == '%s'
+        )
+        """ % data_batch
+    
+    delete_statement = """
+    DELETE 
+    FROM %s
+    %s
+    """ % (table, batch_statement)
+
+    return delete_statement
+
+
 def empty_table(table, conn, data_batch: str = None):
     """
     Delete all existing observations in a JPOD table for a given batch of data.
@@ -89,14 +111,16 @@ def empty_table(table, conn, data_batch: str = None):
     data_batch: str
         A string representing the JPOD data batch
     """
+    
+    delete_statement = _jpod_delete_batch_from_table(table = table, data_batch = data_batch)
     if data_batch:
-        assert data_batch in [x[0] for x in conn.execute("SELECT DISTINCT data_batch FROM job_postings").fetchall()]
-        batch_statement = "WHERE data_batch == '%s'" % data_batch
+        n_rows_table = conn.execute("SELECT COUNT(*) FROM %s WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE data_batch = '%s');" % (table, data_batch)).fetchone()[0]
     else:
-        batch_statement = ""
-    n_rows_table = conn.execute("SELECT COUNT(*) FROM %s %s;" % (table, batch_statement)).fetchone()[0]
+        n_rows_table = conn.execute("SELECT COUNT(*) FROM %s WHERE uniq_id IN (SELECT uniq_id FROM job_postings" % table).fetchone()[0]
+    
     if n_rows_table != 0:
-        conn.execute("DELETE FROM %s %s;" % (table, batch_statement))
+        conn.execute(delete_statement)
+        conn.commit()
         if data_batch:
             print("Deleted %d rows from table '%s' and data batch '%s'" % (n_rows_table, table, data_batch))
         else:

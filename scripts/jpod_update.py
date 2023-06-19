@@ -42,7 +42,8 @@ if __name__ == "__main__":
     for table in JPOD_STRUCTURE.tables:
         pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
 
-    print("---------------Updating JPOD with Data Batch '%s': Update Round %d/%d---------------" % (DATA_BATCH, UPDATE_ROUND + 1, N_ROUNDS))
+    print("---------------Updating JPOD with Data Batch '%s'---------------" % DATA_BATCH)
+    #print("---------------Updating JPOD with Data Batch '%s': Update Round %d/%d---------------" % (DATA_BATCH, UPDATE_ROUND + 1, N_ROUNDS))
     for i, file in enumerate(FILES):
 
         df = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))\
