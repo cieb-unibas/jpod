@@ -2,9 +2,9 @@ import sys
 import pandas as pd
 import sqlite3
 try:
-    import jpod_tests
+    import jpod_eval
 except:
-    from tests import jpod_tests
+    from eval import jpod_eval
 
 # connect to the databse
 DB_DIR = sys.argv[1]
@@ -34,14 +34,14 @@ print("""
 
 
 # retrieve a random sample of employers for a specific period
-sample_employers = jpod_tests.get_employer_sample(
+sample_employers = jpod_eval.get_employer_sample(
     con = JPOD_CONN, n=N_EMPLOYERS, 
     min_postings=MIN_POSTINGS, months = PERIOD
     )
 n_employers = len(sample_employers)
 print("Retrieved %d employers from time period %s" % (n_employers, PERIOD))
 sample_employers = [e for e in sample_employers if e != None]
-employer_postings = jpod_tests.get_employer_postings(
+employer_postings = jpod_eval.get_employer_postings(
     con = JPOD_CONN, employers = sample_employers, 
     months = PERIOD, cleaned_duplicates=CLEAN_DUPLICATES)
 print("Retrieved %d postings from %d employers in time period %s" % (len(employer_postings), N_EMPLOYERS, PERIOD))
@@ -88,7 +88,7 @@ for e in sample_employers:
             continue
 
         # extract randomly chosen sequences of tokens from posting p
-        token_sequences = jpod_tests.random_token_sequences_from_text(
+        token_sequences = jpod_eval.random_token_sequences_from_text(
             text = employer_posting, 
             sequence_length = TOKEN_SEQUENCE_LENGTH, 
             n_sequences = N_TOKEN_SEQUENCES,

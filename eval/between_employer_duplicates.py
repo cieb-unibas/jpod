@@ -3,9 +3,9 @@ import sys
 import random
 import pandas as pd
 try:
-    import jpod_tests
+    import jpod_eval
 except:
-    from tests import jpod_tests
+    from eval import jpod_eval
 
 # connect to the databse
 DB_DIR = sys.argv[1]
@@ -25,7 +25,7 @@ if FULL_SAMPLE:
     PERIODS["full_sample"] = "full_sample"
 else:
     for m in ["2020-12", "2021-05", "2021-10"]:
-        PERIODS[m] = jpod_tests.get_timewindow(month = m, month_window = 1)
+        PERIODS[m] = jpod_eval.get_timewindow(month = m, month_window = 1)
 
 for p in PERIODS:
     print("Performing test for period:", PERIODS[p])

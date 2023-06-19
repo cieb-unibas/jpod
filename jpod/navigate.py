@@ -1,4 +1,9 @@
 import sqlite3
+import os
+
+def get_path(potential_paths):
+    dir_out = [p for p in potential_paths if os.path.exists(p)][0]
+    return dir_out
 
 def get_tables(conn):
     """
@@ -71,9 +76,31 @@ class base_properties():
             "city", "inferred_city", "state", "inferred_state", "country", "inferred_country", 
             "job_type", "inferred_job_title", "inferred_company_type"]
 
-def empty_table(table, conn):
+
+def _jpod_delete_batch_from_table(table: str, data_batch: str = None):
+    if not data_batch:
+        batch_statement = ""
+    else:
+        batch_statement = """
+        WHERE uniq_id IN (
+            SELECT uniq_id
+            FROM job_postings
+            WHERE data_batch == '%s'
+        )
+        """ % data_batch
+    
+    delete_statement = """
+    DELETE 
+    FROM %s
+    %s
+    """ % (table, batch_statement)
+
+    return delete_statement
+
+
+def empty_table(table, conn, data_batch: str = None):
     """
-    Delete all existing observations in a JPOD table.
+    Delete all existing observations in a JPOD table for a given batch of data.
 
     Parameters:
     ----------
@@ -81,10 +108,25 @@ def empty_table(table, conn):
         A string representing the JPOD table
     conn : sqlite3.Connection
         A sqlite3 connection object to JPOD.
+    data_batch: str
+        A string representing the JPOD data batch
     """
-    n_rows_table = conn.execute("SELECT COUNT(*) FROM {};".format(table)).fetchone()[0]
-    if n_rows_table != 0:
-        conn.execute("DELETE FROM {};".format(table))
-        print("Deleted {} rows from table '{}'".format(n_rows_table, table))
+    
+    delete_statement = _jpod_delete_batch_from_table(table = table, data_batch = data_batch)
+    if data_batch:
+        n_rows_table = conn.execute("SELECT COUNT(*) FROM %s WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE data_batch = '%s');" % (table, data_batch)).fetchone()[0]
     else:
-        print("JPOD table '{}' is already empty.".format(table))
+        n_rows_table = conn.execute("SELECT COUNT(*) FROM %s WHERE uniq_id IN (SELECT uniq_id FROM job_postings" % table).fetchone()[0]
+    
+    if n_rows_table != 0:
+        conn.execute(delete_statement)
+        conn.commit()
+        if data_batch:
+            print("Deleted %d rows from table '%s' and data batch '%s'" % (n_rows_table, table, data_batch))
+        else:
+            print("Deleted %d rows from table '%s'" % (n_rows_table, table))
+    else:
+        if data_batch:
+            print("JPOD table '%s' for data batch '%s' is already empty." % (table, data_batch))
+        else:         
+            print("JPOD table '%s' is already empty.".format(table))

@@ -18,10 +18,10 @@ cd $jpod_path
 
 ## create sqlite database
 ml load SQLite/3.35.4-GCCcore-10.3.0
-sqlite3 jpod.db ".read ${jpod_path}jpod/scicore/jpod_create.sqlite"
+sqlite3 jpod.db ".read ${jpod_path}jpod/scripts/jpod_create.sqlite"
 ml purge
 
 ## insert base data from JobsPickR using Python
 ml load Python/3.9.5-GCCcore-10.3.0
 source "${jpod_path}/jpod_venv/bin/activate"
-python "${jpod_path}jpod/jpod/insert_base.py" $jpod_path
+python "${jpod_path}jpod/scripts/insert_base.py" $jpod_path

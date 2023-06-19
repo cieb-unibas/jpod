@@ -1,11 +1,15 @@
 import sys
 import sqlite3 
+import os
 assert float(sqlite3.sqlite_version[:4]) >= 3.33, "SQLITE version must be 3.33.0 or higher. Please upgrade."
+import time
 
 import pandas as pd
 
-import navigate as nav
-import datagen as dg
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.datagen as dg
+import jpod.navigate as nav
 
 #### establish connection and load data --------------------------------------
 DB_DIR = sys.argv[1]
@@ -13,6 +17,7 @@ DB_VERSION = sys.argv[2]
 JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 
 #### match postings to regions --------------------------------------
+start = time.perf_counter()
 assert "regio_grid" in nav.get_tables(conn = JPOD_CONN) # check if "regio_grid" table exists
 for geo_level in ["nuts_2", "nuts_3"]:
     if geo_level in nav.get_table_vars(conn = JPOD_CONN, table = "position_characteristics"):
@@ -109,3 +114,5 @@ print("{0} of {1} job postings assigned to geographical levels (share of {2}).".
 #### Save and close connection to .db --------------------------------------
 JPOD_CONN.commit()
 JPOD_CONN.close()
+end = time.perf_counter()
+print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))

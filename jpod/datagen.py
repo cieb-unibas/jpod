@@ -95,6 +95,8 @@ def retrieve_pkeys(table, p_key, conn):
     -----------
     table : str
         A string indicating the JPOD table.
+    p_key: str, list[str]
+        A string or a list of strings indicating the p_keys.
     conn : sqlite3.Connection
         A sqlite Connection to JPOD.
     
@@ -108,9 +110,14 @@ def retrieve_pkeys(table, p_key, conn):
     set :
         A set of all the primary key values of this table.
     """
-    sql_statement = """SELECT %s FROM %s;""" % (p_key, table)
-    existing_keys = conn.execute(sql_statement).fetchall()
-    existing_keys = set([x[0] for x in existing_keys])
+    if isinstance(p_key, list):
+        p_key_statement = ", ".join(p_key)
+        sql_statement = """SELECT %s FROM %s;""" % (p_key_statement, table)
+        existing_keys = pd.read_sql(sql_statement, con=conn)
+    else:
+        sql_statement = """SELECT %s FROM %s;""" % (p_key, table)
+        existing_keys = conn.execute(sql_statement).fetchall()
+        existing_keys = set([x[0] for x in existing_keys])
     return existing_keys
 
 def unique_records(df, df_identifier, existing_pkeys):
@@ -240,9 +247,75 @@ def sql_like_statement(keywords, matching_column, escape_expression):
         like_statement = str(matching_column) + " LIKE " + keywords[0] + " ESCAPE '%s'" %escape_expression
     return like_statement
 
-def keyword_query(keywords, matching_column, output_variables, escape_expression = "@"):
+def _generate_sql_batch_condition(data_batch: str = "all"):
     """
-    Create a SQL query for a keyword search in a matching variable and define output variables from the position characteristics table. 
+    Create a SQL IN statement for applying a sql query to a batched subsample of data. 
+
+    Parameters:
+    ----------
+    data_batch : str, list[str]
+        A list of batches to subset the data. Will be matched to the `data_batch` column in JPOD job_postings table.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    if data_batch == "all":
+        data_batch_statement = ""
+    elif isinstance(data_batch, list):
+        data_batch_statement = " OR ".join(["data_batch == '" + batch +"'" for batch in data_batch])
+    elif isinstance(data_batch, str):
+        data_batch_statement = "data_batch == '" + data_batch + "'"
+    return data_batch_statement    
+
+def _generate_sql_country_condition(countries):
+    """
+    Create a SQL IN statement for applying a sql query to a country subsample of data. 
+
+    Parameters:
+    ----------
+    countries : str, list[str]
+        A list of countries to subset the data. Will be matched to the `inferred_country` column in JPOD job_postings table.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    if countries == "all":
+        country_condition = ""
+    elif isinstance(countries, str):
+        countries = [countries]
+        country_condition = "inferred_country IN ('" + "', '".join(countries) + "')"
+    elif isinstance(countries, list):
+        country_condition = "inferred_country IN ('" + "', '".join(countries) + "')"
+    return country_condition
+
+def _combine_sql_conditions(condition_statements: list):
+    """
+    Combines different sql conditions into one WHERE clause.
+
+    Parameters:
+    ----------
+    condition_statements: list
+        A list of sql conditions.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL WHERE statement format.
+    """
+    condition_statements = [statement for statement in condition_statements if len(statement) > 0]
+    if len(condition_statements) > 1:
+        condition_statement = "WHERE " + " AND ".join(["(" + c + ")" for c in condition_statements])
+    else:
+        condition_statement = "WHERE " + condition_statements[0]
+    return condition_statement
+    
+def keyword_query(keywords, matching_column, data_batch = "all", countries = "all", escape_expression = "@"):
+    """
+    Create a SQL query for a keyword search in a matching column and retrieve all uniq. 
 
     Parameters:
     ----------
@@ -250,6 +323,8 @@ def keyword_query(keywords, matching_column, output_variables, escape_expression
         A list of keywords to search in the matching variable.
     matching_variable: str
         A string specifiying the JPOD column to be searched for the keywords.
+    data_batch: str, list[str]
+        A string or list of strings indicating the data batches where the keyword query search should be performed. Default is "all".
     escape_expression: str
         A string indicating an expression that is placed in front of SQLITE wildcard characters ('%', '_') 
         to evaluate them based on their literal values. The default is '@'.
@@ -261,28 +336,29 @@ def keyword_query(keywords, matching_column, output_variables, escape_expression
     """
     if isinstance(keywords, str):
         keywords = [keywords]
-    if isinstance(output_variables, str):
-        output_variables = [output_variables]
-    
-    output_variables = ", ".join(["pc." + var for var in output_variables])
+   
+    # subset the data to consider
+    batch_condition = _generate_sql_batch_condition(data_batch = data_batch)
+    country_condition = _generate_sql_country_condition(countries = countries)
+    where_clause = _combine_sql_conditions(condition_statements = [batch_condition, country_condition])
+
+    # define the keyword search
     like_statement = sql_like_statement(
         keywords = keywords, 
         matching_column = matching_column, 
         escape_expression = escape_expression
         )
 
+    # define the sql query
     JPOD_QUERY = """
-    SELECT {0}
+    SELECT uniq_id
     FROM (
-        SELECT *
-        FROM (
-            SELECT uniq_id, lower({1}) as {1}
-            FROM job_postings
-            ) jp
-        WHERE ({2})
-        ) jp
-    LEFT JOIN position_characteristics pc ON pc.uniq_id = jp.uniq_id
-    """.format(output_variables, matching_column,like_statement)
+        SELECT uniq_id, lower({0}) as {0}
+        FROM job_postings
+        {1}
+        )
+    WHERE ({2})
+    """.format(matching_column, where_clause, like_statement)
 
     return JPOD_QUERY
 
@@ -310,7 +386,7 @@ class DuplicateCleaner():
                 SELECT uniq_id,
                 ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) as rnr
                 FROM(
-                    SELECT jp.uniq_id, jp.job_description, pc.city
+                    SELECT jp.uniq_id, jp.job_description, pc.city, pc.inferred_country
                     FROM job_postings jp
                     LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id
                     WHERE jp.data_batch = '%s' 
@@ -322,12 +398,46 @@ class DuplicateCleaner():
 
         return(jpod_query)
 
-    def find_duplicates(self, query):
+    def find_duplicates(self, query, commit: bool = True):
         """
         Run SQL-Query to identify and mark duplicated job postings in JPOD
         """
         self.con.execute(query)
         print("Duplicate cleaning successful for column '%s'" % self.assign_to)
+        if commit:
+            self.con.commit()
+            print("JPOD changes commited.")
 
+def load_jpod_nuts(conn):
+    nuts_query = """
+    SELECT name_en AS inferred_state, nuts_2, nuts_3
+    FROM regio_grid
+    WHERE nuts_level = 2 OR nuts_level = 3;
+    """
+    regio_nuts = pd.read_sql(con = conn, sql = nuts_query)
 
+    oecd_query = """
+    SELECT name_en AS inferred_state, oecd_tl2 AS nuts_2, oecd_tl3 AS nuts_3
+    FROM regio_grid
+    WHERE nuts_2 IS NULL AND nuts_3 IS NULL  AND (oecd_level = 2 OR oecd_level = 3);
+    """
+    regio_oecd = pd.read_sql(con = conn, sql = oecd_query)
+
+    regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
+    return regions
+
+def load_and_clean_keywords(keyword_file, multilingual = False):
+    df = pd.read_csv(keyword_file)
+    if not multilingual:
+        keywords = list(set([w.replace(r"%", r"@%") for w in df["keyword_en"]]))
+    else:
+        for v in ["en", "de", "fr", "it"]:
+            df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
+            df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
+            df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
+        keywords = []
+        for v in ["en", "de", "fr", "it"]:
+            keywords += list(df.loc[:, "keyword_" + v])
+            keywords = list(set(keywords))
+    return keywords
 

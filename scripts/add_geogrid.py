@@ -2,8 +2,11 @@ import sys
 import os
 import sqlite3
 
-import navigate as nav
 import pandas as pd
+
+print("Current directory is: " + os.getcwd())
+sys.path.append(os.getcwd())
+import jpod.navigate as nav
 
 #### connect to JPOD
 DB_DIR = sys.argv[1]
@@ -13,7 +16,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + DB_VERSION)
 #### load data
 HOME = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
 os.chdir(HOME)
-df = pd.read_csv("data/regio_grid.csv", sep = ";")
+df = pd.read_csv("data/regio_grid.csv", encoding= "latin-1", sep = ";")
 df[["name_en", "name_de", "name_fr"]] = df[["name_en", "name_de", "name_fr"]].apply(lambda x: x.str.lower())
 
 #### create regio table in JPOD 
@@ -35,6 +38,7 @@ nuts_3 VARCHAR(5),
 oecd_tl1 VARCHAR(2),
 oecd_tl2 VARCHAR(4),
 oecd_tl3 VARCHAR(5),
+self_classified VARCHAR(3),
 PRIMARY KEY (name_en, nuts_3)
 );
 """
