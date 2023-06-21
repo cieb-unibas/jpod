@@ -45,8 +45,8 @@ if __name__ == "__main__":
     # test and summarize:
     for c in new_cols:
         assert c in nav.get_table_vars(conn=JPOD_CONN, table="job_postings"), "Failed to create column '%s' in Table job_postings" %c
-        n_duplicated = JPOD_CONN.execute("SELECT COUNT(*) FROM job_postings WHERE data_batch == '%s' AND %s == 'no'" % (DATA_BATCH, c)).fetchone()[0]
-        n_unique = JPOD_CONN.execute("SELECT COUNT(*) FROM job_postings WHERE data_batch == '%s' AND %s == 'yes'" % (DATA_BATCH,c)).fetchone()[0]
+        n_duplicated = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch == '%s' AND %s == 'no'" % (DATA_BATCH, c)).fetchone()[0]
+        n_unique = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch == '%s' AND %s == 'yes'" % (DATA_BATCH, c)).fetchone()[0]
         print("Found %d unique and %d duplicated postings in JPOD for column '%s' and data batch '%s'" % (n_unique, n_duplicated, c, DATA_BATCH))
 
     #### Save and close connection to .db
