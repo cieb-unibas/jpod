@@ -14,7 +14,7 @@ import jpod.navigate as nav
 if __name__ == "__main__":
 
     # parameters for connecting to JPOD
-    JPOD_VERSION = "jpod_test.db"
+    JPOD_VERSION = "jpod.db"
     DATA_BATCH = "jobspickr_2023_01"
 
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
@@ -27,33 +27,28 @@ if __name__ == "__main__":
 
     # load keywords
     df = pd.read_csv("data/bloom_tech.csv")
-    df["keyword_en"] = [w.replace(r"%", r"@%") for w in df["keyword_en"]]
-    # for v in ["en", "de", "fr", "it"]:
-    #     df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
-    #     df["keyword_" + v] = [w.replace(r"_", r"@_") for w in df["keyword_" + v]]
-    #     df["keyword_" + v] = [w.replace(r"'", r"''") for w in df["keyword_" + v]]
-
-    res = pd.DataFrame()
     n_searchable = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch = '%s'" % DATA_BATCH).fetchone()[0]
     print("Searching for keywords in job descriptions of data batch '%s' consisting of %d postings" % (DATA_BATCH, n_searchable))
+    res = pd.DataFrame()
 
     # loop over techfields and extract postings that contain their keywords
     for field in list(set(df["bloom_field"])):
         print("Searching job postings in the field of: %s" % field)
-        # define keywords and SQL query for the techfield:
         
-        # keywords = []
-        # for v in ["en", "de", "fr", "it"]:
-        #     keywords += list(df[(df.bloom_field) == field]["keyword_" + v])
-        #     keywords = list(set(keywords))
-        keywords = list(df[(df.bloom_field) == field]["keyword_en"])
-
+        # define keywords for the techfield:
+        keywords = dg.load_and_clean_keywords(
+            keyword_df_or_file = df, 
+            tech_field_subset = field, 
+            multilingual = False
+            )
+        
+        # define sql query
         JPOD_QUERY = dg.keyword_query(
             keywords = keywords,
             matching_column = "job_description",
             data_batch = DATA_BATCH
             )
-
+        
         # retrieve and annotate postings with a connection to the techfield:
         tmp = pd.read_sql(con = JPOD_CONN, sql=JPOD_QUERY)
         if len(tmp) > 0:
@@ -66,7 +61,7 @@ if __name__ == "__main__":
         res = pd.concat([res, tmp], axis=0)
     
     assert len(res.columns) == 2, "Resulting dataset has %d columns - %d are expected." % (len(res.columns), 2)
-    print("Keyword search completet for all disruptive technology fields by Bloom et al. (2020).")
+    print("Keyword search completed for all disruptive technology fields by Bloom et al. (2020). Identified %d postings related to these technologies" % len(res))
     
     # prepare the final data and if it does not exist, create new JPOD table "bloom_tech"
     res = pd.merge(res, pd.read_csv("data/raw_data/bloom_fields.csv"), on = "bloom_field")

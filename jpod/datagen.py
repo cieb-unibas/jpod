@@ -426,10 +426,17 @@ def load_jpod_nuts(conn):
     regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
     return regions
 
-def load_and_clean_keywords(keyword_file, multilingual = False):
-    df = pd.read_csv(keyword_file)
+def load_and_clean_keywords(keyword_df_or_file, tech_field_subset = None, multilingual = False):
+    if not isinstance(keyword_df_or_file, pd.DataFrame):
+        df = pd.read_csv(keyword_df_or_file)
+    else:
+        df = keyword_df_or_file
+    if tech_field_subset:
+        df = df[(df.bloom_field) == tech_field_subset]
     if not multilingual:
         keywords = list(set([w.replace(r"%", r"@%") for w in df["keyword_en"]]))
+        keywords = [w.replace(r"_", r"@_") for w in keywords]
+        keywords = [w.replace(r"'", r"''") for w in keywords]
     else:
         for v in ["en", "de", "fr", "it"]:
             df["keyword_" + v] = [w.replace(r"%", r"@%") for w in df["keyword_" + v]]
@@ -439,5 +446,5 @@ def load_and_clean_keywords(keyword_file, multilingual = False):
         for v in ["en", "de", "fr", "it"]:
             keywords += list(df.loc[:, "keyword_" + v])
             keywords = list(set(keywords))
+    
     return keywords
-

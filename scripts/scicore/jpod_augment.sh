@@ -6,8 +6,8 @@
 #SBATCH --time=02:00:00
 #SBATCH --qos=6hours
 
-#SBATCH --output=cluster_logs/augment_update_test
-#SBATCH --error=cluster_logs/augment_update_test_errors
+#SBATCH --output=cluster_logs/jpod_update_insert
+#SBATCH --error=cluster_logs/jpod_update_insert_errors
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
@@ -19,10 +19,10 @@ source ../jpod_venv/bin/activate
 
 ## add geographical information, detect postings with a connection to AI, disruptive technologies from Bloom(2021) and clean duplicates.
 ## full augmentation
-for f in detect_ai.py detect_disruptech.py clean_duplicates.py
-do
-  python ./scripts/$f
-done
+## for f in detect_ai.py detect_disruptech.py clean_duplicates.py
+## do
+##  python ./scripts/$f
+## done
 
 ## specific augmentation
-## python ./scripts/jpod_update.py
+python ./scripts/jpod_update.py

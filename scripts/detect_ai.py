@@ -15,7 +15,7 @@ import jpod.navigate as nav
 if __name__ == "__main__":
 
     # parameters for connecting to JPOD
-    JPOD_VERSION = "jpod_test.db"
+    JPOD_VERSION = "jpod.db"
     DATA_BATCH = "jobspickr_2023_01"
 
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     print("---------------Updating AI related postings---------------")
     start = time.perf_counter()
     # define keywords
-    keywords = dg.load_and_clean_keywords(keyword_file = "data/acemoglu_ai_keywords.csv", multilingual=False)
+    keywords = dg.load_and_clean_keywords(keyword_df_or_file = "data/acemoglu_ai_keywords.csv", multilingual=False)
 
     # define sql query
     JPOD_QUERY = dg.keyword_query(
