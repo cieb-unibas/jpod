@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
     print("---------------Setting directories---------------")
     # database
-    JPOD_VERSION = "jpod_test.db"
+    JPOD_VERSION = "jpod.db"
     DATA_BATCH = "jobspickr_2023_01"
 
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
