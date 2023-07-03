@@ -2,6 +2,7 @@ import os
 import sqlite3
 import sys
 import time
+import csv
 
 print("Current directory is: " + os.getcwd())
 sys.path.append(os.getcwd())
@@ -17,7 +18,6 @@ def _test_drop_cols(df, con):
     drop_cols = [c for c in df.columns if c not in jpod_columns]
     return drop_cols
 
-
 if __name__ == "__main__":
     
     start = time.perf_counter()
@@ -28,11 +28,18 @@ if __name__ == "__main__":
     DATA_BATCH = "jobspickr_2023_01"
 
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
+    AUGMENT_PATH = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/"
+    if not os.path.exists(AUGMENT_PATH):
+        AUGMENT_PATH = jpod.get_path(jpod.config.DAT_DIRS)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
     JPOD_STRUCTURE = jpod.base_properties()
 
     # data & parameters
     FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))
+    with open(AUGMENT_PATH + "duplicated_uniq_ids.csv", "r") as f:
+        reader = csv.reader(f)
+        UID_DUPLICATES = next(reader)
+        f.close()
     log_n = 20
 
     # get existing p_keys for unique_records
@@ -70,7 +77,9 @@ if __name__ == "__main__":
             assert all(c in table_dat.columns for c in table_vars), "Some columns from JPOD table `%s` are missing in the provided dataframe" % table
 
             # insert
-            try: 
+            try:
+                keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES]
+                table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :]
                 jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False)
             except:
                 table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
