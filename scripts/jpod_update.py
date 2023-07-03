@@ -28,20 +28,15 @@ if __name__ == "__main__":
     DATA_BATCH = "jobspickr_2023_01"
 
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
-    AUGMENT_PATH = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/"
-    if not os.path.exists(AUGMENT_PATH):
-        AUGMENT_PATH = jpod.get_path(jpod.config.DAT_DIRS)
+    AUGMENT_PATH = jpod.get_path(jpod.config.DAT_DIRS)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
     JPOD_STRUCTURE = jpod.base_properties()
 
     # data & parameters
-    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))
-    with open(AUGMENT_PATH + "duplicated_uniq_ids.csv", "r") as f:
-        reader = csv.reader(f)
-        UID_DUPLICATES = next(reader)
-        f.close()
+    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS)) ## !!! check here if this creates problems when having a new .csv file. alternatively save as .txt!!!
+    UID_DUPLICATES = pd.read_csv(AUGMENT_PATH + "duplicated_uniq_ids.csv")
     log_n = 20
-
+    
     # get existing p_keys for unique_records
     pkey_exist = {}
     for table in JPOD_STRUCTURE.tables:
@@ -53,6 +48,11 @@ if __name__ == "__main__":
 
         df = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))\
             .rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
+
+        #### make a check here and continute to the next file if it does not pass the test.
+        # Idea: check for 5 random uniq_ids from that file if they are already in the database (subset based on city)
+        #       if they are all there, then skip to the next file.
+
         
         for table in JPOD_STRUCTURE.tables:
             print("Insert data from raw file '{}' into database table '{}'".format(file, table))
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 lowercase = JPOD_STRUCTURE.lowercase_vars, 
                 distinct = True
                 )
-            assert not _test_drop_cols(df = table_dat, con = JPOD_CONN)
+            assert not _test_drop_cols(df = table_dat, con = JPOD_CONN) ### => make this earlier so that not every time a sqlite command has to be performed
 
             # add (default) information not contained in raw data
             if table == "job_postings":
@@ -73,16 +73,16 @@ if __name__ == "__main__":
                 table_dat["unique_posting_textlocation"] = "yes" # default value
             elif table == "position_characteristics":
                 table_dat = table_dat.merge(jpod.load_jpod_nuts(conn=JPOD_CONN), how = "left", on = "inferred_state")
-            table_vars = jpod.get_table_vars(conn = JPOD_CONN, table = table)
+            table_vars = jpod.get_table_vars(conn = JPOD_CONN, table = table) ### remove from loop so that this has only to be performed once and saved in a dict.
             assert all(c in table_dat.columns for c in table_vars), "Some columns from JPOD table `%s` are missing in the provided dataframe" % table
 
-            # insert
+            # insert the data into the databse
             try:
                 keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES]
                 table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :]
                 jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False)
             except:
-                table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
+                table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table]) ### also introduce a batch condition here
                 jpod.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
             if len(table_dat[p_key]) > 0:
                 pkey_exist[table] |= set(table_dat[p_key])

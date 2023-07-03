@@ -13,7 +13,7 @@
 
 ## add information to JPOD using Python
 jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-jpod_version="jpod_test.db"
+jpod_version="jpod.db"
 cd $jpod_path/jpod/
 source ../jpod_venv/bin/activate
 
@@ -25,4 +25,4 @@ source ../jpod_venv/bin/activate
 ## done
 
 ## specific augmentation
-python ./scripts/jpod_update.py
+python ./scripts/uniq_ids.py
