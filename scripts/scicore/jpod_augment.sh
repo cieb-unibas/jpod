@@ -25,4 +25,4 @@ source ../jpod_venv/bin/activate
 ## done
 
 ## specific augmentation
-python ./scripts/uniq_ids.py
+python ./scripts/jpod_update.py

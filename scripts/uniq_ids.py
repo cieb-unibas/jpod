@@ -13,13 +13,23 @@ if __name__ == "__main__":
     OUT_PATH = jpod.get_path(jpod.config.DAT_DIRS)
 
     # create uid chunks and find duplicated uniq_ids
-    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))
+    FILE_PATH_2023 = jpod.get_path(jpod.config.DAT_DIRS)
+    FILE_PATH_2022 = os.path.abspath(os.path.join(FILE_PATH_2023, os.pardir))
+    FILES2023 = [os.path.join(FILE_PATH_2023, file) for file in jpod.select_raw_files(dir = FILE_PATH_2023)]
+    print("FILES from 2023: ", len(FILES2023))
+    FILES2022 = [os.path.join(FILE_PATH_2022, file) for file in jpod.select_raw_files(dir = FILE_PATH_2022)]    
+    print("FILES from 2022: ", len(FILES2022))
+    FILES = FILES2023 + FILES2022
+    print("Number of selected files: %d " % len(FILES))
+    
     UID_CHUNCK_DICT = {}
     DUPLICATE_IDS = []
 
-    for i, file in enumerate(FILES):
+    for i, file in enumerate(FILES[:2]):
         # load the uniq_ids from the raw file
-        uniq_ids = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))["uniq_id"]
+        print(file)
+        uniq_ids = jpod.load_raw_data(file)["uniq_id"]
+        print(len(uniq_ids))
         # add all ids to the dict and filter out duplicates
         for uid in uniq_ids:
             chunck_id = uid[:2]
@@ -31,9 +41,9 @@ if __name__ == "__main__":
                 else:
                     UID_CHUNCK_DICT[chunck_id].append(uid)
         # logger
-        if i % 5 == 0:
+        if i % 1 == 0:
             print("Identified duplicated uniq_id's in %d/%d raw files." % (i + 1, len(FILES)))
-    
+
     # save to disk
     if len(DUPLICATE_IDS) > 0:
         DUPLICATE_IDS = pd.Series(DUPLICATE_IDS, name = "duplicated_ids")

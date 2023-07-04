@@ -31,10 +31,11 @@ if __name__ == "__main__":
     log_n = 20
     
     # get existing p_keys for unique_records check
-    pkey_exist = {}
-    for table in JPOD_STRUCTURE.tables:
-        pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
+    # pkey_exist = {}
+    # for table in JPOD_STRUCTURE.tables:
+    #    pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
     # get existing table variables
+    existing_employers = list(jpod.retrieve_pkeys(table = "institutions", p_key = JPOD_STRUCTURE.pkeys["institutions"], conn = JPOD_CONN))
     jpod_table_vars = {}
     for table in jpod.get_tables(JPOD_CONN):
         if table == "regio_grid":
@@ -73,21 +74,32 @@ if __name__ == "__main__":
             assert all(c in table_dat.columns for c in jpod_table_vars[table]), "Some columns from JPOD table `%s` are missing in the provided dataframe" % table
 
             # insert the data into the databse
-            try:
-                keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES]
-                table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :]
-                jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-            except:
-                table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
-                jpod.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-            if len(table_dat[p_key]) > 0:
-                pkey_exist[table] |= set(table_dat[p_key])
+            if table == "institutions":
+                keep_ids = [e for e in table_dat[p_key] if e not in existing_employers] # check which employers are already in the .db table
+                if len(keep_ids) > 0:
+                    existing_employers += keep_ids # update the list with the new ones
+                    table_dat = table_dat.loc[table_dat.company_name.isin(keep_ids), :] # subset to those employers that are not yet in the .db table
+                    jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False) # insert these employers
+            else:
+                keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES] # check if there are any duplicate uniq_ids
+                table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :] # subset data to non-duplicated ones
+                jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False) # insert all into .db tables
+            # try:
+            #    keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES]
+            #    table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :]
+            #    jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False)
+            #except:
+            #    table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
+            #    jpod.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
+            #if len(table_dat[p_key]) > 0:
+            #    pkey_exist[table] |= set(table_dat[p_key])
         
         # logs & commit
         if i % log_n == 0 and i != 0:
             print("Inserted data from %d/%d files into JPOD. Approximately %d postings inserted" % (i, len(FILES), i * 100000))
         JPOD_CONN.commit()
     
+    JPOD_CONN.close()
     print("Data from all files successfully inserted.")
     end = time.perf_counter()
     print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))
