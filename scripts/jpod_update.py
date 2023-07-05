@@ -27,27 +27,27 @@ if __name__ == "__main__":
     if os.path.exists("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/not_inserted_files.csv"):
         not_inserted_files = pd.read_csv("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/not_inserted_files.csv")["files"].to_list()
         FILES = [file for file in FILES if file in not_inserted_files]
-    UID_DUPLICATES = pd.read_csv(os.path.join(AUGMENT_PATH, "duplicated_ids.csv"))["duplicated_ids"].to_list()
-    log_n = 20
+    print("Selected %d files with raw data for updating JPOD" % len(FILES))
     
-    # get existing p_keys for unique_records check
-    # pkey_exist = {}
-    # for table in JPOD_STRUCTURE.tables:
-    #    pkey_exist[table] = jpod.retrieve_pkeys(table = table, p_key = JPOD_STRUCTURE.pkeys[table], conn = JPOD_CONN)
-    # get existing table variables
+    UID_DUPLICATES = pd.read_csv(os.path.join(AUGMENT_PATH, "duplicated_ids.csv"))["duplicated_ids"].to_list()
     existing_employers = list(jpod.retrieve_pkeys(table = "institutions", p_key = JPOD_STRUCTURE.pkeys["institutions"], conn = JPOD_CONN))
+    
     jpod_table_vars = {}
     for table in jpod.get_tables(JPOD_CONN):
         if table == "regio_grid":
             continue
         jpod_table_vars[table] = jpod.get_table_vars(JPOD_CONN, table)
+    
     jpod_cols = [] 
     for cols in jpod_table_vars.values():
         jpod_cols += cols
 
+    record_counter = 0
+    log_n = 20
+    
     print("---------------Updating JPOD with Data Batch '%s'---------------" % DATA_BATCH)
 
-    for i, file in enumerate(FILES):
+    for i, file in enumerate(FILES[:1]):
 
         df = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))\
             .rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})
@@ -84,19 +84,12 @@ if __name__ == "__main__":
                 keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES] # check if there are any duplicate uniq_ids
                 table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :] # subset data to non-duplicated ones
                 jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False) # insert all into .db tables
-            # try:
-            #    keep_ids = [uid for uid in table_dat[p_key] if uid not in UID_DUPLICATES]
-            #    table_dat = table_dat.loc[table_dat.uniq_id.isin(keep_ids), :]
-            #    jpod.insert_base_data(df = table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-            #except:
-            #    table_dat = jpod.unique_records(df = table_dat, df_identifier = p_key, existing_pkeys = pkey_exist[table])
-            #    jpod.insert_base_data(df=table_dat, table = table, conn = JPOD_CONN, test_rows = False)
-            #if len(table_dat[p_key]) > 0:
-            #    pkey_exist[table] |= set(table_dat[p_key])
+                if table == "job_postings":
+                    record_counter += len(table_dat)
         
         # logs & commit
         if i % log_n == 0 and i != 0:
-            print("Inserted data from %d/%d files into JPOD. Approximately %d postings inserted" % (i, len(FILES), i * 100000))
+            print("Inserted data from %d/%d files into JPOD. %d postings inserted" % (i, len(FILES), record_counter))
         JPOD_CONN.commit()
     
     JPOD_CONN.close()
