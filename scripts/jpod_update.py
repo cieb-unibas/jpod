@@ -14,7 +14,7 @@ if __name__ == "__main__":
     
     start = time.perf_counter()
     
-    print("---------------Setting directories---------------")
+    print("---------------Setting parameters---------------")
     JPOD_VERSION = "jpod.db"
     DATA_BATCH = "jobspickr_2023_01"
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
@@ -24,8 +24,8 @@ if __name__ == "__main__":
     JPOD_STRUCTURE = jpod.base_properties()
 
     FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))
-    if os.path.exists("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/not_inserted_files.csv"):
-        not_inserted_files = pd.read_csv("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/not_inserted_files.csv")["files"].to_list()
+    if os.path.exists("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/not_inserted_files.csv"):
+        not_inserted_files = pd.read_csv("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/not_inserted_files.csv")["files"].to_list()
         FILES = [file for file in FILES if file in not_inserted_files]
     print("Selected %d files with raw data for updating JPOD" % len(FILES))
     
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     
     print("---------------Updating JPOD with Data Batch '%s'---------------" % DATA_BATCH)
 
-    for i, file in enumerate(FILES[:1]):
+    for i, file in enumerate(FILES):
 
         df = jpod.load_raw_data(os.path.join(jpod.get_path(jpod.config.DAT_DIRS), file))\
             .rename(columns = {"inferred_iso3_lang_code": "text_language", "is_remote": "remote_position"})

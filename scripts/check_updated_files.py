@@ -30,6 +30,7 @@ os.chdir("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/")
 JPOD_VERSION = "jpod.db"
 DATA_BATCH = "jobspickr_2023_01"
 DATA_DIR = "jobspickr_raw/jobspickr2023/"
+OUT_FILE = "augmentation_data/not_inserted_files.csv"
 
 if __name__ == "__main__":
     # connect to .db
@@ -47,7 +48,7 @@ if __name__ == "__main__":
             print("Checked %d/%d raw files" % (i, len(FILES)))
     JPOD_CONN.close()
     # save the `not_inserted_files` list to disk
-    print("Raw data from % of %d files are not inserted to JPOD yet." % (len(not_inserted_files), len(FILES)))
-    pd.Series(not_inserted_files, name = "files").to_csv("not_inserted_files.csv", index = False)
-    print("Saved list of not inserted files to disk at location: %s" % os.getcwd())
+    print("Raw data from %d of %d files are not inserted to JPOD yet." % (len(not_inserted_files), len(FILES)))
+    pd.Series(not_inserted_files, name = "files").to_csv(OUT_FILE, index = False)
+    print("Saved list of not inserted files to disk at location: %s" % os.path.join(os.getcwd(), OUT_FILE))
 

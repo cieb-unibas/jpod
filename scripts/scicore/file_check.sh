@@ -12,5 +12,5 @@
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
 cd "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-source jpod_venv/bin/activate
-python check_updated_files.py
+source ./jpod_venv/bin/activate
+python ./jpod/scripts/check_updated_files.py

@@ -16,7 +16,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
 JPOD_STRUCTURE = nav.base_properties()
 
 #### retrieve samples for creating a random subset:-----------------------
-test_size = 0.005 # 0.5% of overall samples
+test_size = 0.0025 # 0.25% of overall samples
 n_samples = int(JPOD_CONN.execute("SELECT COUNT(*) FROM job_postings").fetchall()[0][0] * test_size)
 JPOD_QUERY = """
 SELECT jp.uniq_id
