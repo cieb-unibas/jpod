@@ -6,8 +6,8 @@
 #SBATCH --time=06:00:00
 #SBATCH --qos=6hours
 
-#SBATCH --output=cluster_logs/jpod_update_insert
-#SBATCH --error=cluster_logs/jpod_update_insert_errors
+#SBATCH --output=cluster_logs/augment_ai
+#SBATCH --error=cluster_logs/augment_ai_errors
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
@@ -25,4 +25,4 @@ source ../jpod_venv/bin/activate
 ## done
 
 ## specific augmentation
-python ./scripts/jpod_update.py
+python ./scripts/detect_ai.py
