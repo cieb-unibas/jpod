@@ -19,8 +19,6 @@ if __name__ == "__main__":
 
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
-    HOME = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
-    os.chdir(HOME)
 
     print("---------------Updating Bloom technologies---------------")
     start = time.perf_counter()
@@ -75,6 +73,7 @@ if __name__ == "__main__":
         );
         """
         JPOD_CONN.executescript(JPOD_QUERY)
+        print("Created new table 'acemoglu_ai' in JPOD")
 
     # insert data into the table, commit and close connection to JPOD
     try:
@@ -85,6 +84,7 @@ if __name__ == "__main__":
             drop_duplicates(subset = ["uniq_id", "bloom_code"], keep = "last").\
                 dropna(subset = ["bloom_field"])
         res.to_sql(name = "bloom_tech", con = JPOD_CONN, if_exists = "append", index = False)
+
     JPOD_CONN.commit()
     JPOD_CONN.close()
     print("Successfully inserted information regarding disruptive technology fields by Bloom et al. (2020).")
