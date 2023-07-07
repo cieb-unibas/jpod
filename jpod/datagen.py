@@ -366,9 +366,11 @@ class DuplicateCleaner():
     """
     Clean and identify duplicated job postings.
     """
-    def __init__(self, con, data_batch):
+    def __init__(self, con, data_batch, restrict_to_countries = False, exclude_countries = False):
         self.batch = data_batch
         self.con = con
+        self.restrict_to_countries = restrict_to_countries
+        self.exclude_countries = exclude_countries
 
     def duplicate_query(self, assign_to = "unique_posting_text", levels = ["job_description"]):
         """
@@ -376,6 +378,16 @@ class DuplicateCleaner():
         """
         level = ", ".join(levels)
         self.assign_to = assign_to
+        if self.restrict_to_countries:
+            assert not self.exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
+            country_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_countries])
+            country_condition = "AND inferred_country IN (%s)" % country_subset
+        elif self.exclude_countries:
+            assert not self.restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
+            country_subset = ", ".join(["'" + c + "'" for c in self.exclude_countries])
+            country_condition = "AND inferred_country NOT IN (%s)" % country_subset
+        else:
+            country_condition = ""
         
         jpod_query = """
         UPDATE job_postings 
@@ -389,12 +401,12 @@ class DuplicateCleaner():
                     SELECT jp.uniq_id, jp.job_description, pc.city, pc.inferred_country
                     FROM job_postings jp
                     LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id
-                    WHERE jp.data_batch = '%s' 
+                    WHERE jp.data_batch = '%s' %s
                     )
                 )
             WHERE rnr > 1
         );
-        """ % (assign_to, level, self.batch)
+        """ % (assign_to, level, self.batch, country_condition)
 
         return(jpod_query)
 

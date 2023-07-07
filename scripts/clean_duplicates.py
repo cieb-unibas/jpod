@@ -24,19 +24,19 @@ if __name__ == "__main__":
         "unique_posting_text", # no exactly identical text
         "unique_posting_textlocation", # no identical text within city
         ]
-    existing_cols = nav.get_table_vars(conn = JPOD_CONN, table = "job_postings")
-    for c in new_cols:
-        if c in existing_cols:
-            JPOD_CONN.execute("UPDATE job_postings SET %s = 'yes' WHERE data_batch == '%s'" % (c, DATA_BATCH))
-            print("Set values in column '%s' for data batch '%s' to default value 'yes'." % (c, DATA_BATCH))
-            JPOD_CONN.commit()
-        else:
-            JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN %s VARCHAR(3) DEFAULT 'yes'" % c)
-            print("Initialized column %s" % c)
-            JPOD_CONN.commit()
+    # existing_cols = nav.get_table_vars(conn = JPOD_CONN, table = "job_postings")
+    # for c in new_cols:
+    #     if c in existing_cols:
+    #         JPOD_CONN.execute("UPDATE job_postings SET %s = 'yes' WHERE data_batch == '%s'" % (c, DATA_BATCH))
+    #         print("Set values in column '%s' for data batch '%s' to default value 'yes'." % (c, DATA_BATCH))
+    #         JPOD_CONN.commit()
+    #     else:
+    #         JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN %s VARCHAR(3) DEFAULT 'yes'" % c)
+    #         print("Initialized column %s" % c)
+    #         JPOD_CONN.commit()
 
     # Identify duplicates:
-    cleaner = DuplicateCleaner(con = JPOD_CONN, data_batch = 'jobspickr_2023_01')
+    cleaner = DuplicateCleaner(con = JPOD_CONN, data_batch = 'jobspickr_2023_01', restrict_to_countries = ["CH"])
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_text", levels=["job_description", "inferred_country"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_textlocation", levels=["job_description", "city"])
