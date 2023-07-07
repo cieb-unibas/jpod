@@ -381,11 +381,11 @@ class DuplicateCleaner():
         if self.restrict_to_countries:
             assert not self.exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_countries])
-            country_condition = "AND inferred_country IN (%s)" % country_subset
+            country_condition = "AND pc.inferred_country IN (%s)" % country_subset
         elif self.exclude_countries:
             assert not self.restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.exclude_countries])
-            country_condition = "AND inferred_country NOT IN (%s)" % country_subset
+            country_condition = "AND pc.inferred_country NOT IN (%s)" % country_subset
         else:
             country_condition = ""
         
@@ -419,6 +419,20 @@ class DuplicateCleaner():
         if commit:
             self.con.commit()
             print("JPOD changes commited.")
+
+def _set_country_batch_to_default(col, defaul_value, data_batch, restrict_to_countries = None, exclude_countries = None):
+    if restrict_to_countries:
+        assert not exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
+        country_subset = ", ".join(["'" + c + "'" for c in restrict_to_countries])
+        country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country IN (%s))" % country_subset
+    elif exclude_countries:
+        assert not restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
+        country_subset = ", ".join(["'" + c + "'" for c in exclude_countries])
+        country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country NOT IN (%s))" % country_subset
+    else:
+        country_condition = ""    
+    query = "UPDATE job_postings SET %s = '%s' WHERE data_batch = '%s' %s" % (col, defaul_value, data_batch, country_condition)
+    return query
 
 def load_jpod_nuts(conn):
     nuts_query = """
