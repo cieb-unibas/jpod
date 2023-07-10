@@ -366,9 +366,10 @@ class DuplicateCleaner():
     """
     Clean and identify duplicated job postings.
     """
-    def __init__(self, con, data_batch, restrict_to_countries = False, exclude_countries = False):
+    def __init__(self, con, data_batch, update_value = "no", restrict_to_countries = False, exclude_countries = False):
         self.batch = data_batch
         self.con = con
+        self.update_value = update_value
         self.restrict_to_countries = restrict_to_countries
         self.exclude_countries = exclude_countries
 
@@ -381,39 +382,42 @@ class DuplicateCleaner():
         if self.restrict_to_countries:
             assert not self.exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_countries])
-            country_condition = "WHERE inferred_country IN (%s)" % country_subset
+            country_condition = "AND inferred_country IN (%s)" % country_subset
+            pc_country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country IN (%s))" % country_subset
         elif self.exclude_countries:
             assert not self.restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.exclude_countries])
-            country_condition = "WHERE inferred_country NOT IN (%s)" % country_subset
+            country_condition = "AND inferred_country NOT IN (%s)" % country_subset
+            pc_country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country NOT IN (%s))" % country_subset
         else:
             country_condition = ""
+            pc_country_condition = ""
         
         jpod_query = """
         UPDATE job_postings 
-        SET %s = 'no' 
+        SET %s = '%s' 
         WHERE uniq_id IN (
             SELECT uniq_id
             FROM (
-                SELECT uniq_id,
-                ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) as rnr
+                SELECT uniq_id, 
+                ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) AS rnr
                 FROM (
-                    SELECT jp.uniq_id, jp.job_description, pc.city, pc.inferred_country
+                    SELECT pc.uniq_id, jp.job_description, pc.city, pc.inferred_country
                     FROM (
+                        SELECT uniq_id, city, inferred_country
+                        FROM position_characteristics
+                        WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE data_batch = '%s') %s
+                        ) pc
+                    LEFT JOIN (
                         SELECT uniq_id, job_description
                         FROM job_postings
-                        WHERE data_batch = '%s'
-                        ) jp
-                    LEFT JOIN (
-                        SELECT uniq_id, city, inferred_country 
-                        FROM position_characteristics
-                        %s
-                        ) pc on jp.uniq_id = pc.uniq_id
+                        WHERE data_batch = '%s' %s
+                        ) jp on pc.uniq_id = jp.uniq_id
                     )
                 )
             WHERE rnr > 1
-        );
-        """ % (assign_to, level, self.batch, country_condition)
+            );
+        """ % (assign_to, self.update_value, level, self.batch, country_condition, self.batch, pc_country_condition)
 
         return(jpod_query)
 
@@ -427,7 +431,7 @@ class DuplicateCleaner():
             self.con.commit()
             print("JPOD changes commited.")
 
-def _set_country_batch_to_default(col, defaul_value, data_batch, restrict_to_countries = None, exclude_countries = None):
+def _set_country_batch_to_default(col, default_value, data_batch, restrict_to_countries = None, exclude_countries = None):
     if restrict_to_countries:
         assert not exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
         country_subset = ", ".join(["'" + c + "'" for c in restrict_to_countries])
@@ -438,7 +442,7 @@ def _set_country_batch_to_default(col, defaul_value, data_batch, restrict_to_cou
         country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country NOT IN (%s))" % country_subset
     else:
         country_condition = ""    
-    query = "UPDATE job_postings SET %s = '%s' WHERE data_batch = '%s' %s" % (col, defaul_value, data_batch, country_condition)
+    query = "UPDATE job_postings SET %s = '%s' WHERE data_batch = '%s' %s" % (col, default_value, data_batch, country_condition)
     return query
 
 def load_jpod_nuts(conn):
