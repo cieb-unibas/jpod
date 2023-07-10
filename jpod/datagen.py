@@ -381,11 +381,11 @@ class DuplicateCleaner():
         if self.restrict_to_countries:
             assert not self.exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_countries])
-            country_condition = "AND pc.inferred_country IN (%s)" % country_subset
+            country_condition = "WHERE inferred_country IN (%s)" % country_subset
         elif self.exclude_countries:
             assert not self.restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
             country_subset = ", ".join(["'" + c + "'" for c in self.exclude_countries])
-            country_condition = "AND pc.inferred_country NOT IN (%s)" % country_subset
+            country_condition = "WHERE inferred_country NOT IN (%s)" % country_subset
         else:
             country_condition = ""
         
@@ -394,14 +394,21 @@ class DuplicateCleaner():
         SET %s = 'no' 
         WHERE uniq_id IN (
             SELECT uniq_id
-            FROM(
+            FROM (
                 SELECT uniq_id,
                 ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) as rnr
-                FROM(
+                FROM (
                     SELECT jp.uniq_id, jp.job_description, pc.city, pc.inferred_country
-                    FROM job_postings jp
-                    LEFT JOIN position_characteristics pc on jp.uniq_id = pc.uniq_id
-                    WHERE jp.data_batch = '%s' %s
+                    FROM (
+                        SELECT uniq_id, job_description
+                        FROM job_postings
+                        WHERE data_batch = '%s'
+                        ) jp
+                    LEFT JOIN (
+                        SELECT uniq_id, city, inferred_country 
+                        FROM position_characteristics
+                        %s
+                        ) pc on jp.uniq_id = pc.uniq_id
                     )
                 )
             WHERE rnr > 1

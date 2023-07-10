@@ -21,6 +21,7 @@ if __name__ == "__main__":
     
     print("---------------Starting to identify duplicated postings---------------")
     start = time.perf_counter()
+
     # check if the columns already exist and set them to their default values:
     new_cols = [
         "unique_posting_text", # no exactly identical text
@@ -60,23 +61,3 @@ if __name__ == "__main__":
     JPOD_CONN.close()
     end = time.perf_counter()
     print("Execution took %f minutes." % round((end - start) / 60, ndigits=3))
-
-# no restrictions
-# Found 81301 unique and 18699 duplicated postings in JPOD for column 'unique_posting_text' and data batch 'jobspickr_2023_01'
-# Found 84885 unique and 15115 duplicated postings in JPOD for column 'unique_posting_textlocation' and data batch 'jobspickr_2023_01'
-
-# after setting CH/GER to default
-# Found 95619 unique and 4381 duplicated postings in JPOD for column 'unique_posting_text' and data batch 'jobspickr_2023_01'
-# Found 98187 unique and 1813 duplicated postings in JPOD for column 'unique_posting_textlocation' and data batch 'jobspickr_2023_01'
-
-# after cleaning CH/GER
-# Found 81301 unique and 18699 duplicated postings in JPOD for column 'unique_posting_text' and data batch 'jobspickr_2023_01'
-# Found 84887 unique and 15113 duplicated postings in JPOD for column 'unique_posting_textlocation' and data batch 'jobspickr_2023_01'
-
-# after setting everything to default except CH/GER
-# Found 85682 unique and 14318 duplicated postings in JPOD for column 'unique_posting_text' and data batch 'jobspickr_2023_01'
-# Found 86700 unique and 13300 duplicated postings in JPOD for column 'unique_posting_textlocation' and data batch 'jobspickr_2023_01'
-
-# after cleaning everything except CH/GER
-# Found 81301 unique and 18699 duplicated postings in JPOD for column 'unique_posting_text' and data batch 'jobspickr_2023_01'
-# Found 84888 unique and 15112 duplicated postings in JPOD for column 'unique_posting_textlocation' and data batch 'jobspickr_2023_01'
