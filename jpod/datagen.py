@@ -448,8 +448,13 @@ def load_jpod_nuts(conn):
     WHERE nuts_2 IS NULL AND nuts_3 IS NULL  AND (oecd_level = 2 OR oecd_level = 3);
     """
     regio_oecd = pd.read_sql(con = conn, sql = oecd_query)
-
     regions = pd.concat([regio_nuts, regio_oecd], axis= 0)
+    # correct for duplicates
+    duplicated_regions = regions.loc[regions["inferred_state"].duplicated(),"inferred_state"].to_list()
+    cleaned_duplicated_regions = regions.loc[regions["inferred_state"].isin(duplicated_regions),:].dropna()
+    regions = regions.loc[~regions["inferred_state"].isin(duplicated_regions),:]
+    regions = pd.concat([regions, cleaned_duplicated_regions], axis = 0)    
+    
     return regions
 
 def load_and_clean_keywords(keyword_df_or_file, tech_field_subset = None, multilingual = False):
