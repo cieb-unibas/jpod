@@ -5,7 +5,8 @@ import time
 
 print("Current directory is: " + os.getcwd())
 sys.path.append(os.getcwd())
-from jpod.datagen import DuplicateCleaner, _set_country_batch_to_default
+
+from jpod.datagen import DuplicateCleaner
 import jpod.config as config
 import jpod.navigate as nav
 
@@ -14,49 +15,30 @@ if __name__ == "__main__":
     # parameters for connecting to JPOD
     JPOD_VERSION = "jpod.db"
     DATA_BATCH = "jobspickr_2023_01"
-    RESTRICT_TO_COUNTRIES = ["switzerland"]
+    RESTRICT_TO_COUNTRIES = ["united kingdom"]
     EXCLUDE_COUNTRIES = None
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
-    
-    print("---------------Starting to identify duplicated postings---------------")
     start = time.perf_counter()
+    
+    # make sure columns exist in the database
+    existing_vars = nav.get_table_vars(conn=JPOD_CONN, table="job_postings")
+    for c in ["unique_posting_text", "unique_posting_textlocation"]:
+        if c not in existing_vars:
+            JPOD_CONN.execute("ALTER TABLE job_postings ADD COLUMN %s VARCHAR(3) DEFAULT 'yes'" % c)
+            print("Created new columns %s in table job postings. Ready to perform duplicate cleaning" % c)
+        else:
+            print("Columns %s exists in table job postings. Ready to perform duplicate cleaning" % c)
 
-    # check if the columns already exist and set them to their default values:
-    new_cols = [
-        "unique_posting_text", # no exactly identical text
-        "unique_posting_textlocation", # no identical text within city
-        ]
-    existing_cols = nav.get_table_vars(conn = JPOD_CONN, table = "job_postings")
-    for c in new_cols:
-        query = _set_country_batch_to_default(
-            col = c, defaul_value='yes', data_batch=DATA_BATCH, 
-            restrict_to_countries= RESTRICT_TO_COUNTRIES,
-            exclude_countries=EXCLUDE_COUNTRIES)
-        JPOD_CONN.execute(query)
-        # log:
-        if RESTRICT_TO_COUNTRIES:
-            print("Set values in column '%s' for countries %s from data batch '%s' to default value 'yes'." % (c, ", ".join(RESTRICT_TO_COUNTRIES), DATA_BATCH))
-        if EXCLUDE_COUNTRIES:
-            print("Set values in column '%s' from data batch '%s' to default value 'yes' except for countries %s." % (c, DATA_BATCH,", ".join(EXCLUDE_COUNTRIES)))
-        if not RESTRICT_TO_COUNTRIES or EXCLUDE_COUNTRIES:
-            print("Set values in column '%s' for data batch '%s' to default value 'yes'." % (c, DATA_BATCH))
-
-    # Identify duplicates:
+    # Load the cleaner and identify duplicates per country-batch:
+    print("---------------Starting to identify duplicated postings---------------")
     cleaner = DuplicateCleaner(con = JPOD_CONN, data_batch = 'jobspickr_2023_01', restrict_to_countries = RESTRICT_TO_COUNTRIES)
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_text", levels=["job_description", "inferred_country"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_textlocation", levels=["job_description", "city"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
 
-    # test and summarize:
-    for c in new_cols:
-        assert c in nav.get_table_vars(conn=JPOD_CONN, table="job_postings"), "Failed to create column '%s' in Table job_postings" %c
-        n_duplicated = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch == '%s' AND %s == 'no'" % (DATA_BATCH, c)).fetchone()[0]
-        n_unique = JPOD_CONN.execute("SELECT COUNT(uniq_id) FROM job_postings WHERE data_batch == '%s' AND %s == 'yes'" % (DATA_BATCH, c)).fetchone()[0]
-        print("Found %d unique and %d duplicated postings in JPOD for column '%s' and data batch '%s'" % (n_unique, n_duplicated, c, DATA_BATCH))
-
-    #### Save and close connection to .db
+    # Save and close connection to JPOD, log the performance of the script
     JPOD_CONN.commit()
     JPOD_CONN.close()
     end = time.perf_counter()

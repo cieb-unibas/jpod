@@ -396,7 +396,8 @@ class DuplicateCleaner():
         jpod_query = """
         UPDATE job_postings 
         SET %s = '%s' 
-        WHERE uniq_id IN (
+        WHERE data_batch = '%s'
+        AND uniq_id IN (
             SELECT uniq_id
             FROM (
                 SELECT uniq_id, 
@@ -417,7 +418,7 @@ class DuplicateCleaner():
                 )
             WHERE rnr > 1
             );
-        """ % (assign_to, self.update_value, level, self.batch, country_condition, self.batch, pc_country_condition)
+        """ % (assign_to, self.update_value, self.batch, level, self.batch, country_condition, self.batch, pc_country_condition)
 
         return(jpod_query)
 
