@@ -366,12 +366,13 @@ class DuplicateCleaner():
     """
     Clean and identify duplicated job postings.
     """
-    def __init__(self, con, data_batch, update_value = "no", restrict_to_countries = False, exclude_countries = False):
+    def __init__(self, con, data_batch, update_value = "no", restrict_scope_by = "inferred_country", restrict_to_geo_units = False, exclude_geo_units = False):
         self.batch = data_batch
         self.con = con
         self.update_value = update_value
-        self.restrict_to_countries = restrict_to_countries
-        self.exclude_countries = exclude_countries
+        self.restrict_scope_by = restrict_scope_by
+        self.restrict_to_geo_units = restrict_to_geo_units
+        self.exclude_geo_units = exclude_geo_units
 
     def duplicate_query(self, assign_to = "unique_posting_text", levels = ["job_description"]):
         """
@@ -379,46 +380,42 @@ class DuplicateCleaner():
         """
         level = ", ".join(levels)
         self.assign_to = assign_to
-        if self.restrict_to_countries:
-            assert not self.exclude_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
-            country_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_countries])
-            country_condition = "AND inferred_country IN (%s)" % country_subset
-            pc_country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country IN (%s))" % country_subset
-        elif self.exclude_countries:
-            assert not self.restrict_to_countries, "Only one of `restrict_to_countries` and `exclude_countries` can be chosen."
-            country_subset = ", ".join(["'" + c + "'" for c in self.exclude_countries])
-            country_condition = "AND inferred_country NOT IN (%s)" % country_subset
-            pc_country_condition = "AND uniq_id IN (SELECT uniq_id FROM position_characteristics WHERE inferred_country NOT IN (%s))" % country_subset
+        if self.restrict_to_geo_units:
+            assert not self.exclude_geo_units, "Only one of `restrict_to_geo_units` and `exclude_geo_units` can be chosen."
+            geo_subset = ", ".join(["'" + c + "'" for c in self.restrict_to_geo_units])
+            geo_condition = "WHERE %s IN (%s)" % (self.restrict_scope_by, geo_subset)
+        elif self.exclude_geo_units:
+            assert not self.exclude_geo_units, "Only one of `restrict_to_geo_units` and `exclude_geo_units` can be chosen."
+            geo_subset = ", ".join(["'" + c + "'" for c in self.exclude_geo_units])
+            geo_condition = "WHERE %s NOT IN (%s)" % (self.restrict_scope_by, geo_subset)
         else:
-            country_condition = ""
-            pc_country_condition = ""
+            geo_condition = ""
         
         jpod_query = """
         UPDATE job_postings 
-        SET %s = '%s' 
-        WHERE data_batch = '%s'
-        AND uniq_id IN (
+        SET {0} = '{1}' 
+        WHERE uniq_id IN (
             SELECT uniq_id
             FROM (
                 SELECT uniq_id, 
-                ROW_NUMBER() OVER (PARTITION BY %s ORDER BY uniq_id) AS rnr
+                ROW_NUMBER() OVER (PARTITION BY {2} ORDER BY uniq_id) AS rnr
                 FROM (
-                    SELECT pc.uniq_id, jp.job_description, pc.city, pc.inferred_country
+                    SELECT pc.uniq_id, jp.job_description, pc.city, pc.{3}
                     FROM (
-                        SELECT uniq_id, city, inferred_country
+                        SELECT uniq_id, city, {3}
                         FROM position_characteristics
-                        WHERE uniq_id IN (SELECT uniq_id FROM job_postings WHERE data_batch = '%s') %s
+                        {4}
                         ) pc
-                    LEFT JOIN (
+                    INNER JOIN (
                         SELECT uniq_id, job_description
                         FROM job_postings
-                        WHERE data_batch = '%s' %s
+                        WHERE data_batch = '{5}'
                         ) jp on pc.uniq_id = jp.uniq_id
                     )
                 )
             WHERE rnr > 1
-            );
-        """ % (assign_to, self.update_value, self.batch, level, self.batch, country_condition, self.batch, pc_country_condition)
+        )
+        """.format(assign_to, self.update_value, level, self.restrict_scope_by, geo_condition, self.batch)
 
         return(jpod_query)
 
