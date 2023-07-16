@@ -19,6 +19,6 @@ ON position_characteristics(inferred_country);
 ---city
 CREATE INDEX pc_city_index
 ON position_characteristics(city);
---- nuts_2
+---nuts_2
 CREATE INDEX pc_nuts_2_index
 ON position_characteristics(nuts_2);
