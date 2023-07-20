@@ -1,0 +1,73 @@
+PRAGMA foreign_keys = ON;
+
+-- create table structures:
+CREATE TABLE job_postings(
+uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
+crawl_timestamp VARCHAR(19),
+url TEXT,
+post_date TEXT,
+job_title TEXT,
+job_description TEXT,
+html_job_description TEXT,
+job_board TEXT,
+text_language TEXT,
+unique_posting_text VARCHAR(3) DEFAULT 'yes',
+unique_posting_textlocation VARCHAR(3) DEFAULT 'yes'
+);
+
+CREATE TABLE position_characteristics(
+uniq_id VARCHAR(32) NOT NULL PRIMARY KEY,
+company_name VARCHAR,
+category VARCHAR,
+inferred_department_name VARCHAR,
+inferred_department_score INTEGER,
+city VARCHAR,
+inferred_city VARCHAR,
+state VARCHAR,
+inferred_state VARCHAR,
+country VARCHAR,
+inferred_country VARCHAR,
+job_type VARCHAR,
+inferred_job_title VARCHAR,
+remote_position VARCHAR
+);
+
+CREATE TABLE institutions(
+company_name VARCHAR NOT NULL PRIMARY KEY,
+contact_email VARCHAR,
+contact_phone_number INTEGER,
+inferred_company_type VARCHAR,
+inferred_company_type_score INTEGER
+);
+
+CREATE TABLE acemoglu_ai(
+uniq_id VARCHAR(32) NOT NULL,
+PRIMARY KEY (uniq_id)
+);
+
+CREATE TABLE bloom_tech(
+uniq_id VARCHAR(32) NOT NULL,
+bloom_field VARCHAR(30),
+bloom_code INT,
+PRIMARY KEY (uniq_id, bloom_code)
+);
+
+CREATE TABLE regio_grid (
+name_en TEXT NOT NULL,
+name_de TEXT,
+name_fr TEXT,
+regio_abbrev VARCHAR(5),
+nuts_level INT,
+oecd_level INT,
+iso_2 VARCHAR(2),
+iso_3 VARCHAR(3),
+nuts_0 VARCHAR(2),
+nuts_1 VARCHAR(3),
+nuts_2 VARCHAR(4),
+nuts_3 VARCHAR(5),
+oecd_tl1 VARCHAR(2),
+oecd_tl2 VARCHAR(4),
+oecd_tl3 VARCHAR(5),
+self_classified VARCHAR(3),
+PRIMARY KEY (name_en, nuts_3)
+);
