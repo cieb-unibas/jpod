@@ -43,6 +43,27 @@ def get_table_vars(conn, table):
     res = [col[1] for col in res.fetchall()]
     return res
 
+def get_table_pkeys(conn, table):
+    """
+    Retrieve the name of the primary key from a table in JPOD
+
+    Parameters:
+    -----------
+    conn : sqlite3.Connection
+        A sqlite3 connection object to JPOD.
+    table :str
+        A string indicating a certain JPOD table.
+
+    Returns:
+    --------
+    list:
+        A list of strings indicating primary keys of a JPOD table.
+    """
+    res = conn.execute("SELECT table_pkey.name FROM PRAGMA table_info({}) AS table_pkey WHERE table_pkey.pk = 1;".format(table))
+    res = [col[1] for col in res.fetchall()]
+    return res
+
+
 class base_properties():
     """
     Retrieve the base properties of JPOD.

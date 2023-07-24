@@ -11,6 +11,7 @@ job_description TEXT,
 html_job_description TEXT,
 job_board TEXT,
 text_language TEXT,
+data_batch VARCHAR DEFAULT 'jobspickr_2022_01',
 unique_posting_text VARCHAR(3) DEFAULT 'yes',
 unique_posting_textlocation VARCHAR(3) DEFAULT 'yes'
 );
@@ -29,7 +30,9 @@ country VARCHAR,
 inferred_country VARCHAR,
 job_type VARCHAR,
 inferred_job_title VARCHAR,
-remote_position VARCHAR
+remote_position VARCHAR,
+nuts_2 VARCHAR(5),
+nuts_3 VARCHAR(5)
 );
 
 CREATE TABLE institutions(
