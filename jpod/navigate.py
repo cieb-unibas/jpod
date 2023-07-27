@@ -5,6 +5,21 @@ def get_path(potential_paths):
     dir_out = [p for p in potential_paths if os.path.exists(p)][0]
     return dir_out
 
+def connect_to_jpod(db_location: str, version: str = "test"):
+    assert os.path.exists(db_location), "The directory `db_location`: %s does not exist." % db_location
+    if version == "test":
+        db_path = os.path.join(db_location, "jpod_test.db")
+        assert os.path.exists(db_path), "`jpod_test.db` could not be found in your specified location."
+        con = sqlite3.connect(db_path)
+        return con
+    elif version == "full":
+        db_path = os.path.join(db_location, "jpod.db")
+        assert os.path.exists(db_path), "`jpod.db` could not be found in your specified location."
+        con = sqlite3.connect(db_path)
+        return con
+    else:
+        raise ValueError("`version` must be either `test`or `full`.")
+
 def get_tables(conn):
     """
     Retrieve all tables from JPOD
