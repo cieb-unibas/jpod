@@ -51,4 +51,4 @@ total_jobs = pd.read_sql(con = JPOD_CONN, sql = TOTAL_QUERY)
 df = ai_jobs["region"].value_counts().reset_index().rename(columns={"index": "region", "region": "ai_postings"})
 df = df.merge(total_jobs, "left", on = ["region"])
 df["ai_share"] = df["ai_postings"] / df["n_postings"]
-print(df.sort_values(by = "share", ascending=False).reset_index(drop=True))
+print(df.sort_values(by = "ai_share", ascending=False).reset_index(drop=True))

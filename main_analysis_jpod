@@ -1,0 +1,52 @@
+                      region  ai_postings  ... n_postings  ai_share
+0                  karnataka         6468  ...     119766  0.054005
+1                   tel aviv           33  ...        759  0.043478
+2                 washington         3265  ...     135915  0.024022
+3                maharashtra         2723  ...     114240  0.023836
+4       district of columbia          725  ...      35883  0.020205
+5                    beijing           17  ...        851  0.019976
+6                   shanghai           37  ...       1864  0.019850
+7              massachusetts         2844  ...     160698  0.017698
+8                 california         9344  ...     538763  0.017343
+9                      delhi          823  ...      48149  0.017093
+10                    madrid          352  ...      22492  0.015650
+11                  new york         3633  ...     259058  0.014024
+12                 jerusalem            3  ...        215  0.013953
+13            capital region           13  ...        980  0.013265
+14               hovedstaden          363  ...      28346  0.012806
+15                   ontario         2653  ...     207609  0.012779
+16                   jiangsu            3  ...        245  0.012245
+17                 catalonia          259  ...      21636  0.011971
+18                 stockholm          184  ...      16104  0.011426
+19                     texas         4468  ...     407545  0.010963
+20                new jersey         1567  ...     144631  0.010834
+21                  maryland         1138  ...     108371  0.010501
+22                   hsinchu           12  ...       1196  0.010033
+23                   bavaria         1417  ...     147297  0.009620
+24                  illinois         1735  ...     209974  0.008263
+25         baden-wurttemberg          650  ...      80623  0.008062
+26                  michigan         1059  ...     137325  0.007712
+27              pennsylvania         1670  ...     224081  0.007453
+28                new taipei           32  ...       4460  0.007175
+29                    taipei           38  ...       5547  0.006851
+30                    quebec          567  ...      85878  0.006602
+31                    zurich           97  ...      14754  0.006574
+32                  istanbul          223  ...      35807  0.006228
+33               connecticut          383  ...      66964  0.005719
+34          région lemanique           19  ...       3390  0.005605
+35                     lazio           89  ...      19349  0.004600
+36              lower saxony          325  ...      92406  0.003517
+37                    ticino            2  ...        570  0.003509
+38              zuid-holland          198  ...      58904  0.003361
+39             noord-brabant          166  ...      53005  0.003132
+40                    moskva           67  ...      23347  0.002870
+41  northwestern switzerland            8  ...       3987  0.002007
+42                  lombardy          107  ...      62201  0.001720
+43       central switzerland           11  ...       6570  0.001674
+44                  piedmont           39  ...      23709  0.001645
+45                   tuscany           26  ...      16817  0.001546
+46                  taichung            4  ...       3313  0.001207
+47         espace mittelland           11  ...       9616  0.001144
+48                    veneto           24  ...      40236  0.000596
+
+[49 rows x 6 columns]
