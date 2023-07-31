@@ -3,8 +3,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=12G
 
-#SBATCH --time=00:30:00
-#SBATCH --qos=30min
+#SBATCH --time=01:30:00
+#SBATCH --qos=6hours
 
 #SBATCH --output=main_analysis_jpod
 #SBATCH --error=data/main_analysis_jpod_errors
