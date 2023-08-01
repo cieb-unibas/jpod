@@ -43,17 +43,22 @@ Bavaria;Bayern;;;1;2;DE;DEU;DE;DE2;;;DE;DE2;;no
 Berlin;Berlin;;;2;2;DE;DEU;DE;DE3;DE30;;DE;DE3;DE300;no
 Baden-Wurttemberg;Baden Württemberg;;;1;2;DE;DEU;DE;DE1;;;DE;DE1;;no
 United Kingdom;;;;0;1;GB;GBR;UK;;;;UK;;;no
+London;;;;2;2;GB;GBR;UK;UKI;;;UK;UKI;;no
 England;;;;1;1;GB;GBR;UK;UKI;;;UK;;;no
+South East England;;;;;2;GB;GBR;UK;UKJ;;;UK;UKJ;;no
 Hampshire;;;;3;3;GB;GBR;UK;UKJ;UKJ3;UKJ36;UK;UKJ;UKJ36;no
+East of England;;;;;2;GB;GBR;UK;UKH;;;UK;UKH;;no
 Cambridgeshire;;;;3;3;GB;GBR;UK;UKH;UKH1;UKH12;UK;UKH;UKH12;no
-Essex;;;;2;;GB;GBR;UK;UKH;UKH3;;UK;UKH;;no
+Essex;;;;;;GB;GBR;UK;UKH;UKH3;;UK;UKH;;no
 Kent;;;;2;;GB;GBR;UK;UKJ;UKJ4;;UK;;;no
 Surrey;;;;3;3;GB;GBR;UK;UKJ;UKJ2;UKJ25;UK;UKJ;UKJ25;no
 Oxfordshire;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ14;UK;UKJ;UKJ14;no
 Hertfordshire;;;;3;3;GB;GBR;UK;UKH;UKH2;UKH23;UK;UKH;UKH23;no
 Buckinghamshire;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ13;UK;UKJ;UKJ13;no
 Norfolk;;;;3;3;GB;GBR;UK;UKH;UKH1;UKH16;UK;UKH;UKH16;no
+East Midlands;;;;;2;GB;GBR;UK;UKF;;;UK;UKF;;no
 Northamptonshire;;;;3;3;GB;GBR;UK;UKF;UKF2;UKF25;UK;UKF;UK25;no
+Yorkshire;;;;;2;GB;GBR;UK;UKE;;;UK;UKE;;no
 Bradford;;;;3;3;GB;GBR;UK;UKE;UKE4;UKE41;UK;UKE;UKE41;no
 Milton keynes;;;;3;3;GB;GBR;UK;UKJ;UKJ1;UKJ12;UK;UKJ;UKJ12;no
 West sussex;;;;3;3;GB;GBR;UK;UKJ;UKJ2;UKJ27;UK;UKJ;UKJ27;no
@@ -86,6 +91,8 @@ Lazio;;;;2;2;IT;ITA;IT;ITI;ITI4;;IT;ITI4;;no
 Tuscany;;;;2;2;IT;ITA;IT;ITI;ITI1;;IT;ITI1;;no
 Friulivenezia giulia;;;;2;2;IT;ITA;IT;ITH;ITH4;;IT;ITH4;;no
 Sweden;Schweden;Suede;SE;0;1;SE;SWE;SE;;;;SE;;;no
+South Sweden;;;;;2;SE;SWE;SE;SE2;SE22;;SE;SE22;;no
+West Sweden;;;;;2;SE;SWE;SE;SE2;SE23;;SE;SE23;;no
 Vastra gotaland;;;;3;3;SE;SWE;SE;SE2;SE23;SE232;SE;SE23;SE232;no
 Stockholm;;;;2;2;SE;SWE;SE;SE1;SE11;;SE;SE11;;no
 Stockholm;;;;3;3;SE;SWE;SE;SE1;SE11;SE110;SE;SE11;SE110;no
@@ -119,6 +126,9 @@ Jerusalem;;;;;2;IL;ISR;;;;;IL;IL01;;no
 Tel aviv;;;;;3;IL;ISR;;;;;IL;IL05;IL050;no
 Jerusalem;;;;;3;IL;ISR;;;;;IL;IL01;IL010;no
 Japan;;;JP;;1;JP;JPN;;;;;JP;;;no
+Kansai;;;;;2;JP;JPN;;;;;JP;JPG;;no
+Toukai;;;;;2;JP;JPN;;;;;JP;JPF;;no
+Southern Kanto;;;;;2;JP;JPN;;;;;JP;JPD;;no
 Tokyo;;;;;3;JP;JPN;;;;;JP;JPD;JPD13;no
 Kanagawa;;;;;3;JP;JPN;;;;;JP;JPD;JPD14;no
 Chiba;;;;;3;JP;JPN;;;;;JP;JPD;JPD12;no
@@ -138,6 +148,7 @@ Capital Region;;;;;2;KR;KOR;;;;;KR;KR01;;no
 Seoul;;;;;3;KR;KOR;;;;;KR;KR01;KR011;no
 Gyeonggi;;;;;3;KR;KOR;;;;;KR;KR01;KR013;no
 Incheon;;;;;3;KR;KOR;;;;;KR;KR01;KR012;no
+Chungcheong;;;;;2;KR;KOR;;;;;KR;KR05;;no
 Daejeon;;;;;3;KR;KOR;;;;;KR;KR05;KR051;no
 Chungbuk;;;;;3;KR;KOR;;;;;KR;KR05;KR052;no
 Sejong;;;;;3;KR;KOR;;;;;KR;KR05;KR054;no
