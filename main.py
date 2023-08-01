@@ -12,7 +12,7 @@ SELECT pc.inferred_country AS country,
     COUNT(aa.uniq_id) AS n_ai_postings
 FROM acemoglu_ai aa
 LEFT JOIN (
-    SELECT uniq_id, inferred_country, company_name, inferred_state, nuts_2
+    SELECT uniq_id, inferred_country, nuts_2
     FROM position_characteristics
     ) pc ON aa.uniq_id = pc.uniq_id
 INNER JOIN (
@@ -37,10 +37,19 @@ GROUP BY region_code
 """
 total_jobs_per_region = pd.read_sql(con = JPOD_CONN, sql = TOTAL_QUERY).drop_duplicates()
 
-# connect and 
+# connect and calculate ai intensity
 ai_jobs_per_region = ai_jobs_per_region.merge(total_jobs_per_region, how="left", on="region_code")
 ai_jobs_per_region["ai_share"] = ai_jobs_per_region["n_ai_postings"] / ai_jobs_per_region["n_postings"]
-print(ai_jobs_per_region.sort_values(by = "ai_share", ascending=False).reset_index(drop=True))
 
-# TO DO: 
-# add all unique nuts2 and oecd2 levels to regio_grid table
+# get region names
+regions = pd.read_sql(con=JPOD_CONN, 
+                      sql= "SELECT name_en AS region, oecd_tl2 AS region_code FROM regio_grid WHERE oecd_level = 2")
+ai_jobs_per_region = ai_jobs_per_region.merge(regions, how = "left", on="region_code")
+
+# manually add some regions due to merging problems
+#ai_jobs_per_region.loc[ai_jobs_per_region["region"].isna(),["region"]] = ["ile-de-france", "berlin", "hong kong", "east of england", "east of england", "south east of england"]
+
+#present result:
+ai_jobs_per_region = ai_jobs_per_region[["region", "region_code", "country", "n_ai_postings", "ai_share"]]
+ai_jobs_per_region.to_csv("./data/ai_dist_region.csv", index=False)
+print(ai_jobs_per_region.sort_values(by = "ai_share", ascending=False).reset_index(drop=True).head(10))

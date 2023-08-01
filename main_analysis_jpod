@@ -1,14 +1,11 @@
-           country region_code  n_ai_postings  n_postings  ai_share
-0            india        INKA           6468      119766  0.054005
-1           israel        IL05             33         759  0.043478
-2    united states        US53           3265      135915  0.024022
-3            india        INMH           2723      114240  0.023836
-4    united states        US11            725       35883  0.020205
-..             ...         ...            ...         ...       ...
-62  united kingdom        UKF2              8        5420  0.001476
-63          taiwan       TWTXG              4        3313  0.001207
-64     switzerland        CH02             11        9616  0.001144
-65           italy        ITH3             24       40236  0.000596
-66     switzerland        None             83      177824  0.000467
-
-[67 rows x 5 columns]
+                 region region_code        country  n_ai_postings  ai_share
+0             karnataka        INKA          india           6468  0.054005
+1              tel aviv        IL05         israel             33  0.043478
+2            washington        US53  united states           3265  0.024022
+3           maharashtra        INMH          india           2723  0.023836
+4  district of columbia        US11  united states            725  0.020205
+5               beijing        CNBJ          china             17  0.019976
+6              shanghai        CNSH          china             37  0.019850
+7         massachusetts        US25  united states           2844  0.017698
+8            california        US06  united states           9344  0.017343
+9                 delhi        INDL          india            823  0.017093
