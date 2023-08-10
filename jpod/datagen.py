@@ -269,6 +269,34 @@ def _generate_sql_batch_condition(data_batch: str = "all"):
         data_batch_statement = "data_batch == '" + data_batch + "'"
     return data_batch_statement    
 
+def _generate_sql_unique_condition(unique_postings_only: bool = True, level: str = "overall"):
+    """
+    Create a SQL statement for applying a sql query to a certain subsample of data. 
+
+    Parameters:
+    ----------
+    unique_postings_only : bool
+        A flag whether to subset the data or not and only including postings with a unique job description. 
+    level: str
+        A string indicating the level where uniqueness is defined. Can be either overall or location.
+
+    Returns:
+    --------
+    str:
+        A string in a SQL LIKE Statement format.
+    """
+    if level == "overall":
+        var = "unique_posting_text"
+    elif level == "location":
+        var = "unique_posting_text"
+    else:
+        raise ValueError("Specifiy a valid level. Must be either overall or location")
+    if unique_postings_only:
+        uniq_condition = "{} = 'yes'".format(var)
+    else:
+        uniq_condition = ""
+    return uniq_condition
+
 def _generate_sql_country_condition(countries):
     """
     Create a SQL IN statement for applying a sql query to a country subsample of data. 
