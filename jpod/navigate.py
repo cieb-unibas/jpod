@@ -1,11 +1,13 @@
 import sqlite3
 import os
 
-def get_path(potential_paths):
+from .config import DB_DIRS 
+
+def get_path(potential_paths = DB_DIRS):
     dir_out = [p for p in potential_paths if os.path.exists(p)][0]
     return dir_out
 
-def connect_to_jpod(db_location: str, version: str = "test"):
+def connect_to_jpod(db_location: str = get_path(), version: str = "test"):
     assert os.path.exists(db_location), "The directory `db_location`: %s does not exist." % db_location
     if version == "test":
         db_path = os.path.join(db_location, "jpod_test.db")

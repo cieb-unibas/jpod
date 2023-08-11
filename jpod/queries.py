@@ -1,8 +1,6 @@
 import pandas as pd
 
-from .config import DB_DIRS
 from .datagen import _generate_sql_batch_condition, _generate_sql_unique_condition, _combine_sql_conditions
-from .navigate import get_path, connect_to_jpod
 
 def get_region_names(con):
     region_names = pd.read_sql(
@@ -19,40 +17,35 @@ def _set_nuts_level(regional_level: int = 2) -> str:
         raise ValueError("Regional level must be either `2` or `3`.")
     return region_column
 
-def get_total_postings_by_region(
-          regional_level=2, data_batch = "jobspickr_2023_01",
-          jpod_version = "test", unique_postings_only = True
-          ):
-    con = connect_to_jpod(db_location=get_path(potential_paths=DB_DIRS), version=jpod_version)
+def _add_region_names_and_sort(con, df, sort_by):
+    region_names = get_region_names(con = con)
+    df_out = df.merge(region_names, how = "left", on="region_code").sort_values(sort_by, ascending=False).reset_index(drop=True)
+    return df_out
+
+
+def get_total_postings_by_region(con, regional_level=2, data_batch = "jobspickr_2023_01", unique_postings_only = True):
+    """Get the number of job postings by regions"""
     region_column = _set_nuts_level(regional_level=regional_level)
- 
     batch_condition = _generate_sql_batch_condition(data_batch=data_batch)
     uniq_condition = _generate_sql_unique_condition(unique_postings_only=unique_postings_only)
     where_clause = _combine_sql_conditions([batch_condition, uniq_condition])
  
     query = """
-    SELECT pc.inferred_country as country, 
-    pc.{0} AS region_code, COUNT(pc.uniq_id) AS n_postings
+    SELECT pc.{0} AS region_code, COUNT(pc.uniq_id) AS n_postings
     FROM (
-        SELECT uniq_id 
-        FROM job_postings 
-        {1}
-        ) jp
-    LEFT JOIN position_characteristics pc ON jp.uniq_id = pc.uniq_id
-    GROUP BY country, region_code
+        SELECT uniq_id
+        FROM job_postings jp
+        {1}) jp
+    LEFT JOIN position_characteristics pc ON pc.uniq_id = jp.uniq_id
+    GROUP BY region_code
     """.format(region_column, where_clause)
     df = pd.read_sql(sql = query, con = con)
-    df = df.merge(get_region_names(con = con), how = "left", on="region_code").sort_values("n_postings", ascending=False)
-
+    df = _add_region_names_and_sort(con = con, df = df, sort_by="n_postings")
     return df
 
-def get_ai_postings_by_region(
-          regional_level=2, data_batch = "jobspickr_2023_01",
-          jpod_version = "test", unique_postings_only = True
-          ):
-    con = connect_to_jpod(db_location=get_path(potential_paths=DB_DIRS), version=jpod_version)
+def get_ai_postings_by_region(con, regional_level=2, data_batch = "jobspickr_2023_01", unique_postings_only = True):
+    """Get the number of ai-related job postings by regions"""
     region_column = _set_nuts_level(regional_level=regional_level)
- 
     batch_condition = _generate_sql_batch_condition(data_batch=data_batch)
     uniq_condition = _generate_sql_unique_condition(unique_postings_only=unique_postings_only)
     where_clause = _combine_sql_conditions([batch_condition, uniq_condition])
@@ -74,17 +67,12 @@ def get_ai_postings_by_region(
     GROUP BY country, region_code
     """.format(region_column, where_clause)
     df = pd.read_sql(sql = query, con = con)
-    df = df.merge(get_region_names(con = con), how = "left", on="region_code").sort_values("n_ai_postings", ascending=False)
-
+    df = _add_region_names_and_sort(con = con, df = df, sort_by="n_ai_postings")
     return df
 
-def get_bloom_postings_by_region(
-        by_field = True, regional_level = 2, data_batch = "jobspickr_2023_01",
-        jpod_version = "test", unique_postings_only = True
-        ):
-    con = connect_to_jpod(db_location = get_path(potential_paths=DB_DIRS), version=jpod_version)
+def get_bloom_postings_by_region(con, by_field = True, regional_level = 2, data_batch = "jobspickr_2023_01", unique_postings_only = True):
+    """Get the number of bloom-technology-related job postings by regions"""
     region_column = _set_nuts_level(regional_level=regional_level)
- 
     batch_condition = _generate_sql_batch_condition(data_batch=data_batch)
     uniq_condition = _generate_sql_unique_condition(unique_postings_only=unique_postings_only)
     where_clause = _combine_sql_conditions([batch_condition, uniq_condition])
@@ -125,17 +113,12 @@ def get_bloom_postings_by_region(
         GROUP BY country, region_code
         """.format(region_column, where_clause)
     df = pd.read_sql(sql = query, con = con)
-    df = df.merge(get_region_names(con = con), how = "left", on="region_code").sort_values("n_disruptive_tech_postings", ascending=False)
-
+    df = _add_region_names_and_sort(con = con, df = df, sort_by="n_disruptive_tech_postings")
     return df
 
-def get_remote_postings_by_region(
-          regional_level = 2, data_batch = "jobspickr_2023_01",
-          jpod_version = "test", unique_postings_only = True
-          ):
-    con = connect_to_jpod(db_location = get_path(potential_paths=DB_DIRS), version=jpod_version)
+def get_remote_postings_by_region(con, regional_level = 2, data_batch = "jobspickr_2023_01", unique_postings_only = True):
+    """Get the number of remote job postings by regions"""
     region_column = _set_nuts_level(regional_level=regional_level)
- 
     batch_condition = _generate_sql_batch_condition(data_batch=data_batch)
     uniq_condition = _generate_sql_unique_condition(unique_postings_only=unique_postings_only)
     where_clause = _combine_sql_conditions([batch_condition, uniq_condition])
@@ -157,6 +140,5 @@ def get_remote_postings_by_region(
     GROUP BY country, region_code
     """.format(region_column, where_clause)
     df = pd.read_sql(sql = query, con = con)
-    df = df.merge(get_region_names(con = con), how = "left", on="region_code").sort_values("n_remote_postings", ascending=False)
-
+    df = _add_region_names_and_sort(con = con, df = df, sort_by="n_remote_postings")
     return df
