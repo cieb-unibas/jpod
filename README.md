@@ -66,13 +66,14 @@ For the full technical docmentation see <a href='./docs/jpod_manual.md'>JPOD man
 ## Repository Struture
 
 This repository has the following structure:
-
+```
 jpod
 ├── data
 ├── docs
 ├── eval
 ├── jpod
 ├── scripts
+```
 
 - [data/](./data/): Contains raw data files that are used to enhance raw data inserted to JPOD and/or to evaluate the dataabse. The data ist either [raw data](./data/raw_data/) or manually created (e.g., [](./data/regio_grid.csv)) or created through scripts (e.g., [](./data/acemoglu_ai_keywords.csv)).
 
