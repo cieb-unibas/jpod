@@ -101,5 +101,6 @@ turkey|36966|35807|0.969
 united kingdom|265261|206617|0.779
 united states|2989548|2429208|0.813
 
-## Updating JPOD: Inserting New Job Adds
-tbd
+## Updating JPOD: Inserting New Job Postings
+
+A core feature of 
