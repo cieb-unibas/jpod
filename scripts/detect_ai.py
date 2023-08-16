@@ -16,8 +16,7 @@ if __name__ == "__main__":
 
     # parameters for connecting to JPOD
     JPOD_VERSION = "jpod.db"
-    DATA_BATCH = "jobspickr_2023_01"
-
+    DATA_BATCH = config.BATCH_VERSION
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
 

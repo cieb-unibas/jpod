@@ -4,6 +4,9 @@ import zipfile as zf
 
 import pandas as pd
 
+from jpod import config
+from jpod.navigate import get_path
+
 def list_batch_files(path):
     files = os.listdir(path)
     files = [file for file in files if file.endswith(".zip")]
@@ -26,10 +29,9 @@ def create_jpod_query(cities):
      """ % (cities)
      return query
      
-os.chdir("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/")
 JPOD_VERSION = "jpod.db"
-DATA_BATCH = "jobspickr_2023_01"
-DATA_DIR = "jobspickr_raw/jobspickr2023/"
+DATA_BATCH = config.BATCH_VERSION
+DATA_DIR = get_path(config.DAT_DIRS)
 OUT_FILE = "augmentation_data/not_inserted_files.csv"
 
 if __name__ == "__main__":

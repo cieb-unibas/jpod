@@ -1,5 +1,10 @@
 import urllib.request as urlreq
 import os
+import sys
+
+sys.path.append(os.getcwd())
+from jpod import config
+from jpod.navigate import get_path
 
 def get_config(config_file):
     with open(config_file, "r") as f:
@@ -15,7 +20,7 @@ def save_jobspickr(url, save_at):
 
 if __name__ == "__main__":
     print("----------------Ready to download postings from jobspickr----------------")
-    destination = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jobspickr_raw/jobspickr2023/"
+    destination = get_path(potential_paths=config.DAT_DIRS)
     urls = get_config(config_file = os.path.join(destination, "jobspickr_config.txt"))
     for u in urls:
         file_name = u.split("/")[-1]

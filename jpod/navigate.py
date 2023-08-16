@@ -4,8 +4,14 @@ import os
 from .config import DB_DIRS 
 
 def get_path(potential_paths = DB_DIRS):
-    dir_out = [p for p in potential_paths if os.path.exists(p)][0]
-    return dir_out
+    if isinstance(DB_DIRS, list):
+        dir_out = [p for p in potential_paths if os.path.exists(p)][0]
+        return dir_out
+    else:
+        if os.path.exists(DB_DIRS):
+            return DB_DIRS
+        else:
+            raise ValueError("Could not find the specified directory.")
 
 def connect_to_jpod(db_location: str = get_path(), version: str = "test"):
     assert os.path.exists(db_location), "The directory `db_location`: %s does not exist." % db_location

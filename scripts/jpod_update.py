@@ -16,20 +16,23 @@ if __name__ == "__main__":
     
     print("---------------Setting parameters---------------")
     JPOD_VERSION = "jpod.db"
-    DATA_BATCH = "jobspickr_2023_01"
+    DATA_BATCH = jpod.config.BATCH_VERSION
     DB_DIR = os.path.join(jpod.get_path(jpod.config.DB_DIRS), JPOD_VERSION)
 
-    AUGMENT_PATH = jpod.get_path(jpod.config.DAT_DIRS)    
+    DATA_DIR = jpod.get_path(jpod.config.DAT_DIRS)    
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
-    JPOD_STRUCTURE = jpod.base_properties()
 
-    FILES = jpod.select_raw_files(dir = jpod.get_path(jpod.config.DAT_DIRS))
-    if os.path.exists("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/not_inserted_files.csv"):
-        not_inserted_files = pd.read_csv("/scicore/home/weder/GROUP/Innovation/05_job_adds_data/augmentation_data/not_inserted_files.csv")["files"].to_list()
+    JPOD_STRUCTURE = jpod.base_properties()
+    STATUS_FILE = os.path.join(DB_DIR, "augmentation_data/not_inserted_files.csv")
+
+    FILES = jpod.select_raw_files(dir = DATA_DIR)
+
+    if os.path.exists(STATUS_FILE):
+        not_inserted_files = pd.read_csv(STATUS_FILE)["files"].to_list()
         FILES = [file for file in FILES if file in not_inserted_files]
     print("Selected %d files with raw data for updating JPOD" % len(FILES))
     
-    UID_DUPLICATES = pd.read_csv(os.path.join(AUGMENT_PATH, "duplicated_ids.csv"))["duplicated_ids"].to_list()
+    UID_DUPLICATES = pd.read_csv(os.path.join(DATA_DIR, "duplicated_ids.csv"))["duplicated_ids"].to_list()
     existing_employers = list(jpod.retrieve_pkeys(table = "institutions", p_key = JPOD_STRUCTURE.pkeys["institutions"], conn = JPOD_CONN))
     
     jpod_table_vars = {}
