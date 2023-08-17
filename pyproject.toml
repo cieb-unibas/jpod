@@ -7,7 +7,8 @@ name = "jpod"
 version = "0.1.0"
 description = "Maintainance package for the CIEB job postings database"
 authors = [
-  {name = "Matthias Nigggli", email = "matthias.niggli@unibas.ch"}
+  {name = "Matthias Niggli", email = "matthias.niggli@unibas.ch"},
+  {name = "Christian Rutzer", email = "christian.rutzer@unibas.ch"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.7"
