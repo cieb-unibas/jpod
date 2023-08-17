@@ -45,7 +45,7 @@ res <- dbSendQuery(JPOD_CON, 'SELECT job_description FROM job_postings LIMIT 5')
 dbFetch(res)
 ```
 
-:exclamation: **Please see further examples <a href='./examples/'>here</a> for a more comprehensive introduction and different ways to query JPOD (e.g. using libraries such as pandas or dplyr).**
+:exclamation: **Please see further examples <a href='./docs/examples/'>here</a> for a more comprehensive introduction and different ways to query JPOD (e.g. using libraries such as pandas or dplyr).**
 
 ## JPOD Overview
 
