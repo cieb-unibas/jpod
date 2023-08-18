@@ -15,22 +15,25 @@ if __name__ == "__main__":
     # parameters for connecting to JPOD
     JPOD_VERSION = "jpod.db"
     DATA_BATCH = config.BATCH_VERSION
-    RESTRICT_TO_GEO_UNITS = ["united states"]
-    EXCLUDE_GEO_UNITS = None
     DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
     JPOD_CONN = sqlite3.connect(database = DB_DIR)
-    start = time.perf_counter()
+
+    RESTRICT_TO_GEO_UNITS = False
+    EXCLUDE_GEO_UNITS = False
     
     if RESTRICT_TO_GEO_UNITS:
         print("Cleaning for the following geographic entities: ", ", ".join(RESTRICT_TO_GEO_UNITS))
-    
-    # Load the cleaner and identify duplicates per data batch:
+    if EXCLUDE_GEO_UNITS:
+        print("Cleaning for all geographic entities except the following: ", ", ".join(RESTRICT_TO_GEO_UNITS))
+       
+    # Load the cleaner:
+    start = time.perf_counter()
     print("---------------Starting to identify duplicated postings---------------")
     cleaner = DuplicateCleaner(con = JPOD_CONN, data_batch = 'jobspickr_2023_01', restrict_scope_by = "inferred_country", restrict_to_geo_units = RESTRICT_TO_GEO_UNITS)
-    
+    # identify duplicates at the country-level
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_text", levels=["job_description"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
-    
+    # identify duplicates at the city-level
     JPOD_QUERY = cleaner.duplicate_query(assign_to = "unique_posting_textlocation", levels=["city", "job_description"])
     cleaner.find_duplicates(query = JPOD_QUERY, commit = True)
 

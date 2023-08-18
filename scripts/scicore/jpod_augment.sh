@@ -15,5 +15,7 @@
 cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
 source ../jpod_venv/bin/activate
 
-## add information to JPOD
+## enhance JPOD
 python ./scripts/clean_duplicates.py
+##python ./scripts/detect_disruptech.py
+##python ./scripts/detect_ai.py

@@ -10,18 +10,17 @@ import jpod
 if __name__ == "__main__":
 
     # set parameters
-    OUT_PATH = jpod.get_path(jpod.config.DAT_DIRS)
+    DATA_BATCH = jpod.config.BATCH_VERSION
+    OUT_PATH = jpod.get_path(jpod.config.DAT_DIRS) + DATA_BATCH
+    
+    DATA_DIR = jpod.get_path(jpod.config.DAT_DIRS)
+    BATCHES = os.listdir(DATA_DIR)
+    FILES = []
+    for batch in BATCHES:
+        batch_path = os.path.join(DATA_DIR, batch)
+        FILES += [os.path.join(batch_path, file) for file in jpod.select_raw_files(dir = batch_path)]    
 
     # create uid chunks and find duplicated uniq_ids
-    FILE_PATH_2023 = jpod.get_path(jpod.config.DAT_DIRS)
-    FILE_PATH_2022 = os.path.abspath(os.path.join(FILE_PATH_2023, os.pardir))
-    FILES2023 = [os.path.join(FILE_PATH_2023, file) for file in jpod.select_raw_files(dir = FILE_PATH_2023)]
-    print("FILES from 2023: ", len(FILES2023))
-    FILES2022 = [os.path.join(FILE_PATH_2022, file) for file in jpod.select_raw_files(dir = FILE_PATH_2022)]    
-    print("FILES from 2022: ", len(FILES2022))
-    FILES = FILES2023 + FILES2022
-    print("Number of selected files: %d " % len(FILES))
-    
     UID_CHUNCK_DICT = {}
     DUPLICATE_IDS = []
 

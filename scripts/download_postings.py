@@ -20,7 +20,8 @@ def save_jobspickr(url, save_at):
 
 if __name__ == "__main__":
     print("----------------Ready to download postings from jobspickr----------------")
-    destination = get_path(potential_paths=config.DAT_DIRS)
+    DATA_BATCH = config.BATCH_VERSION
+    destination = get_path(potential_paths=config.DAT_DIRS) + DATA_BATCH
     urls = get_config(config_file = os.path.join(destination, "jobspickr_config.txt"))
     for u in urls:
         file_name = u.split("/")[-1]

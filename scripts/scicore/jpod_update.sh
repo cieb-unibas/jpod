@@ -21,5 +21,8 @@ python ./scripts/uniq_ids.py
 ## check which files of raw data have to be considered
 python ./scripts/check_updated_files.py
 
+## update the regio_grid table if necessary.
+python ./scripts/add_geogrid.py
+
 ## insert raw data from these files into jpod
 python ./scripts/jpod_update.py

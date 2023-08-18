@@ -31,7 +31,7 @@ def create_jpod_query(cities):
      
 JPOD_VERSION = "jpod.db"
 DATA_BATCH = config.BATCH_VERSION
-DATA_DIR = get_path(config.DAT_DIRS)
+DATA_DIR = get_path(config.DAT_DIRS) + DATA_BATCH
 OUT_FILE = "augmentation_data/not_inserted_files.csv"
 
 if __name__ == "__main__":

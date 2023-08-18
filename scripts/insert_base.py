@@ -13,7 +13,7 @@ JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db")
 JPOD_STRUCTURE = nav.base_properties()
 
 #### insert data from JobsPickr -----------------------
-DAT_DIR = DB_DIR + "jobspickr_raw/"
+DAT_DIR = DB_DIR + "jobspickr_raw/jobspickr_2022_01/"
 FILES = dg.select_raw_files(DAT_DIR)
 
 # get a set of existing pkeys per table.
