@@ -101,6 +101,49 @@ turkey|36966|35807|0.969
 united kingdom|265261|206617|0.779
 united states|2989548|2429208|0.813
 
+### Identifiying Postings with a Connection to AI or Disruptive Technologies
+
+At the time of developing JPOD, the CIEB has been particularly interested in examining technological trends. To this end, JPOD features to additional tables that list postings with a connection to Artificial Intelligence or certain Disruptive Technologies. Postings' `uniq_id`'s are registered in these tables if their full text contains certain keywords that are related to a technology. The corresponding keyword-query-functions are defined in the [jpod.datagen](../jpod/datagen.py) module. For AI, the keywords are taken from <a href='https://www.journals.uchicago.edu/doi/full/10.1086/718327'>Acemoglu et al. (2022) (Footnote 13)</a>, and for disruptive technologies from <a href='https://www.nber.org/papers/w28999'>Bloom et al. (2020)</a>.
+
+The two tables in question are accordingly named `acemoglu_ai` and `bloom_tech`. Note that they only feature a minimum amount of information, which can be used to subset postings from other tables. For example, the following query would return the number of AI-related postings in Swiss regions:
+
+```sql
+SELECT pc.nuts_2 AS region, COUNT(aa.uniq_id) AS n_ai_postings
+FROM acemoglu_ai aa
+LEFT JOIN position_characteristics pc ON aa.uniq_id = pc.uniq_id
+WHERE pc.inferred_country = 'switzerland'
+GROUP BY region
+HAVING region IS NOT NULL
+ORDER BY n_ai_postings DESC
+```
+
 ## Updating JPOD: Inserting New Job Postings
 
-A core feature of 
+A core feature of JPOD is to make it easy to add more data to it. The majority of the source code contained in this repository serves to facilitate this process. It has been applied and tested in 2023 to add additional data from Jobspickr. 
+
+The following presents a step-by-step overview of how to update JPOD with new data, using the case of the data purchase in 2023 from Jobspickr.
+
+:warning: **IMPORTANT:** This walk-through may need adaption if the raw data comes from a different source or changed its format. 
+
+#### Step 1: Configure JPOD
+The first and most important step is that you adapt the [config.py](../jpod/config.py) module's parameter `BATCH_VERSION`, which is currently set to `jobspickr_2023_01`. **The naming schema follows the rule `DATASOURCE_YEAR_VERSION`, which is very important.** For example for a new data purchase in 2024 at Jobspickr, set the `BATCH_VERSION` parameter in [config.py](../jpod/config.py) to `jobspickr_2024_01`. 
+
+#### Step 1: Gather the data
+Jobspickr provides raw data in zipped files through google docs. These can either be downloaded manually or using a script. **The important part is that they are stored correctly.** To do this, create a new folder in the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jobspickr_raw/`, which you name identically to the `BATCH_VERSION` in [config.py](../jpod/config.py). Once this folder is created, all the zipped files delivered by jobspickr can be stored in it. This can either be done manually or using a scirpt such as [`download_postings.py`](../scripts/download_postings.py) (after creating a config file in the newly created folder.) 
+
+#### Step 3: Adapt the regional information in JPOD if necessary
+In the updating process, postings in JPOD are assigned to regions as explained [above](#assigning-postings-to-nuts-regions-and-oecd-territorial-levels). All regions that should be considered for that purpose are registered in the [regio_grid.csv](../data/regio_grid.csv) file. **This file has to be adapted manually if additional regions that are not yet registered should be taken into account.** The file structure (i.e. the columns) must be preserved! During the updating process, JPOD matches `inferred_state` names in the Jobspickr raw data against the specified `name_en` values in the `regio_grid.csv` file.
+
+#### Step 4: Insert the raw data into JPOD
+To do this, run the slurm script [jpod_update.sh](../scripts/scicore/jpod_update.sh). This script will check (1) if the raw data has entries with duplicated identifier variables (which would cause SQL errors), (2) checks whether data from some files has already been inserted to JPOD (in case you run the updating process in several steps), (3) updates the regional information in JPOD according to your specifications described [above](#step-3-adapt-the-regional-information-in-jpod-if-necessary), (4) inserts all the raw data and some additionally created information (e.g., the data batch, regional information) to JPOD.
+
+#### Step 5: Enhance JPOD: Duplicated Postings and Identification of AI & Disruptive Technology Postings
+The final step is to enhance the information contained in JPOD. This can be done through the [jpod_augment.sh](../scripts/scicore/jpod_augment.sh) script, which runs the following three scripts: [clean_duplicates.py](../scripts/clean_duplicates.py), [detect_disruptech.py](../scripts/detect_disruptech.py) and [detect_ai.py](../scripts/detect_ai.py). 
+
+While the latter two are easily handled by scicore and do not require any changes, the `clean_duplicates.py`'s runtimes can be a challenge. **It is thus recommended to run `clean_duplicates.py` seperately for selected countries that dont have more than 3 million postings.**. This behavior can be controlled by specifying the paramater `RESTRICT_TO_GEO_UNITS` in [clean_duplicates.py](../scripts/clean_duplicates.py). For example, to only clean duplicates in JPOD for Germany and Italy, change as follows in the script `RESTRICT_TO_GEO_UNITS = ["germany", "italy"]`.
+
+[smiley](https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg) 
+
+After completing these steps, JPOD should be successfully updated with the new data. 
+
+**:bangbang: Note** if something goes wrong, there is the [clean_tables.py](../scripts/clean_tables.py) script which you can use to delete all data from JPOD for a given batch of data. You have to specify the data bacth using the `DELETE_BATCH` parameter in this script. For example, specify `DELETE_BATCH = "jobspickr_2023_01"` to delete all data from the 2023 jobspickr batch. **HOWEVER, BE VERY CAREFULL WITH THIS SCRIPT**.
