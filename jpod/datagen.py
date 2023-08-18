@@ -337,8 +337,10 @@ def _combine_sql_conditions(condition_statements: list):
     condition_statements = [statement for statement in condition_statements if len(statement) > 0]
     if len(condition_statements) > 1:
         condition_statement = "WHERE " + " AND ".join(["(" + c + ")" for c in condition_statements])
-    else:
+    elif len(condition_statements) == 1:
         condition_statement = "WHERE " + condition_statements[0]
+    else:
+        condition_statement = ""
     return condition_statement
     
 def keyword_query(keywords, matching_column, data_batch = "all", countries = "all", escape_expression = "@"):
