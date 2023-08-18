@@ -12,10 +12,8 @@
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
 ## configure
-jpod_path="/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-jpod_version="jpod.db"
-cd $jpod_path/jpod/
+cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
 source ../jpod_venv/bin/activate
 
-## add infromation to JPOD
+## add information to JPOD
 python ./scripts/clean_duplicates.py

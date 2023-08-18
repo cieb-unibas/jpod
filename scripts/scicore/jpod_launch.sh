@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-#SBATCH --time=04:30:00
+#SBATCH --time=06:00:00
 #SBATCH --qos=6hours
 
 #SBATCH --output=cluster_logs/launch_jpod1_1
