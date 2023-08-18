@@ -142,8 +142,8 @@ The final step is to enhance the information contained in JPOD. This can be done
 
 While the latter two are easily handled by scicore and do not require any changes, the `clean_duplicates.py`'s runtimes can be a challenge. **It is thus recommended to run `clean_duplicates.py` seperately for selected countries that dont have more than 3 million postings.**. This behavior can be controlled by specifying the paramater `RESTRICT_TO_GEO_UNITS` in [clean_duplicates.py](../scripts/clean_duplicates.py). For example, to only clean duplicates in JPOD for Germany and Italy, change as follows in the script `RESTRICT_TO_GEO_UNITS = ["germany", "italy"]`.
 
-![smiley](https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg) 
-
 After completing these steps, JPOD should be successfully updated with the new data. 
+
+<img src="https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg" height="60" width="60" >
 
 **:bangbang: Note** if something goes wrong, there is the [clean_tables.py](../scripts/clean_tables.py) script which you can use to delete all data from JPOD for a given batch of data. You have to specify the data bacth using the `DELETE_BATCH` parameter in this script. For example, specify `DELETE_BATCH = "jobspickr_2023_01"` to delete all data from the 2023 jobspickr batch. **HOWEVER, BE VERY CAREFULL WITH THIS SCRIPT**.
