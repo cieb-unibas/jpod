@@ -89,8 +89,33 @@ jpod
 
 - [scripts/](./scripts/): These are mainly Python scripts and some SQLite scirpts to create JPOD and enhance its inserted raw data. Furthermore there are shell/slurm scripts in [scripts/sciocre/](./scripts/scicore/) that are sending the Python scripts to the cluster. For more information see the technical [JPOD Manual](./docs/jpod_manual.md).
 
-## Use the package
+## Packaging and Installation
 
-To use the JPOD functionalities for another project, create a virtual environment, activate it, `cd` into this repository and run
-`python3 -m pip install -e <PATH_TO_THIS_REPOSITORY>`
+To use the JPOD functionalities for another project, the source code in this repository is also available as a python package named `jpod`. This makes it easier to use the code for other projects. However, the source distribution is not available on pypi and the `jpod` package must be installed locally.
 
+To do that, run the following from the command line:
+```bash
+source source /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod-venv/bin/activate
+pip install --upgrade pip
+pip install --upgrade build
+python3 -m build
+```
+
+This code activates the jpod virtual environment, upgrades the packaging tools `pip` and `build` and then creates the package distribution files using `python3 -m build` (these files will be saved under a newly created `dist/` directory in this repository). These files will be used when installing `jpod` for other projects.
+
+:warning: **IMPORTANT:** If you make changes to the package source code in this repository, you must repeat this process and re-install the package in other projects to use new functionalities.
+
+To install `jpod` for another project, create a virtual environment, activate it, `cd` into this repository and run the following:
+```bash
+python3 -m venv test-jpod-venv
+source test-jpod-venv/bin/activate
+python3 -m pip install -e /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/`
+```
+
+Subsequently, verifiy the installation by importing jpod:
+```python
+import jpod
+con = jpod.connect_to_jpod()
+print(jpod.get_tables(con))
+# ['job_postings', 'position_characteristics', 'institutions', 'acemoglu_ai', 'bloom_tech', 'regio_grid']
+```
