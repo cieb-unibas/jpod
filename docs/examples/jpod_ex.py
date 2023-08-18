@@ -1,34 +1,21 @@
 import pandas as pd
 import sqlite3
 
-DB_DIR = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
+# Establish a connection to jpod
+JPOD_PATH = "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod_test.db"
+JPOD_CONN = sqlite3.connect(JPOD_PATH)
 
-def get_tables(conn):
-    res = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    res = [col[0] for col in res.fetchall()]
-    return res
-    
-def get_table_vars(conn, table):
-    res = conn.execute("PRAGMA table_info({});".format(table))
-    res = [col[1] for col in res.fetchall()]
-    return res
-
-#### connect to the database and get its current structure ---------------------
-JPOD_CONN = sqlite3.connect(DB_DIR + "jpod.db") # complete database
-# JPOD_CONN = sqlite3.connect(DB_DIR + "jpod_test.db") # random subsample for 0.5% of all postings
-TABLES_VARS = {}
-for table in get_tables(conn=JPOD_CONN):
-    TABLES_VARS[table] = get_table_vars(table = table, conn = JPOD_CONN)
-
-# EXAMPLE 1: number of job adds by job board
+# EXAMPLE 1: define a query that returns the number of job adds by job board
 jpod_query = """
 SELECT job_board as plattform, COUNT(*) as n_postings 
 FROM job_postings 
 GROUP BY job_board
 ORDER BY n_postings DESC;
 """
-pd.read_sql_query(jpod_query, con=JPOD_CONN) # Opion 1: read via pandas read_sql_query() method
-# pd.DataFrame(JPOD_CONN.execute(jpod_query).fetchall(), columns=["plattform", "n_postings"]) # Opion 2: read via sqlite execute() method
+# Option 1: read via pandas read_sql_query() method:
+pd.read_sql_query(jpod_query, con=JPOD_CONN) 
+# Opion 2: read via sqlite execute() method
+pd.DataFrame(JPOD_CONN.execute(jpod_query).fetchall(), columns=["plattform", "n_postings"]) 
 
 # EXAMPLE 2: Biggest 10 cities with their total number of postings
 jpod_query = """
@@ -41,11 +28,11 @@ LIMIT 10;
 """
 pd.read_sql_query(jpod_query, con=JPOD_CONN)
 
-# EXAMPLE 3: Job positions from a specific company (Migros) in a given city (Bern)
+# EXAMPLE 3: Job positions from a specific company (novartis) in a given city (basel)
 jpod_query = """
 SELECT company_name, city, inferred_job_title AS job_title
 FROM position_characteristics
-WHERE city LIKE "bern" AND company_name LIKE "%migros%"
+WHERE city LIKE "basel" AND company_name LIKE "%novartis%"
 """
 pd.read_sql_query(jpod_query, con=JPOD_CONN)
 
@@ -79,7 +66,3 @@ LIMIT 20;
 """.format(KEYWORD)
 print("Employers asking about '{}': ".format(KEYWORD))
 pd.read_sql_query(jpod_query, con=JPOD_CONN)
-
-
-#### close connection to .db -------------------
-JPOD_CONN.close()
