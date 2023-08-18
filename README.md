@@ -49,7 +49,7 @@ dbFetch(res)
 
 ## JPOD Overview
 
-JPOD currently consists of **6 tables**, which ecompass information along the following lines:
+**:rotating_light: The full technical docmentation** is available <a href='./docs/jpod_manual.md'>here</a>. To get a brief overview, JPOD currently consists of **6 tables**, which ecompass information along the following lines:
 
 table|descirption
 ---|---
@@ -63,9 +63,6 @@ regio_grid|An overview table of regional entities that are present in JPOD. This
 Below is the full schema of the 2023 JPOD version:
 
 ![jpod_schema](./docs/figures/jpod_schema_2023.png)
-
-
-For the full technical docmentation see <a href='./docs/jpod_manual.md'>JPOD manual</a>
 
 ## Repository Struture
 
