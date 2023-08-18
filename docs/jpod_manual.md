@@ -147,3 +147,14 @@ After completing these steps, JPOD should be successfully updated with the new d
 <img src="https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg" height="60" width="60" >
 
 **:bangbang: Note** if something goes wrong, there is the [clean_tables.py](../scripts/clean_tables.py) script which you can use to delete all data from JPOD for a given batch of data. You have to specify the data bacth using the `DELETE_BATCH` parameter in this script. For example, specify `DELETE_BATCH = "jobspickr_2023_01"` to delete all data from the 2023 jobspickr batch. **HOWEVER, BE VERY CAREFULL WITH THIS SCRIPT**.
+
+## Final Remarks
+
+There are some particular issues where JPOD is likely to have much room for improvement (see the GitHub issues in this repository).
+
+- **Updating performance**: The script [jpod_update.py](../scripts/jpod_update.py) inserts data from its raw form into the three JPOD tables `job_postings`, `position_characteristics` and `institutions`. The institutions table only contains unique employers, but to determine that, the script currently has to check for every new employer in the raw data, if it already exists in JPOD. This is very inefficient. A more elegent solution could be to not insert raw data into the `institutions` table at all in a first round. After the other two tables are filled, a list of unique employer names could be extracted from the database and then applied to the raw data to select employers who should be inserted.
+
+- **Query Performance**: Growing in size, JPOD has become much slower for performing queries. The use of SQL indexes improves this problem somewhat, but there might be further improvements possible, by deleting unnecessary columns in several tables. Unnecessary means here columns that are never used for any analysis. Certain candidates could e.g., be the html_job_description column in den job_postings table, the inferred_departement in the position_characteristics table or almost everything in the institutions table.
+
+- **Data Provider**: If the CIEB would get further job postings data not from Jobspickr anymore, then one would have to create `uniq_id` values for such new postings. This should not be a problem as such, but should not get forgotten.
+
