@@ -88,10 +88,16 @@ jpod
 
 ## Packaging and Installation
 
-To use the JPOD functionalities for another project, the source code in this repository is also available as a **python package named `jpod`**. This makes it easier to use the code for other projects. However, the source distribution is not available on pypi and the `jpod` package must be installed locally. To do that on the cluster, run the following from the command line (if run locally, change the paths to the virtual environment and this repository accordingly):
+To use the JPOD functionalities for another project, the source code in this repository is also available as a **python package named `jpod`**. This makes it easier to use the code for other projects. However, the source distribution is not available on pypi and the `jpod` package must be installed locally. **jpod requires a Python version>=3.6 and setuptools>=61.0**. To ensure that on the cluster, run the following from the command line (if run locally, change the paths to the virtual environment and this repository accordingly):
+
 ```bash
+ml load Python/3.9.6-GCCcore-11.2.0
+python3 -m venv [YOUR_PROJECTS_VIRTUAL_ENVIRONMENT_NAME] python=3.9
 source <PATH_TO_YOUR_PROJECTS_VIRTUAL_ENVIRONMENT>/bin/activate
-pip install -e /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+pip install --upgrade pip
+pip install --upgrade setuptools>=61.0
+cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+pip install .
 ```
 
 Subsequently, verifiy the installation by importing jpod:
