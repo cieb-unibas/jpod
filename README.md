@@ -111,6 +111,8 @@ print(jpod.get_tables(con))
 :warning: **IMPORTANT:** If you make changes to the package source code hosted in [jpod/](./jpod/), you must build the package from scratch and re-install the it in other projects to use such new functionalities that you added. To do this, make sure that the local repository on scicore is up to date (run `git status`, commit or restore changes and then `git pull`) and run the following code in the command line to build the new package:
 ```bash
 cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+rm dist/ -r
+rm *egg-info/ -r
 source ../jpod_venv/bin/activate
 pip install --upgrade pip
 pip install --upgrade build
