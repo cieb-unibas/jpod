@@ -5,7 +5,7 @@ Source code for creating and updating the CIEB Job Postings Database (JPOD)
 ## What is JPOD?
 JPOD hosts job adds data the CIEB first acquired in 2022 from <a href='https://www.jobspikr.com/'>jobspickr</a>. The idea of JPOD is to have an easily updateable and manageable database that allows to add further job-ads data in the future - be it from jobspickr or other data providers. 
 
-All material related to JPOD as well as the database itself is stored on the University of Basel's [scicore cluster](https://scicore.unibas.ch/) under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The JPOD database can be found as an SQLite Database file (https://www.sqlite.org/) named `jpod.db` (about 68.4 GB). This repository contains the source code and scripts to interact with JPOD for maintainance, testing, updating and certain specific querying and is thus also available on sciocore under the directory `jpod/`. Finaly, a virtual environment with all the necessary dependencies is available at `jpod-venv/`. Activate this virtual environment using `source jpod-venv/bin/activate` to interact with JPOD (see also below).
+All material related to JPOD as well as the database itself is stored on the University of Basel's [scicore cluster](https://scicore.unibas.ch/) under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The JPOD database can be found as an SQLite Database file (https://www.sqlite.org/) named `jpod.db` (about 68.4 GB). This repository contains the source code and scripts to interact with JPOD for maintainance, testing, updating and certain specific querying and is thus also available on sciocore under the directory `jpod/`. Finaly, a virtual environment with all the necessary dependencies is available at `jpod-venv/`. Activate this virtual environment using `source jpod_venv/bin/activate` to interact with JPOD (see also below).
 
 Currently (i.e. August 2023), **JPOD contains 9'196'097 job postings from 21 countries and 701'828 different employers**.
 
@@ -49,7 +49,7 @@ dbFetch(res)
 
 ## JPOD Overview
 
-JPOD currently consists of **6 tables**, which ecompass information along the following lines:
+**:rotating_light: The full technical docmentation** is available <a href='./docs/jpod_manual.md'>here</a>. To get a brief overview, JPOD currently consists of **6 tables**, which ecompass information along the following lines:
 
 table|descirption
 ---|---
@@ -63,9 +63,6 @@ regio_grid|An overview table of regional entities that are present in JPOD. This
 Below is the full schema of the 2023 JPOD version:
 
 ![jpod_schema](./docs/figures/jpod_schema_2023.png)
-
-
-For the full technical docmentation see <a href='./docs/jpod_manual.md'>JPOD manual</a>
 
 ## Repository Struture
 
@@ -91,26 +88,16 @@ jpod
 
 ## Packaging and Installation
 
-To use the JPOD functionalities for another project, the source code in this repository is also available as a python package named `jpod`. This makes it easier to use the code for other projects. However, the source distribution is not available on pypi and the `jpod` package must be installed locally.
+To use the JPOD functionalities for another project, the source code in this repository is also available as a **python package named `jpod`**. This makes it easier to use the code for other projects. However, the source distribution is not available on pypi and the `jpod` package must be installed locally. **jpod requires a Python version>=3.6 and setuptools>=61.0**. To ensure that on the cluster, run the following from the command line (if run locally, change the paths to the virtual environment and this repository accordingly):
 
-To do that on the cluster, run the following from the command line (if run locally, change the paths to the virtual environment and this repository accordingly):
 ```bash
-source <PATH_TO_JPOD_VIRTUAL_ENVIRONMENT>
+ml load Python/3.9.6-GCCcore-11.2.0
+python3 -m venv [YOUR_PROJECTS_VIRTUAL_ENVIRONMENT_NAME] python=3.9
+source <PATH_TO_YOUR_PROJECTS_VIRTUAL_ENVIRONMENT>/bin/activate
 pip install --upgrade pip
-pip install --upgrade build
-cd <PATH_TO_THIS_JPOD_REPOSITORY>
-python3 -m build
-```
-
-This code activates the jpod virtual environment, upgrades the packaging tools `pip` and `build` if necessary and then creates the package distribution files using `python3 -m build` (these files will be saved under a newly created `dist/` directory within this repository). The distribution files will be used when installing `jpod` for other projects.
-
-:warning: **IMPORTANT:** If you make changes to the package source code in this repository, you must repeat this process and re-install the package in other projects to use such new functionalities.
-
-To install `jpod` for another project, create a virtual environment for your project, activate it and run the following:
-```bash
-python3 -m venv <YOUR_PROJECT_VIRTUAL_ENVIRONMENT>
-source <PATH_TO_YOUR_PROJECT_VIRTUAL_ENVIRONMENT>/bin/activate
-pip install -e <PATH_TO_THIS_JPOD_REPOSITORY>
+pip install --upgrade setuptools>=61.0
+cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+pip install .
 ```
 
 Subsequently, verifiy the installation by importing jpod:
@@ -120,3 +107,17 @@ con = jpod.connect_to_jpod()
 print(jpod.get_tables(con))
 # ['job_postings', 'position_characteristics', 'institutions', 'acemoglu_ai', 'bloom_tech', 'regio_grid']
 ```
+
+:warning: **IMPORTANT:** If you make changes to the package source code hosted in [jpod/](./jpod/), you must build the package from scratch and re-install the it in other projects to use such new functionalities that you added. To do this, make sure that the local repository on scicore is up to date (run `git status`, commit or restore changes and then `git pull`) and run the following code in the command line to build the new package:
+```bash
+cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+rm dist/ -r
+rm *egg-info/ -r
+source ../jpod_venv/bin/activate
+pip install --upgrade pip
+pip install --upgrade build
+python3 -m build
+```
+This code activates the jpod virtual environment, upgrades the packaging tools `pip` and `build` if necessary and then creates the package distribution files using `python3 -m build` (these files will be saved under a newly created `dist/` directory within this repository). The distribution files will be used when installing `jpod` for other projects (see above).
+
+

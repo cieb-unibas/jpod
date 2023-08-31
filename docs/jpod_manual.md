@@ -6,9 +6,7 @@ JPOD is short for '**J**ob **Po**stings **D**atabase'. It hosts job adds data th
 
 For now, JPOD is set up as a SQLite Database, which is one of the most common relational database management systems (RDBMS) in the world (https://www.sqlite.org/). SQLite is especially suitable for relatively 'small' databases and is easily transferable since the entire database is stored as a single file. SQLite features a lightweight command line program called 'sqlite3', which allows one to execute SQL statements from the CL. Besides, sqlite is compatible to interact with all kinds of IDEs (e.g. DBeaver, DB Browser, Beekeper Studio) and there are several libraries to directly interact with sqlite using Python and/or R.  
 
-JPOD as well as its source code is stored on scicore in the CIEB's GROUP folder under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The created sqlite database is stored in the file `jpod.db` (about 17.2 GB). The source code is available in the directory `jpod/`, which is also on GitHub (https://github.com/cieb-unibas/jpod). 
-
-Currently (i.e. January 2023), JPOD contains 3'211'219 Swiss job postings from 76'935 different institutions.
+JPOD as well as its source code is stored on scicore in the CIEB's GROUP folder under the directory `/scicore/home/weder/GROUP/Innovation/05_job_adds_data/`. The created sqlite database is stored in the file `jpod.db` (about 68 GB). The source code is available in the directory `jpod/`, which is also on GitHub (https://github.com/cieb-unibas/jpod). 
 
 ## Setting Up JPOD from scratch: 
 
@@ -45,16 +43,15 @@ California|||||2|US|USA|||||US|US06||no
 Bavaria|Bayern|||1|2|DE|DEU|DE|DE2|||DE|DE2||no
 basel-stadt|basel-stadt|bâle-ville|BS|3|3|CH|CHE|CH|CH0|CH03|CH031|CH|CH03|CH031|no
 
-The actual assignment of job postings to the stated regions in the `regio_grid` table was initially performed via the script `scripts/assign_geo.py` for Swiss job postings. Using slurm, this script can also be sent to the cluster via the `scicore/jpod_augment.sh` script. Job postings are thereby assigned a territorial code based on the columns `city`, `inferred_city`, `state`, and `inferred_state` in the `position_characteristics` table. More specifically, the script first creates two new columns, `nuts_2` and `nuts_3`, in the `position_characteristics` table (indicating the location of every job posting) and fills them with NUTS codes if values in the columns `city`, `inferred_city`, `state`, and/or `inferred_state` can be (exactly) matched to one of the values in the columns `name_en`, `name_de`, `name_fr` and/or `regio_abbrev` in the `regio_grid` table. After acquiring further data with international coverage in 2023, regional assignment for job postings was directly taken care of in the database [updating process](#updating-jpod-inserting-new-job-adds).
+The actual assignment of job postings to the stated regions in the `regio_grid` table was initially performed via the script `scripts/assign_geo.py` for Swiss job postings. Using slurm, this script can also be sent to the cluster via the `scicore/jpod_augment.sh` script. Job postings are thereby assigned a territorial code based on the columns `city`, `inferred_city`, `state`, and `inferred_state` in the `position_characteristics` table. More specifically, the script first creates two new columns, `nuts_2` and `nuts_3`, in the `position_characteristics` table (indicating the location of every job posting) and fills them with NUTS codes if values in the columns `city`, `inferred_city`, `state`, and/or `inferred_state` can be (exactly) matched to one of the values in the columns `name_en`, `name_de`, `name_fr` and/or `regio_abbrev` in the `regio_grid` table. After acquiring further data with international coverage in 2023, regional assignment for job postings was directly taken care of in the database [updating process](#updating-jpod:-inserting-new-job-postings).
 
 Hence, **geographical information for NUTS-levels 2 and 3 are directly observed in the `position_characteristics` table**. If other terrtorial information has to be retrieved (e.g. another aggregation level or the English, French or German name of the NUTS code), this can be retrieved by joining the `position_characteristics` with the `regio_grid` table. A graphical overview is given in Figure 2.
 
 **Figure 2: ER Diagram of JPOD's regional information**
 
-**Notes on Refined Matching**: Some job postings state their geographical information in a special way (e.g. 'baselstadt' instead of 'basel-stadt' or 'bs'). To capture these false negatives to some extent, refined matching operations were additionally performed for the largest non-matched Swiss entities via the `scripts/assign_geo.py` script. After all of these operations 92.6\% of the 3'211'219 job postings in the initial JPOD could be matched to NUTS 2 regions. 
-
 ![](figures/jpod_regio_er.png)
 
+**Notes on Refined Matching**: Some job postings state their geographical information in a special way (e.g. 'baselstadt' instead of 'basel-stadt' or 'bs'). To capture these false negatives to some extent, refined matching operations were additionally performed for the largest non-matched Swiss entities via the `scripts/assign_geo.py` script. After all of these operations 92.6\% of the 3'211'219 job postings in the initial JPOD could be matched to NUTS 2 regions. 
 
 ### Duplicate Cleaning
 
@@ -142,8 +139,19 @@ The final step is to enhance the information contained in JPOD. This can be done
 
 While the latter two are easily handled by scicore and do not require any changes, the `clean_duplicates.py`'s runtimes can be a challenge. **It is thus recommended to run `clean_duplicates.py` seperately for selected countries that dont have more than 3 million postings.**. This behavior can be controlled by specifying the paramater `RESTRICT_TO_GEO_UNITS` in [clean_duplicates.py](../scripts/clean_duplicates.py). For example, to only clean duplicates in JPOD for Germany and Italy, change as follows in the script `RESTRICT_TO_GEO_UNITS = ["germany", "italy"]`.
 
-[smiley](https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg) 
-
 After completing these steps, JPOD should be successfully updated with the new data. 
 
+<img src="https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg" height="60" width="60" >
+
 **:bangbang: Note** if something goes wrong, there is the [clean_tables.py](../scripts/clean_tables.py) script which you can use to delete all data from JPOD for a given batch of data. You have to specify the data bacth using the `DELETE_BATCH` parameter in this script. For example, specify `DELETE_BATCH = "jobspickr_2023_01"` to delete all data from the 2023 jobspickr batch. **HOWEVER, BE VERY CAREFULL WITH THIS SCRIPT**.
+
+## Final Remarks
+
+There are some particular issues where JPOD is likely to have much room for improvement (see the GitHub issues in this repository).
+
+- **Updating performance**: The script [jpod_update.py](../scripts/jpod_update.py) inserts data from its raw form into the three JPOD tables `job_postings`, `position_characteristics` and `institutions`. The institutions table only contains unique employers, but to determine that, the script currently has to check for every new employer in the raw data, if it already exists in JPOD. This is very inefficient. A more elegent solution could be to not insert raw data into the `institutions` table at all in a first round. After the other two tables are filled, a list of unique employer names could be extracted from the database and then applied to the raw data to select employers who should be inserted.
+
+- **Query Performance**: Growing in size, JPOD has become much slower for performing queries. The use of SQL indexes improves this problem somewhat, but there might be further improvements possible, by deleting unnecessary columns in several tables. Unnecessary means here columns that are never used for any analysis. Certain candidates could e.g., be the html_job_description column in den job_postings table, the inferred_departement in the position_characteristics table or almost everything in the institutions table.
+
+- **Data Provider**: If the CIEB would get further job postings data not from Jobspickr anymore, then one would have to create `uniq_id` values for such new postings. This should not be a problem as such, but should not get forgotten.
+
