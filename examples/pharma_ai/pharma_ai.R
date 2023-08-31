@@ -23,11 +23,15 @@ if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 #### Load data on firm patterns-------------------------------------------------
 patterns_to_firms <- read.csv("./examples/pharma_ai/pharma_firm_list.csv")
 
-#### Prepare String in SQL-Format to extract employers whose name matches the patterns
+#### Prepare a character string in SQL-Format to extract employers whose name matches the patterns indicated in 'patterns_to_firms'
 company_patterns <- paste0("'%", patterns_to_firms$firm_name_pattern, "%'")
 sql_query_string <- paste0("company_name LIKE ", company_patterns, collapse = " OR ")
 
 #### Query JPOD to get the total number of postings from these employers:-------
+# 1) Take all companies from the 'institutions' table that match the patterns indicated above
+# 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
+# 3) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
+# 4) Calculate the number of postings by each retrieved company.
 total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   filter(sql(sql_query_string)) %>%
   select(company_name) %>%
@@ -42,6 +46,11 @@ total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   as.data.frame()
 
 #### Query JPOD to get the number of AI-related postings from these employers:--
+# 1) Take all companies from the 'institutions' table that match the patterns indicated above
+# 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
+# 3) Only take those postings that are registered in the 'acemoglu_ai' table, i.e. those that are connected to AI keywords.
+# 4) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
+# 5) Calculate the number of AI-postings by each retrieved company.
 ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   filter(sql(sql_query_string)) %>%
   select(company_name) %>%

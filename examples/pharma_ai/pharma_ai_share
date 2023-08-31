@@ -1,0 +1,25 @@
+[1] "Connection to JPOD successfull"
+[1] "Resulting top-20 companies:"
+# A tibble: 20 × 4
+   company_name         n_ai_postings n_postings ai_share
+   <chr>                        <int>      <int>    <dbl>
+ 1 Allergan                         1          7  0.143  
+ 2 Sanofi                         238       1746  0.136  
+ 3 Astra Zeneca                   152       2074  0.0733 
+ 4 Novartis                       315       5035  0.0626 
+ 5 Daiichi Sankyo                  95       1538  0.0618 
+ 6 Roche                          802      13827  0.0580 
+ 7 Glaxo Smith Kline               31        579  0.0535 
+ 8 Amgen                           39        769  0.0507 
+ 9 Takeda                         291       7067  0.0412 
+10 Boehringer Ingelheim            42       1128  0.0372 
+11 Teva                            25        743  0.0336 
+12 AbbVie                          26       1173  0.0222 
+13 Johnson & Johnson              242      11152  0.0217 
+14 Bayer                           74       3545  0.0209 
+15 Eli Lilly                        5        290  0.0172 
+16 Merck & Co.                     66       4240  0.0156 
+17 Pfizer                          24       2010  0.0119 
+18 Gilead Sciences                  3        380  0.00789
+19 Novo Nordisk                    32       4238  0.00755
+20 Bristol Myers Squibb            26       6031  0.00431

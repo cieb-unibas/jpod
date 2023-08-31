@@ -7,7 +7,7 @@
 #SBATCH --qos=30min
 
 #SBATCH --output=jpod/examples/pharma_ai/pharma_ai_share
-#SBATCH --error=jpod/examples/pharma_ai/pharma_ai_share
+#SBATCH --error=jpod/examples/pharma_ai/pharma_ai_share_errors
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=matthias.niggli@unibas.ch
 
@@ -15,4 +15,5 @@
 cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
 
 ## run the script
+ml load R
 Rscript ./examples/pharma_ai/pharma_ai.R
