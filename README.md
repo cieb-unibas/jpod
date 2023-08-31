@@ -45,7 +45,7 @@ res <- dbSendQuery(JPOD_CON, 'SELECT job_description FROM job_postings LIMIT 5')
 dbFetch(res)
 ```
 
-:exclamation: **Please see further examples <a href='./docs/examples/'>here</a> for a more comprehensive introduction and different ways to query JPOD (e.g. using libraries such as pandas or dplyr).**
+:exclamation: **Please see further examples <a href='./examples/'>here</a> for a more comprehensive introduction and different ways to query JPOD (e.g. using libraries such as pandas or dplyr).**
 
 ## JPOD Overview
 
@@ -72,15 +72,18 @@ jpod
 ├── data
 ├── docs
 ├── eval
+├── examples
 ├── jpod
 ├── scripts
 ```
 
 - [data/](./data/): Contains data files that are used to enhance information contained in JPOD and/or to evaluate the results extracted from the dataabse. The data can either be raw data (e.g., [acemoglu_ai_keywords.txt](./data/acemoglu_ai_keywords.txt)), created manually (e.g., [regio_grid.csv](./data/regio_grid.csv)) or through scripts (e.g., [acemoglu_ai_keywords.csv](./data/acemoglu_ai_keywords.csv)).
 
-- [docs/](./docs/): Contains files that aim to facilitate the access to and the maintainance of JPOD. You can find an extended JPOD manual [jpod_manual](./docs/jpod_manual.md), approximate [script runtimes](./docs/runtimes.md) and [query examples](./docs/examples/) for R and Python.
+- [docs/](./docs/): Contains files that aim to facilitate the access to and the maintainance of JPOD. You can find an extended JPOD manual [jpod_manual](./docs/jpod_manual.md) and approximate [script runtimes](./docs/runtimes.md)
 
 - [eval/](./eval/): Contains several scritps to test the validity and representativeness of the jobspickr data.
+
+- [examples/](./examples/): Presents some [query examples](./examples/) for R and Python. Furthermore, this contains a directory [pharma_ai](./examples/pharma_ai/) with scripts to perform an analysis regarding the share of AI-related job postings for different pharmaceutical companies.
 
 - [jpod/](./jpod/): Contains Python modules that support configuration, maintainance, navigation and queriying of JPOD. There are 4 modules: config, datagen, navigate and queries. These can be indidually loaded using `from jpod import ...` or entirely together using `import jpod`.
 

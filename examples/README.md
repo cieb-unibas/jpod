@@ -6,9 +6,13 @@ examples
 ├── jpod_ex.py
 ├── jpod_ex.R
 ├── pharma_ai/
-    ├── pharma_firm_list.csv
     ├── pharma_ai.R
     ├── pharma_ai_scicore.sh
+    ├── pharma_ai_share
+    ├── pharma_ai_share_errors
+    ├── pharma_ai_shares.csv
+    └── pharma_firm_list.csv
+
 ```
 
 `jpod_ex.py` and `jpod_ex.R` both shwo you basic functionality to query the database. 

@@ -15,7 +15,7 @@ package_setup(packages = pkgs)
 
 #### Access JPOD ---------------------------------------------------------------
 DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-DB_VERSION <- "jpod_test.db"
+DB_VERSION <- "jpod.db"
 DB_PATH <- paste0(DB_DIR, DB_VERSION)
 JPOD_CONN <- dbConnect(RSQLite::SQLite(), DB_PATH)
 if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
@@ -74,6 +74,9 @@ ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   summarize(n_ai_postings = n()) %>%
   arrange(-n_ai_postings) %>%
   as.data.frame()
+
+#### => merge and stop here: save this file to check if other patterns have to be excluded...
+
 
 #### Rename the company names retrieved from JPOD to their 'clean' name:--------
 rename_companies <- function(company_names){
