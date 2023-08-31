@@ -31,16 +31,20 @@ sql_query_string <- paste0("company_name LIKE ", company_patterns, collapse = " 
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
 # 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
 # 3) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
-# 4) Calculate the number of postings by each retrieved company.
+# 4) Only consider job postings from the 2023 march data batch.
+# 5) Calculate the number of postings by each retrieved company in each region.
 total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   filter(sql(sql_query_string)) %>%
   select(company_name) %>%
   inner_join(
     tbl(src = JPOD_CONN, "position_characteristics"), 
     by = "company_name") %>%
-  select(company_name) %>%
+  select(company_name, uniq_id, nuts_2) %>%
   filter(sql("company_name NOT LIKE '%bayern%' OR '%rochester%'")) %>%
-  group_by(company_name) %>%
+  inner_join(
+    tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
+    by = "uniq_id") %>%
+  group_by(company_name, nuts_2) %>%
   summarize(n_postings = n()) %>%
   arrange(-n_postings) %>%
   as.data.frame()
@@ -48,21 +52,25 @@ total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
 #### Query JPOD to get the number of AI-related postings from these employers:--
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
 # 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
-# 3) Only take those postings that are registered in the 'acemoglu_ai' table, i.e. those that are connected to AI keywords.
-# 4) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
-# 5) Calculate the number of AI-postings by each retrieved company.
+# 3) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
+# 4) Only consider job postings from the 2023 march data batch.
+# 5) Only take those postings that are registered in the 'acemoglu_ai' table, i.e. those that are connected to AI keywords.
+# 6) Calculate the number of AI-postings by each retrieved company.
 ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   filter(sql(sql_query_string)) %>%
   select(company_name) %>%
   inner_join(
     tbl(src = JPOD_CONN, "position_characteristics"), 
     by = "company_name") %>%
-  select(company_name, uniq_id) %>%
+  select(company_name, uniq_id, nuts_2) %>%
+  filter(sql("company_name NOT LIKE '%bayern%' OR '%rochester%'")) %>%
+  inner_join(
+    tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
+    by = "uniq_id") %>%
   inner_join(tbl(src = JPOD_CONN, "acemoglu_ai"), 
              by = "uniq_id") %>%
-  select(company_name) %>%
-  filter(sql("company_name NOT LIKE '%bayern%' OR '%rochester%'")) %>%
-  group_by(company_name) %>%
+  select(company_name, nuts_2) %>%
+  group_by(company_name, nuts_2) %>%
   summarize(n_ai_postings = n()) %>%
   arrange(-n_ai_postings) %>%
   as.data.frame()
@@ -86,15 +94,40 @@ rename_companies <- function(company_names){
 ai_postings$company_name <- rename_companies(company_names = ai_postings$company_name)
 total_postings$company_name <- rename_companies(company_names = total_postings$company_name)
 
-#### Aggregate postings for 'cleaned' companies and calculate ai-shares: -------
-ai_postings <- ai_postings %>% group_by(company_name) %>% summarize(n_ai_postings = sum(n_ai_postings))
-total_postings <- total_postings %>% group_by(company_name) %>% summarize(n_postings = sum(n_postings))
-res <- ai_postings %>% 
-  left_join(total_postings, by = "company_name") %>% 
-  mutate(ai_share = n_ai_postings / n_postings) %>%
-  arrange(-ai_share)
+#### Aggregate postings for 'cleaned' companies and region and calculate ai-shares: -------
+ai_postings <- ai_postings %>% 
+  group_by(company_name, nuts_2) %>% 
+  summarize(n_ai_postings = sum(n_ai_postings))
+total_postings <- total_postings %>% 
+  group_by(company_name, nuts_2) %>% 
+  summarize(n_postings = sum(n_postings))
+res <- total_postings %>%
+  full_join(ai_postings, by = c("company_name", "nuts_2")) %>% 
+  mutate(
+    ai_share = n_ai_postings / n_postings,
+    n_ai_postings = ifelse(is.na(n_ai_postings), 0, n_ai_postings)
+  )
+
+#### get and add regional names:
+regions <- tbl(src = JPOD_CONN, "regio_grid") %>%
+  filter(oecd_level == 2) %>%
+  select(name_en, nuts_2, oecd_tl2, iso_2) %>%
+  mutate(
+    nuts_2 = ifelse(is.na(nuts_2), oecd_tl2, nuts_2),
+    oecd_tl2 = ifelse(is.na(nuts_2), nuts_2, oecd_tl2),
+  ) %>% rename(country = iso_2) %>% as.data.frame()
+res <- res %>% 
+  mutate(nuts_2 = ifelse(startsWith(nuts_2, "UK"), substr(nuts_2, 1,3), nuts_2)) %>%
+  left_join(regions %>% select(-oecd_tl2), by = "nuts_2")
 
 ### Show the top-20 ranked companies and save the result:
-print("Resulting top-20 companies:")
-print(head(res, 20))
+print("Resulting top-20 comany-regions:")
+res %>% 
+  group_by(company_name) %>% 
+  summarise(
+    n_ai_postings = sum(n_ai_postings),
+    n_postings = sum(n_postings),
+    ai_share = n_ai_postings / n_postings) %>%
+  filter(ai_share > 0) %>%
+  head(20)
 write.csv(res, "./examples/pharma_ai/pharma_ai_shares.csv", row.names = FALSE)
