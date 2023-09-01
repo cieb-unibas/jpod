@@ -1,0 +1,27 @@
+[1] "Connection to JPOD successfull"
+[1] "Found 985 employer names matching the indicated patterns."
+[1] "Found 102 employer names with ai postings matching the indicated patterns."
+[1] "Resulting top-20 comany-regions:"
+# A tibble: 20 × 4
+   company_name         n_ai_postings n_postings ai_share
+   <chr>                        <dbl>      <int>    <dbl>
+ 1 AbbVie                          33       1008  0.0327 
+ 2 Allergan                         1          2  0.5    
+ 3 Amgen                           40        879  0.0455 
+ 4 Astra Zeneca                   136       1915  0.0710 
+ 5 Bayer                           21        670  0.0313 
+ 6 Boehringer Ingelheim            26       1024  0.0254 
+ 7 Bristol Myers Squibb            22        942  0.0234 
+ 8 Daiichi Sankyo                  95       1513  0.0628 
+ 9 Eli Lilly                        7        329  0.0213 
+10 Gilead Sciences                  4        894  0.00447
+11 Glaxo Smith Kline               23        460  0.05   
+12 Johnson & Johnson              129       2494  0.0517 
+13 Merck & Co.                     79       1597  0.0495 
+14 Merck KGaA                       5        392  0.0128 
+15 Moderna                          7        352  0.0199 
+16 Novartis                        34       1836  0.0185 
+17 Novo Nordisk                   105       1390  0.0755 
+18 Pfizer                          25       1452  0.0172 
+19 Roche                          355       2454  0.145  
+20 Sanofi                         243       1509  0.161  

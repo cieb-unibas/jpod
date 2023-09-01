@@ -13,24 +13,54 @@ package_setup <- function(packages){
 }
 package_setup(packages = pkgs)
 
+#### configure -----------------------------------------------------------------
+INCLUDE_SUBSIDIARIES <- FALSE
+DB_VERSION <- "jpod.db"
+
 #### Access JPOD ---------------------------------------------------------------
 DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-DB_VERSION <- "jpod_test.db"
 DB_PATH <- paste0(DB_DIR, DB_VERSION)
 JPOD_CONN <- dbConnect(RSQLite::SQLite(), DB_PATH)
 if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 
-#### Set working directory and load data on firm patterns-------------------------------------------------
+#### Define Output file namings
+if(INCLUDE_SUBSIDIARIES == TRUE){
+  out_file_extension <- "_inlc_subsidiaries"
+}else{
+  out_file_extension <- ""
+}
+
+#### Load data on firm patterns-------------------------------------------------
+# parent companies and corresponding search tokens:
 patterns_to_firms <- read.csv("./examples/pharma_ai/pharma_firm_list.csv")
 
-#### Prepare a character string in SQL-Format to extract employers whose name matches the patterns indicated in 'patterns_to_firms'
+# subsidiaries: 
+if(INCLUDE_SUBSIDIARIES == TRUE){
+  # load subsidiaries and search tokens:
+  patterns_subsidiaries_firms <-  read.csv(
+    "/scicore/home/weder/GROUP/Innovation/11_Classifications/top20_pharma.csv", sep = ";"
+    ) %>%
+    select(name, search_tokens) %>% 
+    rename(firm_name = name, firm_name_pattern = search_tokens)
+  # add to existing parent company names and search tokens
+  patterns_to_firms <- rbind(patterns_to_firms, 
+                             patterns_subsidiaries_firms[, c("firm_name_pattern", "firm_name")]
+                             )
+  # only keep every search token once
+  patterns_to_firms <- patterns_to_firms %>% distinct(firm_name_pattern, .keep_all = TRUE)
+}
+
+#### Query Strings  ---------------------------------------------------------------
+# Prepare a character string in SQL-Format to extract employers 
+# whose name matches the patterns indicated in 'patterns_to_firms'
 company_patterns <- paste0("'%", patterns_to_firms$firm_name_pattern, "%'")
 company_patterns <- paste0("company_name LIKE ", company_patterns, collapse = " OR ")
 
-exclude_tokens <- paste0("'%", c("bayern", "bayerisch", "rochester"), "%'")
+exclude_tokens <- paste0("'%", c("bayern", "bayerisch", "rochester", "johanniter", "falcon farms", "broadcasting"), "%'")
 exclude_tokens <- paste0("company_name NOT LIKE ", exclude_tokens, collapse = " AND ")
 
-#### Query JPOD to get the total number of postings from these employers:-------
+#### Query JPOD ---------------------------------------------------------------
+# In order to get the total number of postings from these employers:
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
 # 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
 # 3) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
@@ -51,9 +81,14 @@ total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   summarise(n_postings = n()) %>%
   arrange(-n_postings) %>%
   as.data.frame()
-print(paste("Found", length(unique(total_postings$company_name)), "employer names matching the indicated patterns."))
 
-#### Query JPOD to get the number of AI-related postings from these employers:--
+print(
+  paste("Found", 
+        length(unique(total_postings$company_name)), 
+        "employer names matching the indicated patterns.")
+  )
+
+# in order to get the number of AI-related postings from these employers:
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
 # 2) Take all of their job postings registered in the 'position_characteristics' table using inner_join()
 # 3) Throw out companies that were wrongly matched by the keyowrd search in (1). This concerns e.g. 'bayern' instead of only 'bayer'
@@ -78,15 +113,25 @@ ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   summarize(n_ai_postings = n()) %>%
   arrange(-n_ai_postings) %>%
   as.data.frame()
-print(paste("Found", length(unique(ai_postings$company_name)), "employer names with ai postings matching the indicated patterns."))
 
-#### test whether there are some big false positives:
+print(
+  paste("Found", 
+        length(unique(ai_postings$company_name)), 
+        "employer names with ai postings matching the indicated patterns.")
+  )
+
+#### False positive tests  -----------------------------------------------------
+# test whether there are some big false positive matches
+# write to disk and check manually. if there are, drop them by inserting into
+# `exclude_tokens` above and re-run this script.
 test_firm_list <- total_postings %>% 
   group_by(company_name) %>%
   summarise(n_postings = sum(n_postings)) %>%
-  filter(n_postings >= 100)
+  filter(n_postings >= 50) %>%
+  arrange(-n_postings)
 if(nrow(test_firm_list) > 0){
-  write.csv(test_firm_list, "./examples/pharma_ai/pharma_test_firm_list.csv", row.names = FALSE)
+  out_file = paste0("./examples/pharma_ai/pharma_test_firm_list", out_file_extension, ".csv")
+  write.csv(test_firm_list, out_file, row.names = FALSE)
   }
 
 #### Rename the company names retrieved from JPOD to their 'clean' name:--------
@@ -122,7 +167,7 @@ res <- total_postings %>%
     n_ai_postings = ifelse(is.na(n_ai_postings), 0, n_ai_postings)
   )
 
-#### get and add regional names:
+#### get and add regional names:-------------------------------------------
 regions <- tbl(src = JPOD_CONN, "regio_grid") %>%
   filter(oecd_level == 2) %>%
   select(name_en, nuts_2, oecd_tl2, iso_2) %>%
@@ -134,8 +179,8 @@ res <- res %>%
   mutate(nuts_2 = ifelse(startsWith(nuts_2, "UK"), substr(nuts_2, 1,3), nuts_2)) %>%
   left_join(regions %>% select(-oecd_tl2), by = "nuts_2")
 
-### Show the top-20 ranked companies and save the result:
-print("Resulting top-20 comany-regions:")
+### Show the top-20 ranked companies:-------------------------------------------
+print("Resulting top-20 companies:")
 res %>% 
   group_by(company_name) %>% 
   summarise(
@@ -143,5 +188,11 @@ res %>%
     n_postings = sum(n_postings),
     ai_share = n_ai_postings / n_postings) %>%
   filter(ai_share > 0) %>%
+  arrange(-ai_share) %>%
   head(20)
-write.csv(res, "./examples/pharma_ai/pharma_ai_shares.csv", row.names = FALSE)
+
+#### save the data and close the database --------------------------------------
+out_file = paste0("./examples/pharma_ai/pharma_ai_shares", out_file_extension, ".csv")
+write.csv(res, out_file, row.names = FALSE)
+
+dbDisconnect(conn = JPOD_CONN)
