@@ -1,1 +1,25 @@
 [1] "Connection to JPOD successfull"
+[1] "Resulting top-20 comany-regions:"
+# A tibble: 20 × 4
+   company_name         n_ai_postings n_postings ai_share
+   <chr>                        <dbl>      <int>    <dbl>
+ 1 AbbVie                          26        904  0.0288 
+ 2 Allergan                         1          2  0.5    
+ 3 Amgen                           39        742  0.0526 
+ 4 Astra Zeneca                   133       1682  0.0791 
+ 5 Bayer                           21        664  0.0316 
+ 6 Boehringer Ingelheim            26        991  0.0262 
+ 7 Bristol Myers Squibb            22        904  0.0243 
+ 8 Daiichi Sankyo                  95       1513  0.0628 
+ 9 Eli Lilly                        5        229  0.0218 
+10 Gilead Sciences                  3        278  0.0108 
+11 Glaxo Smith Kline               22        427  0.0515 
+12 Johnson & Johnson              128       2290  0.0559 
+13 Merck & Co.                     61       1188  0.0513 
+14 Novartis                        19        734  0.0259 
+15 Novo Nordisk                    23        787  0.0292 
+16 Pfizer                          24       1273  0.0189 
+17 Roche                          321       2060  0.156  
+18 Sanofi                         238       1245  0.191  
+19 Takeda                         175       4087  0.0428 
+20 Teva                             3        416  0.00721

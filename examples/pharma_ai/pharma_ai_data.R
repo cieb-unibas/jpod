@@ -15,17 +15,20 @@ package_setup(packages = pkgs)
 
 #### Access JPOD ---------------------------------------------------------------
 DB_DIR <- "/scicore/home/weder/GROUP/Innovation/05_job_adds_data/"
-DB_VERSION <- "jpod.db"
+DB_VERSION <- "jpod_test.db"
 DB_PATH <- paste0(DB_DIR, DB_VERSION)
 JPOD_CONN <- dbConnect(RSQLite::SQLite(), DB_PATH)
 if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 
-#### Load data on firm patterns-------------------------------------------------
+#### Set working directory and load data on firm patterns-------------------------------------------------
 patterns_to_firms <- read.csv("./examples/pharma_ai/pharma_firm_list.csv")
 
 #### Prepare a character string in SQL-Format to extract employers whose name matches the patterns indicated in 'patterns_to_firms'
 company_patterns <- paste0("'%", patterns_to_firms$firm_name_pattern, "%'")
-sql_query_string <- paste0("company_name LIKE ", company_patterns, collapse = " OR ")
+company_patterns <- paste0("company_name LIKE ", company_patterns, collapse = " OR ")
+
+exclude_tokens <- paste0("'%", c("bayern", "bayerisch", "rochester"), "%'")
+exclude_tokens <- paste0("company_name NOT LIKE ", exclude_tokens, collapse = " AND ")
 
 #### Query JPOD to get the total number of postings from these employers:-------
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
@@ -34,20 +37,21 @@ sql_query_string <- paste0("company_name LIKE ", company_patterns, collapse = " 
 # 4) Only consider job postings from the 2023 march data batch.
 # 5) Calculate the number of postings by each retrieved company in each region.
 total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
-  filter(sql(sql_query_string)) %>%
+  filter(sql(company_patterns)) %>%
   select(company_name) %>%
   inner_join(
     tbl(src = JPOD_CONN, "position_characteristics"), 
     by = "company_name") %>%
   select(company_name, uniq_id, nuts_2) %>%
-  filter(sql("company_name NOT LIKE '%bayern%' OR '%rochester%'")) %>%
+  filter(sql(exclude_tokens)) %>%
   inner_join(
     tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
     by = "uniq_id") %>%
   group_by(company_name, nuts_2) %>%
-  summarize(n_postings = n()) %>%
+  summarise(n_postings = n()) %>%
   arrange(-n_postings) %>%
   as.data.frame()
+print(paste("Found", length(unique(total_postings$company_name)), "employer names matching the indicated patterns."))
 
 #### Query JPOD to get the number of AI-related postings from these employers:--
 # 1) Take all companies from the 'institutions' table that match the patterns indicated above
@@ -57,13 +61,13 @@ total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
 # 5) Only take those postings that are registered in the 'acemoglu_ai' table, i.e. those that are connected to AI keywords.
 # 6) Calculate the number of AI-postings by each retrieved company.
 ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
-  filter(sql(sql_query_string)) %>%
+  filter(sql(company_patterns)) %>%
   select(company_name) %>%
   inner_join(
     tbl(src = JPOD_CONN, "position_characteristics"), 
     by = "company_name") %>%
   select(company_name, uniq_id, nuts_2) %>%
-  filter(sql("company_name NOT LIKE '%bayern%' OR '%rochester%'")) %>%
+  filter(sql(exclude_tokens)) %>%
   inner_join(
     tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
     by = "uniq_id") %>%
@@ -74,9 +78,16 @@ ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   summarize(n_ai_postings = n()) %>%
   arrange(-n_ai_postings) %>%
   as.data.frame()
+print(paste("Found", length(unique(ai_postings$company_name)), "employer names with ai postings matching the indicated patterns."))
 
-#### => merge and stop here: save this file to check if other patterns have to be excluded...
-
+#### test whether there are some big false positives:
+test_firm_list <- total_postings %>% 
+  group_by(company_name) %>%
+  summarise(n_postings = sum(n_postings)) %>%
+  filter(n_postings >= 100)
+if(nrow(test_firm_list) > 0){
+  write.csv(test_firm_list, "./examples/pharma_ai/pharma_test_firm_list.csv", row.names = FALSE)
+  }
 
 #### Rename the company names retrieved from JPOD to their 'clean' name:--------
 rename_companies <- function(company_names){

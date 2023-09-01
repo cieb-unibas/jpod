@@ -1,5 +1,5 @@
 firm_name_pattern,firm_name
-"johnson","Johnson & Johnson"
+"johnson & johnson","Johnson & Johnson"
 "roche","Roche"
 "pfizer","Pfizer"
 "novartis","Novartis"
@@ -10,6 +10,7 @@ firm_name_pattern,firm_name
 "abbvie","AbbVie"
 "astra zeneca","Astra Zeneca"
 "astrazeneca","Astra Zeneca"
+"bristol myers","Bristol Myers Squibb"
 "myers squibb","Bristol Myers Squibb"
 "eli lilly","Eli Lilly"
 "amgen","Amgen"
