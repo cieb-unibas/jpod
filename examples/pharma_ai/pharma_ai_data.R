@@ -15,6 +15,7 @@ package_setup(packages = pkgs)
 
 #### configure -----------------------------------------------------------------
 INCLUDE_SUBSIDIARIES <- FALSE
+DISTINCT_POSTINGS_ONLY <- TRUE
 DB_VERSION <- "jpod.db"
 
 #### Access JPOD ---------------------------------------------------------------
@@ -25,14 +26,19 @@ if(exists("JPOD_CONN")){print("Connection to JPOD successfull")}
 
 #### Define Output file namings
 if(INCLUDE_SUBSIDIARIES == TRUE){
-  out_file_extension <- "_inlc_subsidiaries"
-}else{
-  out_file_extension <- ""
+  out_file_extension <- "_incl_subsidiaries"
+}
+if(DISTINCT_POSTINGS_ONLY == TRUE){
+  if(exists("out_file_extension")){
+    out_file_extension <- paste0(out_file_extension, "_distinct")
+  }else{
+    out_file_extension <- "_distinct"
+  }
 }
 
 #### Load data on firm patterns-------------------------------------------------
 # parent companies and corresponding search tokens:
-patterns_to_firms <- read.csv("./examples/pharma_ai/pharma_firm_list.csv")
+patterns_to_firms <- read.csv("./examples/pharma_ai/data/pharma_firm_list.csv")
 
 # subsidiaries: 
 if(INCLUDE_SUBSIDIARIES == TRUE){
@@ -51,13 +57,21 @@ if(INCLUDE_SUBSIDIARIES == TRUE){
 }
 
 #### Query Strings  ---------------------------------------------------------------
-# Prepare a character string in SQL-Format to extract employers 
-# whose name matches the patterns indicated in 'patterns_to_firms'
+# Prepare strings in SQL-Format for querying 
+
+# 1) find employers whose name matches the patterns indicated in 'patterns_to_firms'
 company_patterns <- paste0("'%", patterns_to_firms$firm_name_pattern, "%'")
 company_patterns <- paste0("company_name LIKE ", company_patterns, collapse = " OR ")
 
+# 2) exclude false positively matched employers from (1)
 exclude_tokens <- paste0("'%", c("bayern", "bayerisch", "rochester", "johanniter", "falcon farms", "broadcasting"), "%'")
 exclude_tokens <- paste0("company_name NOT LIKE ", exclude_tokens, collapse = " AND ")
+
+# 3) filter the data to consider by batch (= March 2023) and conisder postings only once.
+data_filter <- "data_batch = 'jobspickr_2023_01'"
+if(DISTINCT_POSTINGS_ONLY){
+  data_filter <- paste0(data_filter, " AND unique_posting_text = 'yes'")
+}
 
 #### Query JPOD ---------------------------------------------------------------
 # In order to get the total number of postings from these employers:
@@ -75,7 +89,7 @@ total_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   select(company_name, uniq_id, nuts_2) %>%
   filter(sql(exclude_tokens)) %>%
   inner_join(
-    tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
+    tbl(src = JPOD_CONN, "job_postings") %>% filter(sql(data_filter)), 
     by = "uniq_id") %>%
   group_by(company_name, nuts_2) %>%
   summarise(n_postings = n()) %>%
@@ -104,7 +118,7 @@ ai_postings <- tbl(src = JPOD_CONN, "institutions") %>%
   select(company_name, uniq_id, nuts_2) %>%
   filter(sql(exclude_tokens)) %>%
   inner_join(
-    tbl(src = JPOD_CONN, "job_postings") %>% filter(data_batch == "jobspickr_2023_01"), 
+    tbl(src = JPOD_CONN, "job_postings") %>% filter(sql(data_filter)), 
     by = "uniq_id") %>%
   inner_join(tbl(src = JPOD_CONN, "acemoglu_ai"), 
              by = "uniq_id") %>%
@@ -130,7 +144,7 @@ test_firm_list <- total_postings %>%
   filter(n_postings >= 50) %>%
   arrange(-n_postings)
 if(nrow(test_firm_list) > 0){
-  out_file = paste0("./examples/pharma_ai/pharma_test_firm_list", out_file_extension, ".csv")
+  out_file = paste0("./examples/pharma_ai/data/pharma_test_firm_list", out_file_extension, ".csv")
   write.csv(test_firm_list, out_file, row.names = FALSE)
   }
 
@@ -192,7 +206,7 @@ res %>%
   head(20)
 
 #### save the data and close the database --------------------------------------
-out_file = paste0("./examples/pharma_ai/pharma_ai_shares", out_file_extension, ".csv")
+out_file = paste0("./examples/pharma_ai/data/pharma_ai_shares", out_file_extension, ".csv")
 write.csv(res, out_file, row.names = FALSE)
 
 dbDisconnect(conn = JPOD_CONN)
