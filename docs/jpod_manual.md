@@ -137,13 +137,78 @@ To do this, run the slurm script [jpod_update.sh](../scripts/scicore/jpod_update
 #### Step 5: Enhance JPOD: Duplicated Postings and Identification of AI & Disruptive Technology Postings
 The final step is to enhance the information contained in JPOD. This can be done through the [jpod_augment.sh](../scripts/scicore/jpod_augment.sh) script, which runs the following three scripts: [clean_duplicates.py](../scripts/clean_duplicates.py), [detect_disruptech.py](../scripts/detect_disruptech.py) and [detect_ai.py](../scripts/detect_ai.py). 
 
-While the latter two are easily handled by scicore and do not require any changes, the `clean_duplicates.py`'s runtimes can be a challenge. **It is thus recommended to run `clean_duplicates.py` seperately for selected countries that dont have more than 3 million postings.**. This behavior can be controlled by specifying the paramater `RESTRICT_TO_GEO_UNITS` in [clean_duplicates.py](../scripts/clean_duplicates.py). For example, to only clean duplicates in JPOD for Germany and Italy, change as follows in the script `RESTRICT_TO_GEO_UNITS = ["germany", "italy"]`.
+While the latter two are easily handled by scicore and do not require any changes, the `clean_duplicates.py`'s runtimes can be a challenge. **It is thus recommended to run `clean_duplicates.py` seperately for selected countries that dont have more than 3 million postings.**. This behavior can be controlled by specifying the paramater `RESTRICT_TO_GEO_UNITS` in [clean_duplicates.py](../scripts/clean_duplicates.py). For example, to only clean duplicates in JPOD for Germany and Italy, change as follows in the script `RESTRICT_TO_GEO_UNITS = ["germany", "italy"]`:
 
-After completing these steps, JPOD should be successfully updated with the new data. 
+In that sense switch from:
+```python
+if __name__ == "__main__":
 
-<img src="https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg" height="60" width="60" >
+    # parameters for connecting to JPOD
+    JPOD_VERSION = "jpod.db"
+    DATA_BATCH = config.BATCH_VERSION
+    DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
+    JPOD_CONN = sqlite3.connect(database = DB_DIR)
+
+    RESTRICT_TO_GEO_UNITS = False
+    EXCLUDE_GEO_UNITS = False
+```
+
+to:
+```python
+if __name__ == "__main__":
+
+    # parameters for connecting to JPOD
+    JPOD_VERSION = "jpod.db"
+    DATA_BATCH = config.BATCH_VERSION
+    DB_DIR = os.path.join(nav.get_path(config.DB_DIRS), JPOD_VERSION)
+    JPOD_CONN = sqlite3.connect(database = DB_DIR)
+
+    RESTRICT_TO_GEO_UNITS = ["germany", "italy"]
+    EXCLUDE_GEO_UNITS = False
+```
+
+which will perform the cleaning only for postings from Germany and Italy. Save the script and send it to the cluster using [jpod_augment.sh](../scripts/scicore/jpod_augment.sh) as follows:
+
+```sh
+#!/bin/bash
+#SBATCH --job-name=augment_jpod
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+
+#SBATCH --time=06:00:00
+#SBATCH --qos=6hours
+
+#SBATCH --output=cluster_logs/clean_duplicates
+#SBATCH --error=cluster_logs/clean_duplicates_errors
+#SBATCH --mail-type=END,FAIL,TIME_LIMIT
+#SBATCH --mail-user=matthias.niggli@unibas.ch
+
+## configure
+cd /scicore/home/weder/GROUP/Innovation/05_job_adds_data/jpod/
+source ../jpod_venv/bin/activate
+
+## enhance JPOD
+python ./scripts/clean_duplicates.py
+##python ./scripts/detect_disruptech.py
+##python ./scripts/detect_ai.py
+```
+
 
 **:bangbang: Note** if something goes wrong, there is the [clean_tables.py](../scripts/clean_tables.py) script which you can use to delete all data from JPOD for a given batch of data. You have to specify the data bacth using the `DELETE_BATCH` parameter in this script. For example, specify `DELETE_BATCH = "jobspickr_2023_01"` to delete all data from the 2023 jobspickr batch. **HOWEVER, BE VERY CAREFULL WITH THIS SCRIPT**.
+
+JPOD should now be successfully updated with the new data. There is only one final step to do.
+
+#### Step 5: Updating `jpod_test.db`
+
+As specified above the idea of `jpod_test.db` is to have an identical, lightweight clone of the fully specified database. Since you updated the main database, you also have to do this for `jpod_test.db`. This last step is a relatively easy one, since it is almost all taken care of automatically in the shell script [`test_db.sh`](../scripts/scicore/test_db.sh).
+
+**HOWEVER BEFORE RUNNING THIS SCRIPT MAKE SURE OF THE FOLLOWING:** If you added or deleted columns or indexes during the update, you have to manually adapt the file [`jpod_test_create.sqlite`](../scripts/jpod_test_create.sqlite), which defines the schema of the `jpod_test.db` which has to be identical to `jpod.db`.
+
+Once you made such changes, you are ready to send [`test_db.sh`](../scripts/scicore/test_db.sh) to the cluster via `sbatch test_db.sh`. 
+
+After completing all these steps, everythin is set in motion for analyses.
+
+<img src="https://cdn.pixabay.com/photo/2016/03/03/02/08/samuel-1233415_960_720.jpg" height="60" width="60" >
 
 ## Final Remarks
 
