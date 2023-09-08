@@ -20,7 +20,7 @@ The corresponding code from the script looks as follows:
 
 ```r
 #### configure -----------------------------------------------------------------
-DB_VERSION <- "jpod.db"
+DB_VERSION <- "jpod_test.db"
 INCLUDE_SUBSIDIARIES <- TRUE
 DISTINCT_POSTINGS_ONLY <- FALSE
 
